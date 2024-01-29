@@ -5,7 +5,6 @@ const router = express.Router();
 const Category = require("../model/category");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
-const upload = require("../middleware/multer")
 const path = require("path");
 const fs = require('fs').promises;
 
@@ -42,7 +41,10 @@ router.post(
             const newCategory = {
                 name,
                 description,
-                imageUrl: result.url
+                image: {
+                    url: result.url,
+                    public_id: result.public_id
+                }
             }
             const data = await Category.create(newCategory);
 

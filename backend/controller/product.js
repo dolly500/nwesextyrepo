@@ -3,10 +3,13 @@ const { isSeller, isAuthenticated, isAdmin } = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const router = express.Router();
 const Product = require("../model/product");
+const Category = require("../model/category");
 const Order = require("../model/order");
 const Shop = require("../model/shop");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
+const path = require("path");
+const fs = require('fs').promises;
 
 // create product
 router.post(
@@ -19,31 +22,39 @@ router.post(
         return next(new ErrorHandler("Shop Id is invalid!", 400));
       } else {
         let images = [];
-
-        if (typeof req.body.images === "string") {
-          images.push(req.body.images);
-        } else {
-          images = req.body.images;
+        if (req.files.images) {
+          images.push(req.files.images);
         }
-      
         const imagesLinks = [];
-      
+
         for (let i = 0; i < images.length; i++) {
-          const result = await cloudinary.v2.uploader.upload(images[i], {
+          // Save the file to a temporary location
+          const image = images[i]
+          const tempFilePath = path.join(__dirname, '../uploads', image.name);
+          await image.mv(tempFilePath);
+          const result = await cloudinary.v2.uploader.upload(tempFilePath, {
             folder: "products",
           });
-      
+
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
+          await fs.unlink(tempFilePath);
         }
-      
+
         const productData = req.body;
         productData.images = imagesLinks;
         productData.shop = shop;
 
         const product = await Product.create(productData);
+        if (productData.categoryId) {
+          await Category.findByIdAndUpdate({ _id: productData.categoryId }, {
+            $push: {
+              products: product._id
+            }
+          });
+        }
 
         res.status(201).json({
           success: true,
@@ -83,14 +94,14 @@ router.delete(
 
       if (!product) {
         return next(new ErrorHandler("Product is not found with this id", 404));
-      }    
+      }
 
       for (let i = 0; 1 < product.images.length; i++) {
         const result = await cloudinary.v2.uploader.destroy(
           product.images[i].public_id
         );
       }
-    
+
       // await product.remove();
       await Product.findByIdAndDelete(req.params.id)
 
