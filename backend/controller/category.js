@@ -79,54 +79,21 @@ router.get(
 
 // edit a category
 router.put(
-    "/create-new-review",
+    "/:id",
     isAuthenticated,
     catchAsyncErrors(async (req, res, next) => {
         try {
-            const { user, rating, comment, categoryId, orderId } = req.body;
+            const categoryId = req.params.id;
 
-            const category = await Product.findById(categoryId);
-
-            const review = {
-                user,
-                rating,
-                comment,
+            await Category.findByIdAndUpdate(
                 categoryId,
-            };
-
-            const isReviewed = category.reviews.find(
-                (rev) => rev.user._id === req.user._id
-            );
-
-            if (isReviewed) {
-                category.reviews.forEach((rev) => {
-                    if (rev.user._id === req.user._id) {
-                        (rev.rating = rating), (rev.comment = comment), (rev.user = user);
-                    }
-                });
-            } else {
-                category.reviews.push(review);
-            }
-
-            let avg = 0;
-
-            category.reviews.forEach((rev) => {
-                avg += rev.rating;
-            });
-
-            category.ratings = avg / category.reviews.length;
-
-            await category.save({ validateBeforeSave: false });
-
-            await Order.findByIdAndUpdate(
-                orderId,
-                { $set: { "cart.$[elem].isReviewed": true } },
-                { arrayFilters: [{ "elem._id": categoryId }], new: true }
+                req.body,
+                { new: true }
             );
 
             res.status(200).json({
                 success: true,
-                message: "Reviwed succesfully!",
+                message: "Updated succesfully!",
             });
         } catch (error) {
             return next(new ErrorHandler(error, 400));
