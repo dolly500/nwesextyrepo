@@ -8,7 +8,7 @@ const path = require("path");
 const fileUpload = require('express-fileupload');
 
 app.use(cors({
-  origin: ['https://allsextoys.vercel.app'],
+  origin: '*',
   credentials: true
 }));
 // app.use(express.bodyParser({limit: '50mb'}))
