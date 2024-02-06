@@ -1,11 +1,19 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { brandingData, categoriesData } from "../../../static/data";
 import styles from "../../../styles/styles";
-// import {} from "react-router-dom"
+import { server } from "../../../server";
+import axios from "axios";
 
 const Categories = () => {
   const navigate = useNavigate();
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+        setData(res.data.categorys);
+    })
+  }, []);
   return (
     <>
       <div className={`${styles.section} hidden sm:block`}>
@@ -33,10 +41,10 @@ const Categories = () => {
           <h1 style={{color: 'white'}}>All Categories</h1>
         </div>
         <div className="grid grid-cols-1 gap-[70px] md:grid-cols-2 md:gap-[10px] lg:grid-cols-4 lg:gap-[20px] xl:grid-cols-5 xl:gap-[30px]">
-          {categoriesData &&
-            categoriesData.map((i) => {
+          {data &&
+            data.map((i) => {
               const handleSubmit = (i) => {
-                navigate(`/products?category=${i.title}`);
+                navigate(`/products?category=${i.name}`);
               };
               return (
                 <div
@@ -46,15 +54,15 @@ const Categories = () => {
                 >
 
                   <img
-                    src={i.image_Url}
+                    src={i.image.url}
                     className="w-full h-48 object-cover"
                     alt=""
                   />
                   <div class="p-5">
           
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{i.title}</h5>
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{i.name}</h5>
                    
-                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{i.subTitle}</p>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{i.description}</p>
                     <Link to="/products" className="inline-block">
                       <div className={`${styles.button} mt-100`}>
                         <span className="text-[#fff] text-[18px]">

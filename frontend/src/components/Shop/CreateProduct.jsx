@@ -3,8 +3,10 @@ import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createProduct } from "../../redux/actions/product";
-import { categoriesData } from "../../static/data";
+import { categories } from "../../static/data";
 import { toast } from "react-toastify";
+import { server } from "../../server";
+import axios from "axios";
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -16,10 +18,12 @@ const CreateProduct = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [tags, setTags] = useState("");
   const [originalPrice, setOriginalPrice] = useState();
   const [discountPrice, setDiscountPrice] = useState();
   const [stock, setStock] = useState();
+  const [categories, setCategories] = useState();
 
   useEffect(() => {
     if (error) {
@@ -30,6 +34,9 @@ const CreateProduct = () => {
       navigate("/dashboard");
       window.location.reload();
     }
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategories(res.data.categorys);
+  })
   }, [dispatch, error, success]);
 
   const handleImageChange = (e) => {
@@ -47,6 +54,13 @@ const CreateProduct = () => {
       };
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    const selectedCategoryId = categories.find(cat => cat.name === selectedCategory)?._id || ''; 
+    setCategory(selectedCategory);
+    setCategoryId(selectedCategoryId);
   };
 
   const handleSubmit = (e) => {
@@ -70,6 +84,7 @@ const CreateProduct = () => {
         name,
         description,
         category,
+        categoryId,
         tags,
         originalPrice,
         discountPrice,
@@ -124,13 +139,13 @@ const CreateProduct = () => {
           <select
             className="w-full mt-2 border h-[35px] rounded-[5px]"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={handleCategoryChange}
           >
             <option value="Choose a category">Choose a category</option>
-            {categoriesData &&
-              categoriesData.map((i) => (
-                <option value={i.title} key={i.title}>
-                  {i.title}
+            {categories &&
+              categories.map((i) => (
+                <option value={i.name} key={i.description}>
+                  {i.name}
                 </option>
               ))}
           </select>
