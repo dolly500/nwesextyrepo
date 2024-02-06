@@ -64,8 +64,10 @@ import {
   ShopPreviewPage,
   ShopSettingsPage,
   ShopWithDrawMoneyPage,
+  ShopCreateCategory,
 } from "./routes/ShopRoutes";
 import { server } from "./server";
+import { getAllCategories } from "./redux/actions/category.js";
 
 
 const App = () => {
@@ -81,6 +83,7 @@ const App = () => {
     Store.dispatch(getAllProducts());
     Store.dispatch(getAllEvents());
     Store.dispatch(getAllPosts());
+    Store.dispatch(getAllCategories());
     getPaystackApikey();
   }, []);
 
@@ -88,16 +91,16 @@ const App = () => {
     <BrowserRouter>
       {paystackApikey && (
         // <Elements paystack={loadpaystack(paystackApikey)}>
-          <Routes>
-            <Route
-              path="/payment"
-              element={
-                <ProtectedRoute>
-                  <PaymentPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+        <Routes>
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
         // </Elements>
       )}
       <Routes>
@@ -117,7 +120,7 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
 
-         <Route path="/posts" element={<PostsPage />} />
+        <Route path="/posts" element={<PostsPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/about" element={<LiveChat />} />
         <Route path="/contact" element={<FAQPage />} />
@@ -249,6 +252,14 @@ const App = () => {
           }
         />
         <Route
+          path="/dashboard-create-category"
+          element={
+            <SellerProtectedRoute>
+              <ShopCreateCategory />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard-events"
           element={
             <SellerProtectedRoute>
@@ -321,7 +332,7 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
-         <Route
+        <Route
           path="/admin-products"
           element={
             <ProtectedAdminRoute>
@@ -329,7 +340,7 @@ const App = () => {
             </ProtectedAdminRoute>
           }
         />
-         <Route
+        <Route
           path="/admin-events"
           element={
             <ProtectedAdminRoute>
@@ -346,7 +357,7 @@ const App = () => {
           }
         />
 
-         <Route
+        <Route
           path="/admin-withdraw-request"
           element={
             <ProtectedAdminRoute>
