@@ -38,8 +38,6 @@ const Header = ({ activeHeading, data }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
-      console.log("data", data)
-
   
   
   const handleSearchChange = (e) => {

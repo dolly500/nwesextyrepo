@@ -9,8 +9,6 @@ import CountDown from "./CountDown";
 const EventCard = ({ active, data }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  console.log(data, "event data")
-
 
   const addToCartHandler = (data) => {
     const isItemExists = cart && cart.find((i) => i._id === data._id);
