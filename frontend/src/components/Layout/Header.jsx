@@ -14,7 +14,6 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { server } from "../../server";
-import { categoriesData } from "../../static/data";
 import logo from "../../static/imgs/logo.png";
 import styles from "../../styles/styles";
 import Wishlist from "../Wishlist/Wishlist";
@@ -23,7 +22,7 @@ import DropDown from "./DropDown";
 import Navbar from "./Navbar";
 
 
-const Header = ({ activeHeading, data }) => {
+const Header = ({ activeHeading, data, categoriesData }) => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { isSeller } = useSelector((state) => state.seller);

@@ -6,14 +6,20 @@ import Header from "../components/Layout/Header";
 import Loader from "../components/Layout/Loader";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import styles from "../styles/styles";
+import axios from "axios";
+import { server } from "../server";
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const categoryData = searchParams.get("category");
   const { allProducts, isLoading } = useSelector((state) => state.products);
   const [data, setData] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([])
 
   useEffect(() => {
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategoriesData(res.data.categorys);
+    })
     if (categoryData === null) {
       const d = allProducts;
       setData(d);
@@ -32,7 +38,7 @@ const ProductsPage = () => {
           <Loader />
         ) : (
           <div>
-            <Header activeHeading={3} />
+            <Header activeHeading={3} categoriesData={categoriesData} />
             <br />
             <br />
             <div className={`${styles.section}`}>

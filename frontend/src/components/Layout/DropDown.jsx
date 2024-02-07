@@ -5,7 +5,7 @@ import styles from "../../styles/styles";
 const DropDown = ({ categoriesData, setDropDown }) => {
   const navigate = useNavigate();
   const submitHandle = (i) => {
-    navigate(`/products?category=${i.title}`);
+    navigate(`/products?category=${i.name}`);
     setDropDown(false);
     window.location.reload();
   };
@@ -19,7 +19,7 @@ const DropDown = ({ categoriesData, setDropDown }) => {
             onClick={() => submitHandle(i)}
           >
             <img
-              src={i.image_Url}
+              src={i.image.url}
               style={{
                 width: "25px",
                 height: "25px",
@@ -29,7 +29,7 @@ const DropDown = ({ categoriesData, setDropDown }) => {
               }}
               alt=""
             />
-            <h3 className="m-3 cursor-pointer select-none">{i.title}</h3>
+            <h3 className="m-3 cursor-pointer select-none">{i.name}</h3>
           </div>
         ))}
     </div>

@@ -5,12 +5,18 @@ import Header from "../components/Layout/Header";
 import Loader from "../components/Layout/Loader";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import styles from "../styles/styles";
+import axios from "axios";
+import { server } from "../server";
 
 const BestSellingPage = () => {
   const [data, setData] = useState([]);
   const { allProducts, isLoading } = useSelector((state) => state.products);
+  const [categoriesData, setCategoriesData] = useState([])
 
   useEffect(() => {
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategoriesData(res.data.categorys);
+    })
     const allProductsData = allProducts ? [...allProducts] : [];
     const sortedData = allProductsData?.sort((a, b) => b.sold_out - a.sold_out);
     setData(sortedData);
@@ -23,7 +29,7 @@ const BestSellingPage = () => {
           <Loader />
         ) : (
           <div>
-            <Header activeHeading={2} />
+            <Header activeHeading={2} categoriesData={categoriesData} />
             <br />
             <br />
             <div className={`${styles.section}`}>

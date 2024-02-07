@@ -72,6 +72,7 @@ import { getAllCategories } from "./redux/actions/category.js";
 
 const App = () => {
   const [paystackApikey, setPaystackApiKey] = useState("");
+  const [categoriesData, setCategoriesData] = useState([])
 
   async function getPaystackApikey() {
     const { data } = await axios.get(`${server}/payment/paystackapikey`);
@@ -85,6 +86,9 @@ const App = () => {
     Store.dispatch(getAllPosts());
     Store.dispatch(getAllCategories());
     getPaystackApikey();
+    axios.get(`${server}/category`, { withCredentials: true }).then((res) => {
+      setCategoriesData(res.data.categorys);
+    })
   }, []);
 
   return (
@@ -120,10 +124,10 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
 
-        <Route path="/posts" element={<PostsPage />} />
+        <Route path="/posts" element={<PostsPage categoriesData={categoriesData} />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/about" element={<LiveChat />} />
-        <Route path="/contact" element={<FAQPage />} />
+        <Route path="/about" element={<LiveChat categoriesData={categoriesData} />} />
+        <Route path="/contact" element={<FAQPage categoriesData={categoriesData} />} />
 
         <Route
           path="/checkout"

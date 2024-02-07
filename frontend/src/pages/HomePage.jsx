@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Layout/Header';
 import Hero from '../components/Route/Hero/Hero';
@@ -10,14 +10,20 @@ import SliderIndicatorsOutside from '../components/Route/Slider/Slider';
 // import Sponsored from '../components/Route/Sponsored';
 import Footer from '../components/Layout/Footer';
 import SlideInOnScroll from './SlideInOnScroll'; // Import the SlideInOnScroll component
+import { server } from '../server';
+import axios from 'axios';
 
 const HomePage = () => {
 
   const navigate = useNavigate();
+  const [categoriesData, setCategoriesData] = useState([])
 
   useEffect(() => {
     // When the component mounts, scroll to the top of the page
     window.scrollTo(0, 0);
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategoriesData(res.data.categorys);
+  })
   }, []);
 
   const handleFooterClick = () => {
@@ -46,7 +52,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <Header activeHeading={1} />
+      <Header activeHeading={1} categoriesData={categoriesData} />
       <div className={`bg-black`}>
         <SlideInOnScroll>
           <Hero />

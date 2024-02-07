@@ -6,10 +6,10 @@ import styles from "../styles/styles";
 import SlideInOnScroll from "./SlideInOnScroll";
 
 
-const FAQPage = () => {
+const FAQPage = ({ categoriesData }) => {
   return (
     <div>
-      <Header activeHeading={5} />
+      <Header activeHeading={5} categoriesData={categoriesData} />
       <div className={`bg-black`}>
 
         <SlideInOnScroll>

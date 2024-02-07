@@ -7,9 +7,9 @@ import PostCard from "../components/Posts/PostCard";
 import styles from "../styles/styles";
 
 
-const PostsPage = () => {
+const PostsPage = ({categoriesData}) => {
   const { allPosts, isLoading } = useSelector((state) => state.posts);
-  console.log(allPosts, "all post data")
+  // console.log(allPosts, "all post data")
 
   return (
     <>
@@ -17,7 +17,7 @@ const PostsPage = () => {
         <Loader />
       ) : (
         <div>
-          <Header activeHeading={6} />
+          <Header activeHeading={6} categoriesData={categoriesData}/>
           <div className={`${styles.section} my-8`}>
             <div className={`${styles.heading}`}>
               <h1>Blog Posts</h1>

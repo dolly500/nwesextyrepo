@@ -8,10 +8,10 @@ import emailjs from 'emailjs-com';
 
 
 
-const Contact = () => {
+const Contact = ({categoriesData}) => {
   return(
     <div>
-      <Header activeHeading={5} />
+      <Header activeHeading={5} categoriesData={categoriesData} />
 
       <SlideInOnScroll>
         <ContactForm />
