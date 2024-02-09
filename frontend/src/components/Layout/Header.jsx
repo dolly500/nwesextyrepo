@@ -270,14 +270,16 @@ const Header = ({ activeHeading, data, categoriesData }) => {
               className="relative mr-[20px]"
               onClick={() => setOpenCart(true)}
             >
-              <AiOutlineShoppingCart size={30} style={{color: 'white'}}/>
-              <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
+              <AiOutlineShoppingCart size={30} style={{color: 'white'}} onClick={() => setOpenCart(true)}/>
+              <span className="absolute left-0 top-0 rounded-full bg-[#5f3bc1] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
                 {cart && cart.length}
               </span>
             </div>
           </div>
           {/* cart popup */}
+ 
           {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+          
 
           {/* wishlist popup */}
           {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
