@@ -6,7 +6,7 @@ import Categories from '../components/Route/Categories/Categories';
 import BestDeals from '../components/Route/BestDeals/BestDeals';
 import FeaturedProduct from '../components/Route/FeaturedProduct/FeaturedProduct';
 import Events from '../components/Events/Events';
-import SliderIndicatorsOutside from '../components/Route/Slider/Slider';
+// import SliderIndicatorsOutside from '../components/Route/Slider/Slider';
 // import Sponsored from '../components/Route/Sponsored';
 import Footer from '../components/Layout/Footer';
 import SlideInOnScroll from './SlideInOnScroll'; // Import the SlideInOnScroll component
@@ -70,11 +70,7 @@ const HomePage = () => {
           <FeaturedProduct />
         </SlideInOnScroll>
         <SlideInOnScroll>
-          <SliderIndicatorsOutside />
-        </SlideInOnScroll>
-        <SlideInOnScroll>
-
-          <Footer onClick={handleFooterClick}/>
+        <Footer onClick={handleFooterClick}/>
 
         </SlideInOnScroll>
       </div>
