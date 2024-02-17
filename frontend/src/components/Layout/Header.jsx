@@ -20,6 +20,7 @@ import Wishlist from "../Wishlist/Wishlist";
 import Cart from "../cart/Cart";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
+import Modal from "react-modal";
 
 
 const Header = ({ activeHeading, data, categoriesData }) => {
@@ -30,6 +31,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
   const { cart } = useSelector((state) => state.cart);
   const { allProducts } = useSelector((state) => state.products);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false)
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
   const [dropDown, setDropDown] = useState(false);
@@ -49,6 +51,15 @@ const Header = ({ activeHeading, data, categoriesData }) => {
         product.name.toLowerCase().includes(term.toLowerCase())
       );
     setSearchData(filteredProducts);
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  
+  
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   window.addEventListener("scroll", () => {
@@ -79,7 +90,8 @@ const Header = ({ activeHeading, data, categoriesData }) => {
             toast.error(error.response.data.message);
           });
     } else {
-      toast.error("Please login to create a conversation");
+      // toast.error("Please login to create a conversation");
+      openModal();
     }
   };
 
@@ -180,6 +192,77 @@ const Header = ({ activeHeading, data, categoriesData }) => {
                 <div className="relative cursor-pointer mr-[15px]" onClick={handleMessageSubmit}>
                   <IoChatbubbleEllipses size={30} color="rgb(255 255 255 / 83%)"/>
                 </div>
+
+                
+<Modal
+  isOpen={isModalOpen}
+  onRequestClose={closeModal}
+  contentLabel="Login Modal"
+  style={{
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    content: {
+      width: '400px',
+      margin: 'auto',
+      borderRadius: '8px',
+      position: 'relative',
+    },
+  }}
+>
+  <div>
+    {/* Cancel icon at the right top */}
+    <button
+      style={{
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: '20px',
+        color: '#333',
+      }}
+      onClick={closeModal}
+    >
+      &#10006; {/* Unicode for 'x' symbol */}
+    </button>
+
+    <p>Please Pay to access assigned therapists</p>
+
+    <br />
+    
+    {/* Cancel button styling */}
+    <button
+      style={{
+        background: '#ddd',
+        color: '#333',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        marginRight: '10px',
+        cursor: 'pointer',
+      }}
+      onClick={closeModal}
+    >
+      Cancel
+    </button>
+    
+    {/* Pay Here button styling */}
+    <button
+      style={{
+        background: '#483bc1',
+        color: '#fff',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+      }}
+      onClick={() => { /* handle payment logic */ }}
+    >
+      Pay Here
+    </button>
+  </div>
+</Modal>
+
             </div>
             <div className={`${styles.noramlFlex}`}>
               <div
