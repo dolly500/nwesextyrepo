@@ -1,45 +1,49 @@
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
-    cart:{
+    cart: {
         type: Array,
         required: true,
     },
-    shippingAddress:{
+    shippingAddress: {
         type: Object,
         required: true,
     },
-    user:{
+    user: {
         type: Object,
         required: true,
     },
-    totalPrice:{
+    totalPrice: {
         type: Number,
         required: true,
     },
-    status:{
+    status: {
         type: String,
         default: "Processing",
     },
-    paymentInfo:{
-        id:{
+    paymentInfo: {
+        id: {
             type: String,
         },
         status: {
             type: String,
         },
-        type:{
+        type: {
+            type: String,
+        },
+        paystackRef: {
             type: String,
         },
     },
-    paidAt:{
+    paidAt: {
         type: Date,
         default: Date.now(),
     },
     deliveredAt: {
         type: Date,
+        default: null
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now(),
     },
