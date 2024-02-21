@@ -70,6 +70,32 @@ const Header = ({ activeHeading, data, categoriesData }) => {
     }
   });
 
+
+  const handlePayment = async () => {
+    try {
+      // Make a request to your server to initiate the payment
+      const response = await axios.post('/api/paystack/initialize-payment', {
+        amount: 5000, // Set your desired amount
+        email: '', // Set the customer's email
+        metadata: {
+          custom_fields: [
+            {
+              display_name: 'Product Name',
+              variable_name: 'product_name',
+              value: 'Your Product',
+            },
+          ],
+        },
+      });
+
+      // After getting the response from the server, redirect to Paystack payment page
+      window.location.href = response.data.data.authorization_url;
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      // Handle error appropriately (e.g., show an error message to the user)
+    }
+  };
+
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
       navigate(`/inbox`)
@@ -141,8 +167,8 @@ const Header = ({ activeHeading, data, categoriesData }) => {
             ) : null}
           </div>
 
-          <div className={`${styles.button} mr-20`}>
-            <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
+          <div className={`${styles.button} mr-20`} style={{ display: 'none' }}>
+            <Link to={`${isSeller ? "/dashboard" : "/administrator"}`}>
               <h1 className="text-[#fff] flex items-center">
                 {isSeller ? "Go Dashboard" : "Become Seller"}{" "}
                 <IoIosArrowForward className="ml-1" />
@@ -256,7 +282,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
         borderRadius: '4px',
         cursor: 'pointer',
       }}
-      onClick={() => { /* handle payment logic */ }}
+      onClick={handlePayment}
     >
       Pay Here
     </button>
@@ -425,7 +451,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
               </div>
 
               <Navbar active={activeHeading} />
-              <div className={`${styles.button} ml-4 !rounded-[4px]`}>
+              <div className={`${styles.button} ml-4 !rounded-[4px]`} style={{ display: 'none' }}>
                 <Link to="/shop-create">
                   <h1 className="text-[#fff] flex items-center">
                     Become Seller <IoIosArrowForward className="ml-1" />
