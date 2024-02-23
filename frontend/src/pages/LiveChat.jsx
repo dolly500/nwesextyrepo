@@ -395,44 +395,9 @@ const AboutUs = () => {
         </div>
 
         <div className="mb-6">
-          <h3 className="text-xl font-bold mb-2">Fill out questionnaire</h3>
-          <p>Religion, Gender, Relationship status, What are you seeking help for? <a href="" style={{ color: 'blue' }}>Questionnaire Form</a></p>
+          <h3 className="text-xl font-bold mb-2">Fill out questionnaire below:</h3>
+          <p><a href="/questionaire" style={{ color: 'blue' }}>Questionnaire Form</a></p>
           {/* Add form elements for questionnaire here */}
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-2">
-            Option Available
-          </h3>
-          <p>Your sex life, differences with your spouse, divorce, adoption, infertility, infidelity, pregnancy, postpartum depression,others (allow a client to put in the reason)</p>
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-2">Initial consultation fee</h3>
-          {/* Add initial consultation fee information */}
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-2">Types of Therapy</h3>
-          <p className="mb-2">Choose the type of therapy that suits your needs:</p>
-          <ul className="list-disc pl-6">
-            <li>
-              <strong className="font-bold">1. Individual</strong>
-              <p>- Personalized therapy for self-growth</p>
-              <p>- Support myself</p>
-            </li>
-            <li className="mt-4">
-              <strong className="font-bold">2. Couples</strong>
-              <p>- Strengthening bonds & resolving</p>
-              <p>- Support us to grow our relationship</p>
-            </li>
-            <li className="mt-4">
-              <strong className="font-bold">3. Teens</strong>
-              <p>- Guidance for adolescent challenges</p>
-              <p>- Supporting my child</p>
-            </li>
-            {/* You can add more types of therapy here */}
-          </ul>
         </div>
 
         <div className="mb-6">

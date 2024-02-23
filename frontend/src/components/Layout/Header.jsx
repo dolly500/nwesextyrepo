@@ -20,6 +20,7 @@ import Wishlist from "../Wishlist/Wishlist";
 import Cart from "../cart/Cart";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
+import Modal from "react-modal";
 
 
 const Header = ({ activeHeading, data, categoriesData }) => {
@@ -30,6 +31,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
   const { cart } = useSelector((state) => state.cart);
   const { allProducts } = useSelector((state) => state.products);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false)
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
   const [dropDown, setDropDown] = useState(false);
@@ -51,6 +53,15 @@ const Header = ({ activeHeading, data, categoriesData }) => {
     setSearchData(filteredProducts);
   };
 
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  
+  
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {
       setActive(true);
@@ -58,6 +69,32 @@ const Header = ({ activeHeading, data, categoriesData }) => {
       setActive(false);
     }
   });
+
+
+  const handlePayment = async () => {
+    try {
+      // Make a request to your server to initiate the payment
+      const response = await axios.post('/api/paystack/initialize-payment', {
+        amount: 5000, // Set your desired amount
+        email: '', // Set the customer's email
+        metadata: {
+          custom_fields: [
+            {
+              display_name: 'Product Name',
+              variable_name: 'product_name',
+              value: 'Your Product',
+            },
+          ],
+        },
+      });
+
+      // After getting the response from the server, redirect to Paystack payment page
+      window.location.href = response.data.data.authorization_url;
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      // Handle error appropriately (e.g., show an error message to the user)
+    }
+  };
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
@@ -79,7 +116,8 @@ const Header = ({ activeHeading, data, categoriesData }) => {
             toast.error(error.response.data.message);
           });
     } else {
-      toast.error("Please login to create a conversation");
+      // toast.error("Please login to create a conversation");
+      openModal();
     }
   };
 
@@ -129,7 +167,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
             ) : null}
           </div>
 
-          <div className={`${styles.button} mr-20`}>
+          <div className={`${styles.button} mr-20`} style={{ display: 'none' }}>
             <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
               <h1 className="text-[#fff] flex items-center">
                 {isSeller ? "Go Dashboard" : "Become Seller"}{" "}
@@ -180,6 +218,77 @@ const Header = ({ activeHeading, data, categoriesData }) => {
                 <div className="relative cursor-pointer mr-[15px]" onClick={handleMessageSubmit}>
                   <IoChatbubbleEllipses size={30} color="rgb(255 255 255 / 83%)"/>
                 </div>
+
+                
+<Modal
+  isOpen={isModalOpen}
+  onRequestClose={closeModal}
+  contentLabel="Login Modal"
+  style={{
+    overlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    content: {
+      width: '400px',
+      margin: 'auto',
+      borderRadius: '8px',
+      position: 'relative',
+    },
+  }}
+>
+  <div>
+    {/* Cancel icon at the right top */}
+    <button
+      style={{
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: '20px',
+        color: '#333',
+      }}
+      onClick={closeModal}
+    >
+      &#10006; {/* Unicode for 'x' symbol */}
+    </button>
+
+    <p>Buy Your Talk Time Unit To Access Assigned Therapists</p>
+
+    <br />
+    
+    {/* Cancel button styling */}
+    <button
+      style={{
+        background: '#ddd',
+        color: '#333',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        marginRight: '10px',
+        cursor: 'pointer',
+      }}
+      onClick={closeModal}
+    >
+      Cancel
+    </button>
+    
+    {/* Pay Here button styling */}
+    <button
+      style={{
+        background: '#483bc1',
+        color: '#fff',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+      }}
+      onClick={handlePayment}
+    >
+      Pay Here
+    </button>
+  </div>
+</Modal>
+
             </div>
             <div className={`${styles.noramlFlex}`}>
               <div
@@ -270,14 +379,16 @@ const Header = ({ activeHeading, data, categoriesData }) => {
               className="relative mr-[20px]"
               onClick={() => setOpenCart(true)}
             >
-              <AiOutlineShoppingCart size={30} style={{color: 'white'}}/>
-              <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
+              <AiOutlineShoppingCart size={30} style={{color: 'white'}} onClick={() => setOpenCart(true)}/>
+              <span className="absolute left-0 top-0 rounded-full bg-[#5f3bc1] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
                 {cart && cart.length}
               </span>
             </div>
           </div>
           {/* cart popup */}
+ 
           {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+          
 
           {/* wishlist popup */}
           {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
@@ -340,7 +451,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
               </div>
 
               <Navbar active={activeHeading} />
-              <div className={`${styles.button} ml-4 !rounded-[4px]`}>
+              <div className={`${styles.button} ml-4 !rounded-[4px]`} style={{ display: 'none' }}>
                 <Link to="/shop-create">
                   <h1 className="text-[#fff] flex items-center">
                     Become Seller <IoIosArrowForward className="ml-1" />
