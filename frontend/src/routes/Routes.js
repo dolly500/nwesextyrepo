@@ -19,8 +19,10 @@ import ShopLoginPage from "../pages/ShopLoginPage";
 import SignupPage from "../pages/SignupPage";
 import TrackOrderPage from "../pages/TrackOrderPage";
 import UserInbox from "../pages/UserInbox.jsx";
+import QuestionnaireForm from "../pages/QuestionairePage.jsx";
 
 export { 
+    QuestionnaireForm,
     LoginPage,
     SignupPage,
     ActivationPage,

@@ -254,7 +254,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
       &#10006; {/* Unicode for 'x' symbol */}
     </button>
 
-    <p>Please Pay to access assigned therapists</p>
+    <p>Buy Your Talk Time Unit To Access Assigned Therapists</p>
 
     <br />
     
