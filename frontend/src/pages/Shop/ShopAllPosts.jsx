@@ -11,7 +11,7 @@ const ShopAllPosts = () => {
             <div className="w-[80px] 800px:w-[330px]">
               <DashboardSideBar active={5} />
             </div>
-            <div className="w-full justify-center flex">
+            <div className="w-full justify-center flex bg-white">
                 <AllPosts />
             </div>
           </div>

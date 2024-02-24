@@ -5,7 +5,7 @@ import OrderDetails from "../../components/Shop/OrderDetails";
 
 const ShopOrderDetails = () => {
   return (
-    <div>
+    <div className='bg-white'>
          <DashboardHeader />
          <OrderDetails />
           <Footer />

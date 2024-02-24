@@ -62,6 +62,7 @@ const QuestionnaireForm = () => {
             Religion
           </label>
           <select id="religion" name="religion" className="mt-1 p-2 w-full border rounded-md">
+          <option></option>
             <option>Christianity</option>
             <option>Islam</option>
             <option>Others</option>
@@ -73,6 +74,7 @@ const QuestionnaireForm = () => {
             Gender
           </label>
           <select id="gender" name="gender" className="mt-1 p-2 w-full border rounded-md">
+          <option></option>
             <option>Male</option>
             <option>Female</option>
             <option>Others</option>
@@ -88,6 +90,7 @@ const QuestionnaireForm = () => {
             name="relationshipStatus"
             className="mt-1 p-2 w-full border rounded-md"
           >
+            <option></option>
             <option>Single</option>
             <option>Married</option>
             <option>Divorced</option>
@@ -117,6 +120,7 @@ const QuestionnaireForm = () => {
             name="optionsAvailable"
             className="mt-1 p-2 w-full border rounded-md"
           >
+            <option></option>
             <option>Your sex life</option>
             <option>Differences with your spouse</option>
             <option>Divorce</option>
@@ -146,6 +150,7 @@ const QuestionnaireForm = () => {
             Types of Therapy
           </label>
           <select id="therapyType" name="therapyType" className="mt-1 p-2 w-full border rounded-md">
+          <option></option>
             <option value="individual">Individual</option>
             <option value="couples">Couples</option>
             <option value="teens">Teens</option>

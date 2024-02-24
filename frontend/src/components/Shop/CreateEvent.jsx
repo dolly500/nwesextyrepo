@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
 import { createevent } from "../../redux/actions/event";
+import { server } from "../../server";
+import axios from "axios";
 
 const CreateEvent = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -22,6 +24,30 @@ const CreateEvent = () => {
   const [stock, setStock] = useState();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [categoryId, setCategoryId] = useState("");
+  const [categories, setCategories] = useState();
+
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (success) {
+      toast.success("Event created successfully!");
+      navigate("/dashboard");
+      window.location.reload();
+    }
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategories(res.data.categorys);
+  })
+  }, [dispatch, error, success]);
+
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    const selectedCategoryId = categories.find(cat => cat.name === selectedCategory)?._id || ''; 
+    setCategory(selectedCategory);
+    setCategoryId(selectedCategoryId);
+  };
 
   const handleStartDateChange = (e) => {
     const startDate = new Date(e.target.value);
@@ -143,13 +169,13 @@ const CreateEvent = () => {
           <select
             className="w-full mt-2 border h-[35px] rounded-[5px]"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={handleCategoryChange}
           >
             <option value="Choose a category">Choose a category</option>
-            {categoriesData &&
-              categoriesData.map((i) => (
-                <option value={i.title} key={i.title}>
-                  {i.title}
+            {categories &&
+              categories.map((i) => (
+                <option value={i.name} key={i.description}>
+                  {i.name}
                 </option>
               ))}
           </select>

@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createpost } from "../../redux/actions/post";
 import { categoriesData } from "../../static/data";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { server } from "../../server";
 
 const CreatePost = () => {
   const { seller } = useSelector((state) => state.seller);
@@ -15,11 +18,34 @@ const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [tags, setTags] = useState("");
+  const [categories, setCategories] = useState();
+
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (success) {
+      toast.success("Post created successfully!");
+      navigate("/dashboard");
+      window.location.reload();
+    }
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategories(res.data.categorys);
+  })
+  }, [dispatch, error, success]);
 
 
 //   const today = new Date().toISOString().slice(0, 10);
 
+const handleCategoryChange = (e) => {
+  const selectedCategory = e.target.value;
+  const selectedCategoryId = categories.find(cat => cat.name === selectedCategory)?._id || ''; 
+  setCategory(selectedCategory);
+  setCategoryId(selectedCategoryId);
+};
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -102,13 +128,13 @@ const CreatePost = () => {
           <select
             className="w-full mt-2 border h-[35px] rounded-[5px]"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={handleCategoryChange}
           >
             <option value="Choose a category">Choose a category</option>
-            {categoriesData &&
-              categoriesData.map((i) => (
-                <option value={i.title} key={i.title}>
-                  {i.title}
+            {categories &&
+              categories.map((i) => (
+                <option value={i.name} key={i.description}>
+                  {i.name}
                 </option>
               ))}
           </select>

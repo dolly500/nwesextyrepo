@@ -7,7 +7,7 @@ const ShopCreatePosts = () => {
   return (
     <div>
         <DashboardHeader />
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full bg-white">
       <div className="w-[330px]">
         <DashboardSideBar active={6} />
       </div>
