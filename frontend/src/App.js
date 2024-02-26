@@ -46,7 +46,8 @@ import {
   SignupPage,
   TrackOrderPage,
   UserInbox,
-  QuestionnaireForm
+  QuestionnaireForm,
+  ForgotPassword
 } from "./routes/Routes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute";
 import {
@@ -111,6 +112,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/sign-up" element={<SignupPage />} />
         <Route
           path="/activation/:activation_token"

@@ -6,6 +6,7 @@ import FAQPage from "../pages/FAQPage";
 import HomePage from "../pages/HomePage";
 import LiveChat from "../pages/LiveChat.jsx";
 import LoginPage from "../pages/Login";
+import ForgotPassword from "../pages/ForgotPassword.jsx";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
 import OrderSuccessPage from "../pages/OrderSuccessPage";
 import PaymentPage from "../pages/PaymentPage";
@@ -23,6 +24,7 @@ import QuestionnaireForm from "../pages/QuestionairePage.jsx";
 
 export { 
     QuestionnaireForm,
+    ForgotPassword,
     LoginPage,
     SignupPage,
     ActivationPage,

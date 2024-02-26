@@ -2,39 +2,33 @@
 import React, { useState } from 'react';
 import { Link} from "react-router-dom";
 import logo from '../static/imgs/logo.png'
+import axios from 'axios';
 
 const QuestionnaireForm = () => {
-    const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    try {
-      // Mock API call - replace this with your actual API endpoint
-      const response = await fetch('https://api.example.com/submit-questionnaire', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          // Include form data here
-          religion: e.target.religion.value,
-          gender: e.target.gender.value,
-          relationshipStatus: e.target.relationshipStatus.value,
-          // ... other form fields
-        }),
-      });
+      try {
+          const response = await axios.post('https://api.example.com/submit-questionnaire', {
+              // Include form data here
+              religion: e.target.religion.value,
+              gender: e.target.gender.value,
+              relationshipStatus: e.target.relationshipStatus.value,
+              // ... other form fields
+          });
 
-      if (response.ok) {
-        // Form submitted successfully
-        setShowPopup(true);
-      } else {
-        // Handle error scenarios
-        console.error('Form submission failed');
+          if (response.status === 200) {
+              // Form submitted successfully
+              setShowPopup(true);
+          } else {
+              // Handle error scenarios
+              console.error('Form submission failed');
+          }
+      } catch (error) {
+          console.error('Error during form submission:', error);
       }
-    } catch (error) {
-      console.error('Error during form submission:', error);
-    }
   };
 
   const closePopup = () => {
