@@ -42,8 +42,8 @@ const QuestionnaireForm = () => {
   };
 
   return (
-    <div className="bg-white">
-    <div className="max-w-md mx-auto mt-8 p-4 bg-white shadow-md rounded">
+    <div className="w-full bg-white">
+    <div className="max-w-md mx-auto mt-8 p-4 shadow-md rounded">
         <Link to="/">
               <img
                 src= {logo}
