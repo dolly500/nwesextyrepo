@@ -4,36 +4,30 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../static/imgs/logo.png';
 import { FaHome } from "react-icons/fa"; 
+import axios from 'axios';
 
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-
-  const handleForgotPassword = async () => {
-    try {
-      // Make a request to your backend API for password reset
-      const response = await fetch('https://your-backend-api.com/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage(data.message);
-      } else {
-        setError(data.error);
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+  
+    const handleForgotPassword = async () => {
+      try {
+        const response = await axios.post('https://your-backend-api.com/forgot-password', {
+          email,
+        });
+  
+        if (response.status === 200) {
+          setMessage(response.data.message);
+        } else {
+          setError(response.data.error);
+        }
+      } catch (error) {
+        console.error('Error sending password reset request:', error);
+        setError('Something went wrong. Please try again later.');
       }
-    } catch (error) {
-      console.error('Error sending password reset request:', error);
-      setError('Something went wrong. Please try again later.');
-    }
-  };
+    };  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
