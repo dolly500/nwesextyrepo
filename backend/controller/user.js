@@ -61,7 +61,7 @@ router.post("/create-user", async (req, res, next) => {
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "30m",
   });
 };
 

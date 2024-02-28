@@ -6,18 +6,26 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 const fileUpload = require('express-fileupload');
+const morgan = require("morgan");
+
+
+
 
 app.use(cors({
   origin: true,
   credentials: true
 }));
 // app.use(express.bodyParser({limit: '50mb'}))
+
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyParser.json({ limit: '52428800' }));
 app.use(cookieParser());
 app.use("/", express.static(path.join(__dirname, "./uploads")));
-app.use("/test", (req, res) => {
-  res.send("Hello world!");
+
+
+app.get("/", async (req, res, next) => {
+  res.send({ message: "Welcome🚀" });
 });
 
 app.use(fileUpload({
