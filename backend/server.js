@@ -2,6 +2,11 @@ const app = require("./app");
 const connectDatabase = require("./db/Database");
 const cloudinary = require("cloudinary");
 
+
+
+
+
+
 // Handling uncaught Exception
 // process.on("uncaughtException", (err) => {
 //   console.log(`Error: ${err.message}`);
@@ -26,11 +31,11 @@ cloudinary.config({
 
 
 // create server
-const server = app.listen(process.env.PORT, () => {
-  console.log(
-    `Server is running on http://localhost:${process.env.PORT}`
-  );
-});
+
+
+const PORT = process.env.PORT || 3000; // Set the PORT to the environment variable PORT or default to 3000
+app.listen(PORT, () => console.log(`🚀 @ http://localhost:${PORT}`)); // Start the server on the specified PORT
+
 
 // unhandled promise rejection
 // process.on("unhandledRejection", (err) => {
