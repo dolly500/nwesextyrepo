@@ -33,11 +33,7 @@ router.post("/create-user", async (req, res, next) => {
       },
     };
 
-
-    // const activationUrl = `https://allsextoys.vercel.app/activation/${activationToken}`;
-
     const activationToken = createActivationToken(user);
-
     const activationUrl = `https://allsextoys.vercel.app/activation/${activationToken}`;
 
     try {
@@ -46,9 +42,12 @@ router.post("/create-user", async (req, res, next) => {
         subject: "Activate your account",
         message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
       });
+
+      // Include user data in the response
       res.status(201).json({
         success: true,
-        message: `please check your email:- ${user.email} to activate your account!`,
+        message: `Please check your email (${user.email}) to activate your account!`,
+        user: user, // Include user data here
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -58,12 +57,14 @@ router.post("/create-user", async (req, res, next) => {
   }
 });
 
+
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
     expiresIn: "30m",
   });
 };
+
 
 // activate user
 router.post(
@@ -94,12 +95,18 @@ router.post(
         password,
       });
 
-      sendToken(user, 201, res);
+      // Include user data in the response
+      res.status(201).json({
+        success: true,
+        message: "User activated successfully",
+        user: user, // Include user data here
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
+
 
 // login user
 router.post(
@@ -109,29 +116,39 @@ router.post(
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return next(new ErrorHandler("Please provide the all fields!", 400));
+        return next(new ErrorHandler("Please provide all fields!", 400));
       }
 
       const user = await User.findOne({ email }).select("+password");
 
       if (!user) {
-        return next(new ErrorHandler("User doesn't exists!", 400));
+        return next(new ErrorHandler("User doesn't exist!", 400));
       }
 
       const isPasswordValid = await user.comparePassword(password);
 
       if (!isPasswordValid) {
-        return next(
-          new ErrorHandler("Please provide the correct information", 400)
-        );
+        return next(new ErrorHandler("Incorrect email or password", 400));
       }
 
-      sendToken(user, 201, res);
+      // Include user data in the response
+      res.status(200).json({
+        success: true,
+        message: "User logged in successfully",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar
+          // Include other fields as needed
+        }
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
+
 
 // load user
 router.get(
