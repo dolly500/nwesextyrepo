@@ -9,7 +9,10 @@ const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
-// create user
+
+
+
+// create user without activation token
 router.post("/create-user", async (req, res, next) => {
   try {
     const { name, email, password, avatar } = req.body;
@@ -23,7 +26,7 @@ router.post("/create-user", async (req, res, next) => {
       folder: "avatars",
     });
 
-    const user = {
+    const user = await User.create({
       name: name,
       email: email,
       password: password,
@@ -31,82 +34,18 @@ router.post("/create-user", async (req, res, next) => {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
       },
-    };
+    });
 
-    const activationToken = createActivationToken(user);
-    const activationUrl = `https://allsextoys.vercel.app/activation/${activationToken}`;
-
-    try {
-      await sendMail({
-        email: user.email,
-        subject: "Activate your account",
-        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-      });
-
-      // Include user data in the response
-      res.status(201).json({
-        success: true,
-        message: `Please check your email (${user.email}) to activate your account!`,
-        user: user, // Include user data here
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
+    // Include user data in the response
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: user, // Include user data here
+    });
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
 });
-
-
-// create activation token
-const createActivationToken = (user) => {
-  return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: "30m",
-  });
-};
-
-
-// activate user
-router.post(
-  "/activation",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const { activation_token } = req.body;
-
-      const newUser = jwt.verify(
-        activation_token,
-        process.env.ACTIVATION_SECRET
-      );
-
-      if (!newUser) {
-        return next(new ErrorHandler("Invalid token", 400));
-      }
-      const { name, email, password, avatar } = newUser;
-
-      let user = await User.findOne({ email });
-
-      if (user) {
-        return next(new ErrorHandler("User already exists", 400));
-      }
-      user = await User.create({
-        name,
-        email,
-        avatar,
-        password,
-      });
-
-      // Include user data in the response
-      res.status(201).json({
-        success: true,
-        message: "User activated successfully",
-        user: user, // Include user data here
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
 
 // login user
 router.post(
@@ -433,5 +372,70 @@ router.delete(
     }
   })
 );
+
+// create admin user
+router.post("/create-admin", async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+    const userEmail = await User.findOne({ email });
+
+    if (userEmail) {
+      return next(new ErrorHandler("User already exists", 400));
+    }
+
+    const user = await User.create({
+      name: name,
+      email: email,
+      password: password,
+      isAdmin: true, // Set isAdmin flag to true for admin users
+    });
+
+    // Include user data in the response
+    res.status(201).json({
+      success: true,
+      message: "Admin user created successfully",
+      user: user, // Include user data here
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
+
+router.post("/admin-login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return next(new ErrorHandler("Please provide all fields!", 400));
+    }
+
+    const admin = await Admin.findOne({ email }).select("+password");
+
+    if (!admin) {
+      return next(new ErrorHandler("Admin doesn't exist!", 400));
+    }
+
+    const isPasswordValid = await admin.comparePassword(password);
+
+    if (!isPasswordValid) {
+      return next(new ErrorHandler("Incorrect email or password", 400));
+    }
+
+    // Generate a JWT token for the authenticated admin
+    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1h" // Token expires in 1 hour (adjust as needed)
+    });
+
+    // Include the token in the response
+    res.status(200).json({
+      success: true,
+      message: "Admin logged in successfully",
+      token: token
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
 
 module.exports = router;
