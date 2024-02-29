@@ -78,8 +78,7 @@ router.post(
           _id: user._id,
           name: user.name,
           email: user.email,
-          avatar: user.avatar
-          // Include other fields as needed
+         
         }
       });
     } catch (error) {
