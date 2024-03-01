@@ -30,7 +30,7 @@ const generateAccessToken = (user) => {
     expiresIn: '50m',
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, options);
+  const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, options);
 
   //console.log('Generated Token:', token);
 
