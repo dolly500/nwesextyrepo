@@ -12,12 +12,12 @@ const { sendResetEmail, getAdminByEmail } = require('../services/admin.service')
 //const catchAsync = require('express-async-handler');
 const adminService = require('../services/admin.service');
 
-const signupUser = async (req, res) => {
+const signupAdmin = async (req, res) => {
   try {
-    const { name, email, password} = req.body;
+    const {shopName,phoneNumber, email, addresses,zipCode, password, avatar} = req.body;
 
     // Validate user input
-    const { error } = adminRegistrationSchema.validate({ name, email, password});
+    const { error } = adminRegistrationSchema.validate({shopName,phoneNumber, email, addresses,zipCode, password, avatar});
     if (error) {
       return res.status(400).json({
         success: false,
@@ -40,9 +40,13 @@ const signupUser = async (req, res) => {
 
     // Create a new admin user
     const admin = new Admin({
-      name,
+      shopName,
+      phoneNumber,
       email,
+      addresses,
+      zipCode,
       password: hashedPassword,
+      avatar
       
     });
 
@@ -64,9 +68,9 @@ const signupUser = async (req, res) => {
     });
   }
 };
-const signInUser = async (req, res) => {
+const signInAdmin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const {email,password } = req.body;
 
     // Validate user input
     const { error } = adminLoginSchema.validate({ email, password });
@@ -196,8 +200,8 @@ const resetPassword = async (req, res) => {
 
 
 module.exports = { 
-  signupUser,
-  signInUser,
+  signupAdmin,
+  signInAdmin,
   logoutUser,
   forgotPassword,
   resetPassword,

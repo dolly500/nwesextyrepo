@@ -372,69 +372,7 @@ router.delete(
   })
 );
 
-// create admin user
-router.post("/create-admin", async (req, res, next) => {
-  try {
-    const { name, email, password } = req.body;
-    const userEmail = await User.findOne({ email });
 
-    if (userEmail) {
-      return next(new ErrorHandler("User already exists", 400));
-    }
-
-    const user = await User.create({
-      name: name,
-      email: email,
-      password: password,
-      isAdmin: true, // Set isAdmin flag to true for admin users
-    });
-
-    // Include user data in the response
-    res.status(201).json({
-      success: true,
-      message: "Admin user created successfully",
-      user: user, // Include user data here
-    });
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 400));
-  }
-});
-
-router.post("/admin-login", async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return next(new ErrorHandler("Please provide all fields!", 400));
-    }
-
-    const admin = await Admin.findOne({ email }).select("+password");
-
-    if (!admin) {
-      return next(new ErrorHandler("Admin doesn't exist!", 400));
-    }
-
-    const isPasswordValid = await admin.comparePassword(password);
-
-    if (!isPasswordValid) {
-      return next(new ErrorHandler("Incorrect email or password", 400));
-    }
-
-    // Generate a JWT token for the authenticated admin
-    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h" // Token expires in 1 hour (adjust as needed)
-    });
-
-    // Include the token in the response
-    res.status(200).json({
-      success: true,
-      message: "Admin logged in successfully",
-      token: token
-    });
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-  }
-});
 
 
 module.exports = router;
