@@ -7,8 +7,8 @@ router.get("/admin", async (req, res, next) => {
   });
   
   // Define user routes
-router.post("/admin/auth/signup", adminController.signupUser);
-router.post("/admin/auth/login", adminController.signInUser);
+router.post("/admin/auth/signup", adminController.signupAdmin);
+router.post("/admin/auth/login", adminController.signInAdmin);
 router.post("/admin/auth/logout", adminController.logoutUser);
 router.post('/admin/auth/forgot-password', adminController.forgotPassword);
 router.post('/admin/auth/reset-password', adminController.resetPassword);

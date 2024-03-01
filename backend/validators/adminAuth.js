@@ -1,11 +1,22 @@
 // validation.js
 const Joi = require("joi");
 
+
+
+// Define Joi schema for the avatar object
+const avatarSchema = Joi.object({
+  public_id: Joi.string().required(),
+  url: Joi.string().required(),
+});
 // Joi schema for user registration
 const adminRegistrationSchema = Joi.object({
-  name: Joi.string().required(),
+  shopName: Joi.string().required(),
+  phoneNumber: Joi.string().required(),
   email: Joi.string().email().required(),
+  addresses: Joi.string().required(),
+  zipCode: Joi.string().required(),
   password: Joi.string().required(),
+  avatar: avatarSchema.required(),
 });
 
 

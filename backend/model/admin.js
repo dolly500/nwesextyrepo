@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
-  name: {
+  shopName: {
     type: String,
     required: [true, "Please enter your name!"],
   },
@@ -17,6 +17,35 @@ const userSchema = new mongoose.Schema({
     minLength: [4, "Password should be greater than 4 characters"],
     select: false,
   },
+  phoneNumber: {
+    type: String
+  },
+
+  zipCode: {
+    type: String
+  },
+
+  addresses: {
+    type: String
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+
+  avatar: {
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+
+
   newPassword: {
     type: String,
     
@@ -26,8 +55,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  resetPasswordToken: String,
-  resetPasswordTime: Date,
+ 
 });
 
 
