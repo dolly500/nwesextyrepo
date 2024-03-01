@@ -70,7 +70,7 @@ const signupAdmin = async (req, res) => {
 };
 const signInAdmin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const {email,password } = req.body;
 
     // Validate user input
     const { error } = adminLoginSchema.validate({ email, password });
