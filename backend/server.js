@@ -5,8 +5,6 @@ const cloudinary = require("cloudinary");
 
 
 
-
-
 // Handling uncaught Exception
 // process.on("uncaughtException", (err) => {
 //   console.log(`Error: ${err.message}`);
