@@ -20,11 +20,8 @@ const sendToken = (user, statusCode, res) => {
 };
 
 
-const generateResetToken = async () => {
-  const token = Math.floor(100000 + Math.random() * 900000); // Generates a random 6-digit number
-  const hash = await hashFunction(token.toString()); // Convert the number to a string and hash it
-  return { token, hash };
-};
+
+
 
 
 const generateAccessToken = (user) => {
@@ -66,4 +63,4 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-module.exports = { sendToken, verifyToken, generateAccessToken, generateResetToken};
+module.exports = { sendToken, verifyToken, generateAccessToken};

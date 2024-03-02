@@ -36,10 +36,30 @@ const updateSellerInfoSchema = Joi.object({
   zipCode: Joi.string().required(),
 });
 
+// Joi schema for forgot password
+const forgotPasswordSchema = Joi.object({
+    email: Joi.string().email().required(),
+});
+
+// Joi schema for reset password
+const resetPasswordSchema = Joi.object({
+    email: Joi.string().email().required(),
+    resetToken: Joi.string().required(),
+    newPassword: Joi.string().required(),
+  });
+  
+const verifyEmailRequestSchema = Joi.object({
+    token: Joi.string().required(),
+});
+
+
 module.exports = {
   createShopSchema,
   activationSchema,
   loginSchema,
   updateShopAvatarSchema,
   updateSellerInfoSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  verifyEmailRequestSchema
 };
