@@ -5,16 +5,26 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const jwt = require("jsonwebtoken");
-const { sendResetTokenByEmail } = require("../utils/sendMail");
-const {sendToken, generateResetToken} = require("../utils/jwtToken");
+const sendMail = require("../utils/sendMail");
+const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
+const {
+  createShopSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  verifyEmailRequestSchema
 
 
+} = require("../validators/userValidator");
 
-
-// create user without activation token
+// create user
 router.post("/create-user", async (req, res, next) => {
   try {
+    const { error } = createShopSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
     const { name, email, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 
@@ -26,7 +36,7 @@ router.post("/create-user", async (req, res, next) => {
       folder: "avatars",
     });
 
-    const user = await User.create({
+    const user = {
       name: name,
       email: email,
       password: password,
@@ -34,24 +44,91 @@ router.post("/create-user", async (req, res, next) => {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
       },
-    });
+    };
 
-    // Include user data in the response
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      user: user, // Include user data here
-    });
+    const activationToken = createActivationToken(user);
+    const activationUrl = `https://allsextoys.vercel.app/activation/${activationToken}`;
+
+    try {
+      await sendMail({
+        email: user.email,
+        subject: "Activate your account",
+        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+      });
+
+      // Include user data in the response
+      res.status(201).json({
+        success: true,
+        message: `Please check your email (${user.email}) to activate your account!`,
+        user: user, // Include user data here
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
 });
+
+// create activation token
+const createActivationToken = (user) => {
+  return jwt.sign(user, process.env.ACTIVATION_SECRET, {
+    expiresIn: "30m",
+  });
+};
+
+
+// activate user
+router.post(
+  "/activation",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { activation_token } = req.body;
+
+      const newUser = jwt.verify(
+        activation_token,
+        process.env.ACTIVATION_SECRET
+      );
+
+      if (!newUser) {
+        return next(new ErrorHandler("Invalid token", 400));
+      }
+      const { name, email, password, avatar } = newUser;
+
+      let user = await User.findOne({ email });
+
+      if (user) {
+        return next(new ErrorHandler("User already exists", 400));
+      }
+      user = await User.create({
+        name,
+        email,
+        avatar,
+        password,
+      });
+
+      // Include user data in the response
+      res.status(201).json({
+        success: true,
+        message: "User activated successfully",
+        user: user, // Include user data here
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 
 // login user
 router.post(
   "/login-user",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = loginSchema.validate(req.body);
+      if (error) {
+        throw new ErrorHandler(error.details[0].message, 400);
+      }
       const { email, password } = req.body;
 
       if (!email || !password) {
@@ -78,7 +155,8 @@ router.post(
           _id: user._id,
           name: user.name,
           email: user.email,
-         
+          avatar: user.avatar
+          // Include other fields as needed
         }
       });
     } catch (error) {
@@ -86,78 +164,6 @@ router.post(
     }
   })
 );
-
-router.post(
-  "/forgot-password",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const { error, value } = forgotPasswordSchema.validate(req.body);
-  
-      if (error) {
-        return res.status(400).json({
-          success: false,
-          data: null,
-          error: error.details[0].message,
-          message: "Password reset email failed",
-        });
-      }
-  
-      const { email } = value;
-  
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(404).json({ success: false, error: "User not found" });
-      }
-  
-      // Generate a reset token and save its hash in the user document
-      const { token, hash } = await generateResetToken();
-      user.resetToken = token;
-      user.resetTokenHash = hash;
-      user.resetTokenExpiry = Date.now() + 3600000; // Token expiry time (1 hour)
-      await user.save();
-  
-      // Send the reset token via email
-      await sendResetTokenByEmail(user.email, token);
-  
-      res.status(200).json({
-        success: true,
-        data: { email: user.email },
-        message: "Password reset email sent",
-      });
-    } catch (err) {
-      res.status(400).json({ success: false, error: err.message });
-    }
-  })
-);
-
-
-// log out user
-router.get(
-  "/logout",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      res.cookie("token", null, {
-        expires: new Date(Date.now()),
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
-      res.status(201).json({
-        success: true,
-        message: "Log out successful!",
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
-
-
-
-
-
-
 
 
 
@@ -183,6 +189,26 @@ router.get(
   })
 );
 
+// log out user
+router.get(
+  "/logout",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(201).json({
+        success: true,
+        message: "Log out successful!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 // update user info
 router.put(
@@ -374,6 +400,7 @@ router.get(
   })
 );
 
+
 // all users --- for admin
 router.get(
   "/admin-all-users",
@@ -424,8 +451,5 @@ router.delete(
     }
   })
 );
-
-
-
 
 module.exports = router;
