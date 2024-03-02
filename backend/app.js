@@ -69,7 +69,7 @@ app.use("/api/v2/payment", payment);
 app.use("/api/v2/withdraw", withdraw);
 
 
-app.use("/api/v2/", require("../backend/routes/admin.route"));
+// app.use("/api/v2/", require("../backend/routes/admin.route"));
 
 // it's for ErrorHandling
 // app.use(ErrorHandler);

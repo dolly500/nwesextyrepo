@@ -9,11 +9,25 @@ const cloudinary = require("cloudinary");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
+const {
+  createShopSchema,
+  activationSchema,
+  loginSchema,
+  updateShopAvatarSchema,
+  updateSellerInfoSchema,
+} = require("../validators/shopValidation");
+
+
+
 
 // create shop
 router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
   console.log("error handler")
   try {
+    const { error } = createShopSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
     const { email } = req.body;
     const sellerEmail = await Shop.findOne({ email });
     if (sellerEmail) {
@@ -62,8 +76,9 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
 
 // create activation token
 const createActivationToken = (seller) => {
+
   return jwt.sign(seller, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "25m",
   });
 };
 
@@ -72,6 +87,10 @@ router.post(
   "/activation",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = activationSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
       const { activation_token } = req.body;
 
       const newSeller = jwt.verify(
@@ -113,6 +132,10 @@ router.post(
   "/login-shop",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = loginSchema.validate(req.body);
+      if (error) {
+        throw new ErrorHandler(error.details[0].message, 400);
+      }
       const { email, password } = req.body;
 
       if (!email || !password) {
@@ -205,6 +228,10 @@ router.put(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = updateShopAvatarSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
       let existsSeller = await Shop.findById(req.seller._id);
 
         const imageId = existsSeller.avatar.public_id;
@@ -240,6 +267,10 @@ router.put(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = updateSellerInfoSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
       const { name, description, address, phoneNumber, zipCode } = req.body;
 
       const shop = await Shop.findOne(req.seller._id);

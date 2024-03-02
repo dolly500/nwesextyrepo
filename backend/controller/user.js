@@ -5,8 +5,8 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const jwt = require("jsonwebtoken");
-const sendMail = require("../utils/sendMail");
-const sendToken = require("../utils/jwtToken");
+const { sendResetTokenByEmail } = require("../utils/sendMail");
+const {sendToken, generateResetToken} = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
 
@@ -87,6 +87,79 @@ router.post(
   })
 );
 
+router.post(
+  "/forgot-password",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { error, value } = forgotPasswordSchema.validate(req.body);
+  
+      if (error) {
+        return res.status(400).json({
+          success: false,
+          data: null,
+          error: error.details[0].message,
+          message: "Password reset email failed",
+        });
+      }
+  
+      const { email } = value;
+  
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ success: false, error: "User not found" });
+      }
+  
+      // Generate a reset token and save its hash in the user document
+      const { token, hash } = await generateResetToken();
+      user.resetToken = token;
+      user.resetTokenHash = hash;
+      user.resetTokenExpiry = Date.now() + 3600000; // Token expiry time (1 hour)
+      await user.save();
+  
+      // Send the reset token via email
+      await sendResetTokenByEmail(user.email, token);
+  
+      res.status(200).json({
+        success: true,
+        data: { email: user.email },
+        message: "Password reset email sent",
+      });
+    } catch (err) {
+      res.status(400).json({ success: false, error: err.message });
+    }
+  })
+);
+
+
+// log out user
+router.get(
+  "/logout",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(201).json({
+        success: true,
+        message: "Log out successful!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
+
+
+
+
+
+
+
 
 // load user
 router.get(
@@ -110,26 +183,6 @@ router.get(
   })
 );
 
-// log out user
-router.get(
-  "/logout",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      res.cookie("token", null, {
-        expires: new Date(Date.now()),
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
-      res.status(201).json({
-        success: true,
-        message: "Log out successful!",
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
 
 // update user info
 router.put(
