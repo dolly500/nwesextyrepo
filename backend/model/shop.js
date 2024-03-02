@@ -25,7 +25,7 @@ const shopSchema = new mongoose.Schema({
     required: true,
   },
   phoneNumber: {
-    type: Number,
+    type: String,
     required: true,
   },
   role: {
@@ -75,6 +75,18 @@ const shopSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+  },
+  resetToken: {
+    type: String,
+    default: null,
+  },
+  resetTokenHash: {
+    type: String,
+    default: null,
+  },
+  resetTokenExpiry: {
+    type: Date,
+    default: null,
   },
   resetPasswordToken: String,
   resetPasswordTime: Date,

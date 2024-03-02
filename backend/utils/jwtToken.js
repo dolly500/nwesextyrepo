@@ -20,6 +20,10 @@ const sendToken = (user, statusCode, res) => {
 };
 
 
+
+
+
+
 const generateAccessToken = (user) => {
   const payload = {
     userId: user._id,
@@ -59,4 +63,4 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-module.exports = { sendToken, verifyToken, generateAccessToken };
+module.exports = { sendToken, verifyToken, generateAccessToken};

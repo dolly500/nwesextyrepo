@@ -9,11 +9,32 @@ const cloudinary = require("cloudinary");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
+const {
+  createShopSchema,
+  activationSchema,
+  loginSchema,
+  updateShopAvatarSchema,
+  updateSellerInfoSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  verifyEmailRequestSchema
+
+
+} = require("../validators/shopValidation");
+const { generateResetToken } = require('../utils/resetToken');
+const {
+  sendResetTokenByEmail,
+} = require("../services/admin.service");
+
 
 // create shop
 router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
   console.log("error handler")
   try {
+    const { error } = createShopSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
     const { email } = req.body;
     const sellerEmail = await Shop.findOne({ email });
     if (sellerEmail) {
@@ -62,8 +83,9 @@ router.post("/create-shop", catchAsyncErrors(async (req, res, next) => {
 
 // create activation token
 const createActivationToken = (seller) => {
+
   return jwt.sign(seller, process.env.ACTIVATION_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "25m",
   });
 };
 
@@ -72,6 +94,10 @@ router.post(
   "/activation",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = activationSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
       const { activation_token } = req.body;
 
       const newSeller = jwt.verify(
@@ -113,6 +139,10 @@ router.post(
   "/login-shop",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = loginSchema.validate(req.body);
+      if (error) {
+        throw new ErrorHandler(error.details[0].message, 400);
+      }
       const { email, password } = req.body;
 
       if (!email || !password) {
@@ -139,6 +169,57 @@ router.post(
     }
   })
 );
+
+
+// Forgot-password
+router.post(
+  "/forgot-password",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { error, value } = forgotPasswordSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset email failed",
+      });
+    }
+
+    const { email } = value;
+
+    const user = await Shop.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Shop not found" });
+    }
+
+    // Generate a reset token and save its hash in the user document
+    const { token, hash } = await generateResetToken();
+    user.resetToken = token;
+    user.resetTokenHash = hash;
+    user.resetTokenExpiry = Date.now() + 3600000; // Token expiry time (1 hour)
+    await user.save();
+
+    // Send the reset token via email
+    await sendResetTokenByEmail(user.email, token);
+
+    res.status(200).json({
+      success: true,
+      data: { email: user.email },
+      message: "Password reset email sent👾",
+    });
+     
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
+
+
+
 
 // load shop
 router.get(
@@ -205,6 +286,10 @@ router.put(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = updateShopAvatarSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
       let existsSeller = await Shop.findById(req.seller._id);
 
         const imageId = existsSeller.avatar.public_id;
@@ -240,6 +325,10 @@ router.put(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const { error } = updateSellerInfoSchema.validate(req.body);
+    if (error) {
+      throw new ErrorHandler(error.details[0].message, 400);
+    }
       const { name, description, address, phoneNumber, zipCode } = req.body;
 
       const shop = await Shop.findOne(req.seller._id);
