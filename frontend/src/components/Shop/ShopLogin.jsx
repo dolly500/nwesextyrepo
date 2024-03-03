@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { FaHome } from "react-icons/fa";
+import logo from '../../static/imgs/logo.png'
 
 const ShopLogin = () => {
   const navigate = useNavigate();
@@ -37,6 +39,17 @@ const ShopLogin = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 ">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <Link to="/">
+        <img src={logo} alt='' style={{ height: '130px', width: '120px', display: 'flex', margin: '0 auto' }}
+        />
+      </Link>
+
+      <Link to="/">
+          {/* Home Icon Button */}
+          <button className="absolute top-4 right-4 text-pink-600">
+            <FaHome size={24} />
+          </button>
+      </Link>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Login to your shop
         </h2>
@@ -112,7 +125,7 @@ const ShopLogin = () => {
               </div>
               <div className="text-sm">
                 <a
-                  href=".forgot-password"
+                  href="admin-forgot-password"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
                   Forgot your password?

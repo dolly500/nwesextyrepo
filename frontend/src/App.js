@@ -41,13 +41,16 @@ import {
   ProductsPage,
   ProfilePage,
   SellerActivationPage,
+  ShopCheckPassword,
+  ShopForgotPassword,
   ShopCreatePage,
   ShopLoginPage,
   SignupPage,
   TrackOrderPage,
   UserInbox,
   QuestionnaireForm,
-  ForgotPassword
+  ForgotPassword, 
+  CheckPassword
 } from "./routes/Routes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute";
 import {
@@ -113,6 +116,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/check-password" element={<CheckPassword />} />
         <Route path="/sign-up" element={<SignupPage />} />
         <Route
           path="/activation/:activation_token"
@@ -178,6 +182,9 @@ const App = () => {
         {/* shop Routes */}
         <Route path="/shop-create" element={<ShopCreatePage />} />
         <Route path="/shop-login" element={<ShopLoginPage />} />
+        <Route path="/admin-check-password" element={<ShopCheckPassword />} />
+        <Route path="/admin-forgot-password" element={<ShopForgotPassword />} />
+
         <Route
           path="/shop/:id"
           element={

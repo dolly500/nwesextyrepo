@@ -2,14 +2,16 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../static/imgs/logo.png';
 import { FaHome } from "react-icons/fa"; 
+import logo from '../../static/imgs/logo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 
-const ForgotPassword = () => {
-    const navigate = useNavigate();
+
+const AdminForgotPassword = () => {
+
+  const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
@@ -22,7 +24,7 @@ const ForgotPassword = () => {
   
         if (response.status === 200) {
           setMessage(response.data.message);
-          navigate('/check-password')
+          navigate('/admin-check-password')
         } else {
           setError(response.data.error);
         }
@@ -46,7 +48,7 @@ const ForgotPassword = () => {
             <FaHome size={24} />
           </button>
       </Link>
-        <h2 className="text-2xl font-semibold mb-4" style={{textAlign: 'center'}}>Forgot Password</h2>
+        <h2 className="text-2xl font-semibold mb-4" style={{textAlign: 'center'}}>Admin Forgot Password</h2>
 
         {message && (
           <div className="mb-4 text-green-500">{message}</div>
@@ -79,4 +81,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default AdminForgotPassword;

@@ -5,6 +5,8 @@ import EventsPage from "../pages/EventsPage";
 import FAQPage from "../pages/FAQPage";
 import HomePage from "../pages/HomePage";
 import LiveChat from "../pages/LiveChat.jsx";
+import ShopCheckPassword from "../pages/ShopCheckpassword.jsx";
+import ShopForgotPassword from "../pages/ShopForgotPassword.jsx";
 import LoginPage from "../pages/Login";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
@@ -21,6 +23,7 @@ import SignupPage from "../pages/SignupPage";
 import TrackOrderPage from "../pages/TrackOrderPage";
 import UserInbox from "../pages/UserInbox.jsx";
 import QuestionnaireForm from "../pages/QuestionairePage.jsx";
+import CheckPassword from "../pages/CheckPassword.jsx"
 
 export { 
     QuestionnaireForm,
@@ -29,6 +32,7 @@ export {
     SignupPage,
     ActivationPage,
     HomePage,
+    CheckPassword,
     ProductsPage,
     BestSellingPage,
     EventsPage,
@@ -45,6 +49,8 @@ export {
     TrackOrderPage,
     UserInbox,
     PostsPage,
+    ShopCheckPassword,
+    ShopForgotPassword,
     LiveChat
 };
 
