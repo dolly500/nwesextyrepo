@@ -17,6 +17,12 @@ const {
 
 
 } = require("../validators/userValidator");
+const { generateResetToken } = require('../utils/resetToken');
+const {
+  sendResetTokenByEmail,
+} = require("../services/admin.service");
+
+
 
 // create user
 router.post("/create-user", async (req, res, next) => {
@@ -164,6 +170,56 @@ router.post(
     }
   })
 );
+
+// Forgot-password
+router.post(
+  "/forgot-password",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { error, value } = forgotPasswordSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset email failed",
+      });
+    }
+
+    const { email } = value;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Shop not found" });
+    }
+
+    // Generate a reset token and save its hash in the user document
+    const { token, hash } = await generateResetToken();
+    user.resetToken = token;
+    user.resetTokenHash = hash;
+    user.resetTokenExpiry = Date.now() + 3600000; // Token expiry time (1 hour)
+    await user.save();
+
+    // Send the reset token via email
+    await sendResetTokenByEmail(user.email, token);
+
+    res.status(200).json({
+      success: true,
+      data: { email: user.email },
+      message: "Password reset email sent👾",
+    });
+     
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
+
+
+
 
 
 

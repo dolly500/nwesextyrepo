@@ -6,9 +6,6 @@ const createShopSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   avatar: Joi.string().required(),
-  address: Joi.string().required(),
-  phoneNumber: Joi.string().required(),
-  zipCode: Joi.string().required(),
 });
 
 // Validation schema for activation
