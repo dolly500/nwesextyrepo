@@ -21,40 +21,38 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Shop Id is invalid!", 400));
       } else {
-        let images = [];
-        if (req.files.images) {
-          images.push(req.files.images);
-        }
-        const imagesLinks = [];
+          const { name, description, category, categoryId, tags, originalPrice, discountPrice, stock, shopId, shop, images, sold_out, ratings, reviews} = req.body;
 
-        for (let i = 0; i < images.length; i++) {
-          // Save the file to a temporary location
-          const image = images[i]
-          const tempFilePath = path.join(__dirname, '../uploads', image.name);
-          await image.mv(tempFilePath);
-          const result = await cloudinary.v2.uploader.upload(tempFilePath, {
+           // Process images
+        const imagesLinks = [];
+        for (const image of images) {
+          const result = await cloudinary.v2.uploader.upload(image, {
             folder: "products",
           });
-
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
-          await fs.unlink(tempFilePath);
         }
 
-        const productData = req.body;
-        productData.images = imagesLinks;
-        productData.shop = shop;
+        const productData = {
+          name,
+          description,
+          category,
+          categoryId,
+          tags,
+          sold_out,
+          ratings,
+          reviews,
+          originalPrice,
+          discountPrice,
+          stock,
+          images: imagesLinks, // Assign processed images
+          shopId,
+          shop,
+        };
 
         const product = await Product.create(productData);
-        if (productData.categoryId) {
-          await Category.findByIdAndUpdate({ _id: productData.categoryId }, {
-            $push: {
-              products: product._id
-            }
-          });
-        }
 
         res.status(201).json({
           success: true,

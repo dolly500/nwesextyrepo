@@ -18,10 +18,6 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     default: null
   },
-  category: {
-    type: String,
-    required: [true, "Please enter your product category!"],
-  },
   tags: {
     type: String,
   },
