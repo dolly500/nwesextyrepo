@@ -17,32 +17,36 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Shop Id is invalid!", 400));
       } else {
-        let images = [];
+        const { name, description, category, start_Date, Finish_Date, tags, originalPrice, discountPrice, stock, images } = req.body;
 
-        if (typeof req.body.images === "string") {
-          images.push(req.body.images);
-        } else {
-          images = req.body.images;
-        }
-
+        // Process images
         const imagesLinks = [];
-
-        for (let i = 0; i < images.length; i++) {
-          const result = await cloudinary.v2.uploader.upload(images[i], {
-            folder: "products",
+        for (const image of images) {
+          const result = await cloudinary.v2.uploader.upload(image, {
+            folder: "events",
           });
-
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
         }
 
-        const productData = req.body;
-        productData.images = imagesLinks;
-        productData.shop = shop;
+        const eventData = {
+          name,
+          description,
+          category,
+          start_Date,
+          Finish_Date,
+          tags,
+          originalPrice,
+          discountPrice,
+          stock,
+          images: imagesLinks, // Assign processed images
+          shopId,
+          shop,
+        };
 
-        const event = await Event.create(productData);
+        const event = await Event.create(eventData);
 
         res.status(201).json({
           success: true,
@@ -54,6 +58,8 @@ router.post(
     }
   })
 );
+
+
 
 // get all events
 router.get("/get-all-events", async (req, res, next) => {
