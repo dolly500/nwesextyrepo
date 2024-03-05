@@ -7,55 +7,6 @@ const { isSeller, isAdmin, isAuthenticated } = require("../middleware/auth");
 const router = express.Router();
 const cloudinary = require("cloudinary");
 
-// // create post
-// create-post route
-// router.post(
-//     "/create-post",
-//     catchAsyncErrors(async (req, res, next) => {
-//         try {
-//             // Extracting data from request body
-//             const { title, description, category,tags} = req.body;
-
-//             const uploadedFile = req.files.image
-//             // Save the file to a temporary location
-//             const tempFilePath = path.join(__dirname, '../uploads', uploadedFile.name);
-//             await uploadedFile.mv(tempFilePath);
-//             const result = await cloudinary.v2.uploader.upload(tempFilePath, {
-//                 // Optionally, specify any upload options here
-//             });
-//             await fs.unlink(tempFilePath);
-
-//             const newPost = {
-//                 title,
-//                 description,
-//                 category,
-//                 tags,
-//                 image: {
-//                     url: result.url,
-//                     public_id: result.public_id
-//                 }
-//             }
-//             const data = await Post.create(newPost);
-
-//             res.status(201).json({
-//                 data,
-//                 success: true,
-//                 message: `Post created!🤑`,
-//             });
-            
-            
-
-            
-
-            
-
-
-//         } catch (error) {
-//             return next(new ErrorHandler(error.message, 400));
-//         }
-//     })
-// );
-
  router.post(
   "/create-post",
   catchAsyncErrors(async (req, res, next) => {
@@ -65,31 +16,30 @@ const cloudinary = require("cloudinary");
       if (!shop) {
         return next(new ErrorHandler("Shop Id is invalid!", 400));
       } else {
-        let images = [];
-
-        if (typeof req.body.images === "string") {
-          images.push(req.body.images);
-        } else {
-          images = req.body.images;
-        }
-
+        const { title, description, category, status, tags, shopId, shop, images } = req.body;
+        
+        // Process images
         const imagesLinks = [];
-
-        for (let i = 0; i < images.length; i++) {
-          const result = await cloudinary.v2.uploader.upload(images[i], {
+        for (const image of images) {
+          const result = await cloudinary.v2.uploader.upload(image, {
             folder: "posts",
           });
-
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
         }
 
-        const postData = req.body;
-        postData.images = imagesLinks;
-        postData.shop = shop;
-
+        const postData = {
+          title,
+          description,
+          category,
+          tags,
+          status,
+          images: imagesLinks, // Assign processed images
+          shopId,
+          shop,
+        };
         const post = await Post.create(postData);
 
         res.status(201).json({
