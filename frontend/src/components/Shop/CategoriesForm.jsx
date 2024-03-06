@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { createCategory } from "../../redux/actions/category";
 import { toast } from "react-toastify";
+import { server } from "../../server";
+import axios from "axios";
 
 const CategoryForm = () => {
   const { success, error } = useSelector((state) => state.category);
@@ -13,6 +15,7 @@ const CategoryForm = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
+  const [categories, setCategories] = useState();
 
   useEffect(() => {
     if (error) {
@@ -23,6 +26,9 @@ const CategoryForm = () => {
       navigate("/dashboard");
       window.location.reload();
     }
+    axios.post(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategories(res.data.categorys);
+  })
   }, [dispatch, error, success]);
 
   const handleImageChange = (e) => {
