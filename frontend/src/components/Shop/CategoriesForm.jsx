@@ -25,7 +25,7 @@ const CategoryForm = () => {
       toast.success("Category created successfully!");
       navigate("/dashboard");
     }
-    axios.post(`${server}/category`, {withCredentials: true}).then((res) => {
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
   }, [dispatch, error, success, navigate]);
