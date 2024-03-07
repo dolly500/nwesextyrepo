@@ -69,7 +69,8 @@ import {
   ShopPreviewPage,
   ShopSettingsPage,
   ShopWithDrawMoneyPage,
-  ShopCreateCategory,
+  ShopCreateCategory, 
+  ShopAllCategory,
 } from "./routes/ShopRoutes";
 import { server } from "./server";
 import { getAllCategories } from "./redux/actions/category.js";
@@ -287,6 +288,15 @@ const App = () => {
           element={
             <SellerProtectedRoute>
               <ShopAllPosts />
+            </SellerProtectedRoute>
+          }
+        />
+
+      <Route
+          path="/dashboard-all-categories"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllCategory />
             </SellerProtectedRoute>
           }
         />

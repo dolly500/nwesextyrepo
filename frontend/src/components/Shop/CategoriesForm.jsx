@@ -24,12 +24,11 @@ const CategoryForm = () => {
     if (success) {
       toast.success("Category created successfully!");
       navigate("/dashboard");
-      window.location.reload();
     }
     axios.post(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
-  }, [dispatch, error, success]);
+  }, [dispatch, error, success, navigate]);
 
   const handleImageChange = (e) => {
     setFile(e.target.files[0]);

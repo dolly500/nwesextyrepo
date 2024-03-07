@@ -21,7 +21,7 @@ const AllEvents = () => {
 
   const handleDelete = (id) => {
     dispatch(deleteEvent(id));
-    window.location.reloapostd();
+    window.location.reload();
   }
 
   const columns = [

@@ -14,11 +14,12 @@ import ShopPreviewPage from "../pages/Shop/ShopPreviewPage";
 import ShopSettingsPage from "../pages/Shop/ShopSettingsPage";
 import ShopWithDrawMoneyPage from "../pages/Shop/ShopWithDrawMoneyPage";
 import ShopCreateCategory from "../pages/Shop/ShopCreateCategory";
+import ShopAllCategory from "../pages/Shop/ShopAllCategory"
 
 
 
 export {
     ShopAllCoupouns, ShopAllEvents, ShopAllOrders, ShopAllPosts, ShopAllProducts, ShopAllRefunds, ShopCreateEvents,
     ShopCreatePosts, ShopCreateProduct, ShopDashboardPage, ShopInboxPage, ShopOrderDetails, ShopPreviewPage, ShopSettingsPage,
-    ShopWithDrawMoneyPage, ShopCreateCategory
+    ShopWithDrawMoneyPage, ShopCreateCategory, ShopAllCategory,
 };

@@ -35,12 +35,11 @@ const CreateEvent = () => {
     if (success) {
       toast.success("Event created successfully!");
       navigate("/dashboard");
-      window.location.reload();
     }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
-  }, [dispatch, error, success]);
+  }, [dispatch, error, success, navigate]);
 
   const handleCategoryChange = (e) => {
     const selectedCategory = e.target.value;

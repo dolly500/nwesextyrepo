@@ -24,18 +24,19 @@ const CreatePost = () => {
 
 
   useEffect(() => {
+    console.log("Success state:", success);
     if (error) {
       toast.error(error);
     }
     if (success) {
+      console.log("Toast should be displayed here");
       toast.success("Post created successfully!");
       navigate("/dashboard");
-      window.location.reload();
     }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
-  }, [dispatch, error, success]);
+  }, [dispatch, error, success, navigate]);
 
 
 //   const today = new Date().toISOString().slice(0, 10);
