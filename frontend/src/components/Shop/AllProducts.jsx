@@ -4,8 +4,7 @@ import React, { useEffect } from "react";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllProductsShop } from "../../redux/actions/product";
-import { deleteProduct } from "../../redux/actions/product";
+import { deleteProduct, getAllProductsShop } from "../../redux/actions/product";
 import Loader from "../Layout/Loader";
 
 const AllProducts = () => {
@@ -60,9 +59,11 @@ const AllProducts = () => {
       type: "number",
       sortable: false,
       renderCell: (params) => {
+        const d = params.row.name;
+        const product_name = d.replace(/\s+/g, "-");
         return (
           <>
-            <Link to={`/product/${params.id}`}>
+            <Link to={`/product/${product_name}`}>
               <Button>
                 <AiOutlineEye size={20} />
               </Button>
@@ -97,11 +98,13 @@ const AllProducts = () => {
       row.push({
         id: item._id,
         name: item.name,
-        price: "US$ " + item.discountPrice,
+        price: "₦" + item.discountPrice,
         Stock: item.stock,
-        sold: item?.sold_out,
+        sold: item.sold_out,
       });
     });
+
+    console.log('product', products)
 
   return (
     <>

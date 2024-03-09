@@ -1,7 +1,7 @@
 import axios from "axios";
 import { server } from "../../server";
 
-// create product
+// create category
 export const createCategory =
   (
     { name,
@@ -13,13 +13,17 @@ export const createCategory =
         dispatch({
           type: "categoryCreateRequest",
         });
+
+        console.log("Payload Request", { name,
+          description,
+          image })
         const formData = new FormData();
         formData.append('name', name);
         formData.append('description', description);
         formData.append('image', image);
         const { data } = await axios.post(
           `${server}/category/create-category`,
-          formData,
+          formData, 
         );
         dispatch({
           type: "categoryCreateSuccess",

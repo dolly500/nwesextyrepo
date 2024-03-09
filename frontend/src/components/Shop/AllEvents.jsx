@@ -108,6 +108,8 @@ const AllEvents = () => {
       });
     });
 
+    console.log("events", events)
+
   return (
     <>
       {isLoading ? (

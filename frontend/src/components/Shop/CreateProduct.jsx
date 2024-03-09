@@ -68,29 +68,34 @@ const CreateProduct = () => {
     const newForm = new FormData();
 
     images.forEach((image) => {
-      newForm.set("images", image);
+      newForm.append("images", image);
     });
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append("category", category);
-    newForm.append("tags", tags);
-    newForm.append("originalPrice", originalPrice);
-    newForm.append("discountPrice", discountPrice);
-    newForm.append("stock", stock);
-    newForm.append("shopId", seller._id);
+
+    // newForm.append("name", name);
+    // newForm.append("description", description);
+    // newForm.append("category", category);
+    // newForm.append("categoryId", categoryId);
+    // newForm.append("tags", tags);
+    // newForm.append("originalPrice", originalPrice);
+    // newForm.append("discountPrice", discountPrice);
+    // newForm.append("stock", stock);
+    // newForm.append("shopId", seller._id);
+
+    const data = {
+      name,
+      description,
+      category,
+      categoryId,
+      tags,
+      originalPrice,
+      discountPrice,
+      stock,
+      images,
+      shopId: seller._id,
+    }
+    console.log("Request Payload:", data); 
     dispatch(
-      createProduct({
-        name,
-        description,
-        category,
-        categoryId,
-        tags,
-        originalPrice,
-        discountPrice,
-        stock,
-        shopId: seller._id,
-        images,
-      })
+      createProduct(data)
     );
   };
 

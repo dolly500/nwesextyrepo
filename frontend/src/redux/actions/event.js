@@ -7,7 +7,7 @@ export const createevent = (data) => async (dispatch) => {
     dispatch({
       type: "eventCreateRequest",
     });
-
+    console.log("Request Payload:", data);
     const { d } = await axios.post(`${server}/event/create-event`, data);
     dispatch({
       type: "eventCreateSuccess",
@@ -29,6 +29,8 @@ export const getAllEventsShop = (id) => async (dispatch) => {
     });
 
     const { data } = await axios.get(`${server}/event/get-all-events/${id}`);
+
+    console.log("Received data:", data);
     dispatch({
       type: "getAlleventsShopSuccess",
       payload: data.events,

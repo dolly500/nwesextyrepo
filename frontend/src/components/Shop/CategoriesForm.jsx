@@ -41,7 +41,7 @@ const CategoryForm = () => {
 
     newForm.append("name", name);
     newForm.append("description", description);
-    newForm.set('image', file);
+    newForm.append('image', file);
 
     dispatch(
       createCategory({

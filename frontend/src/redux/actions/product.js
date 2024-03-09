@@ -2,39 +2,20 @@ import axios from "axios";
 import { server } from "../../server";
 
 // create product
-export const createProduct =
-  (
-    name,
-    description,
-    category,
-    tags,
-    originalPrice,
-    discountPrice,
-    stock,
-    shopId,
-    images
-  ) =>
+export const createProduct = (data) =>
   async (dispatch) => {
     try {
       dispatch({
         type: "productCreateRequest",
       });
+      
+      console.log("Request Payload:", data); 
 
-      const { data } = await axios.post(
-        `${server}/product/create-product`,
-        name,
-        description,
-        category,
-        tags,
-        originalPrice,
-        discountPrice,
-        stock,
-        shopId,
-        images,
-      );
+      const { d } = await axios.post(
+        `${server}/product/create-product`, data);
       dispatch({
         type: "productCreateSuccess",
-        payload: data.product,
+        payload: d.product,
       });
     } catch (error) {
       dispatch({
@@ -47,6 +28,7 @@ export const createProduct =
 // get All Products of a shop
 export const getAllProductsShop = (id) => async (dispatch) => {
   try {
+    console.log("Requesting all products for shop with ID:", id);
     dispatch({
       type: "getAllProductsShopRequest",
     });
@@ -54,6 +36,8 @@ export const getAllProductsShop = (id) => async (dispatch) => {
     const { data } = await axios.get(
       `${server}/product/get-all-products-shop/${id}`
     );
+
+    console.log("Received data:", data);
     dispatch({
       type: "getAllProductsShopSuccess",
       payload: data.products,
@@ -74,7 +58,7 @@ export const deleteProduct = (id) => async (dispatch) => {
     });
 
     const { data } = await axios.delete(
-      `${server}/product/delete-shop-product/${id}`,
+      `${server}/product/get-all-products-shop/${id}`,
       {
         withCredentials: true,
       }
@@ -104,6 +88,8 @@ export const getAllProducts = () => async (dispatch) => {
       type: "getAllProductsSuccess",
       payload: data.products,
     });
+    console.log("Received data:", data);
+
   } catch (error) {
     dispatch({
       type: "getAllProductsFailed",
