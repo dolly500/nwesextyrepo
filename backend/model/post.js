@@ -39,7 +39,6 @@ const postSchema = new mongoose.Schema({
     },
     shop:{
         type: Object,
-        required: true,
     },
    
     createdAt:{
