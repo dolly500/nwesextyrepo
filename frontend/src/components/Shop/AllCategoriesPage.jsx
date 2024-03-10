@@ -62,6 +62,8 @@ const AllCategories = () => {
       });
     });
 
+  console.log('category', categories)
+
   return (
     <>
       {isLoading ? (

@@ -25,6 +25,8 @@ export const createCategory =
           `${server}/category/create-category`,
           formData, 
         );
+
+        console.log('category', formData)
         dispatch({
           type: "categoryCreateSuccess",
           payload: data.data,
@@ -44,7 +46,8 @@ export const getAllCategories = () => async (dispatch) => {
       type: "getAllCategoriesRequest",
     });
 
-    const { data } = await axios.get(`${server}/category`);
+    const { data } = await axios.get(`${server}/category/`);
+    console.log('category in the get', data)
     dispatch({
       type: "getAllCategoriesSuccess",
       payload: data.products,

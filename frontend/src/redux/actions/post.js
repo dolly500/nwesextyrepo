@@ -9,6 +9,8 @@ export const createpost = (data) => async (dispatch) => {
     });
 
     const { d } = await axios.post(`${server}/post/create-post`, data);
+    console.log('post', data); 
+    
     dispatch({
       type: "postCreateSuccess",
       payload: d.post,
