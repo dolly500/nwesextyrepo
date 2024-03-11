@@ -26,7 +26,9 @@ export const productReducer = createReducer(initialState, {
   getAllProductsShopSuccess: (state, action) => {
     state.isLoading = false;
     state.products = action.payload;
+    console.log('products reducers', action.payload)
   },
+
   getAllProductsShopFailed: (state, action) => {
     state.isLoading = false;
     state.error = action.payload;

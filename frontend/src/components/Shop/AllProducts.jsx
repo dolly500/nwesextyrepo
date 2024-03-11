@@ -17,6 +17,8 @@ const AllProducts = () => {
     dispatch(getAllProductsShop(seller._id));
   }, [dispatch]);
 
+  console.log('After API call, products:', products);
+
   const handleDelete = (id) => {
     dispatch(deleteProduct(id));
     window.location.reload();
@@ -26,19 +28,20 @@ const AllProducts = () => {
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
     {
       field: "name",
-      headerName: "Name",
+      headerName: "Product Name",
       minWidth: 180,
       flex: 1.4,
     },
     {
       field: "price",
-      headerName: "Price",
+      headerName: "Product Price",
       minWidth: 100,
       flex: 0.6,
+      type: "number", 
     },
     {
       field: "Stock",
-      headerName: "Stock",
+      headerName: "Product Stock",
       type: "number",
       minWidth: 80,
       flex: 0.5,

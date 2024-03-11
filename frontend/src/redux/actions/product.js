@@ -28,7 +28,6 @@ export const createProduct = (data) =>
 // get All Products of a shop
 export const getAllProductsShop = (id) => async (dispatch) => {
   try {
-    console.log("Requesting all products for shop with ID:", id);
     dispatch({
       type: "getAllProductsShopRequest",
     });
@@ -40,7 +39,7 @@ export const getAllProductsShop = (id) => async (dispatch) => {
     console.log("Received data:", data);
     dispatch({
       type: "getAllProductsShopSuccess",
-      payload: data.products,
+      payload: data.product,
     });
   } catch (error) {
     dispatch({
