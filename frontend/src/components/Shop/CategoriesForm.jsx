@@ -37,12 +37,6 @@ const CategoryForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newForm = new FormData();
-
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append('image', file);
-
     dispatch(
       createCategory({
         name,

@@ -43,6 +43,7 @@ const Categories = () => {
         <div className="grid grid-cols-1 gap-[70px] md:grid-cols-2 md:gap-[10px] lg:grid-cols-4 lg:gap-[20px] xl:grid-cols-5 xl:gap-[30px]">
           {data &&
             data.map((i) => {
+              console.log(i)
               const handleSubmit = (i) => {
                 navigate(`/products?category=${i.name}`);
               };

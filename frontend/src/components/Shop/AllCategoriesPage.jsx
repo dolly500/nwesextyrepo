@@ -8,7 +8,7 @@ import { deleteCategory, getAllCategories } from "../../redux/actions/category";
 import Loader from "../Layout/Loader";
 
 const AllCategories = () => {
-  const { categories, isLoading } = useSelector((state) => state.category);
+  const { allCategorys, isLoading } = useSelector((state) => state.category);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -53,8 +53,8 @@ const AllCategories = () => {
 
   const row = [];
 
-  categories &&
-    categories.forEach((item) => {
+  allCategorys &&
+    allCategorys?.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
@@ -62,7 +62,7 @@ const AllCategories = () => {
       });
     });
 
-  console.log('category', categories)
+  console.log('category', allCategorys)
 
   return (
     <>

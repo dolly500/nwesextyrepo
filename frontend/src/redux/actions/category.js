@@ -1,6 +1,17 @@
 import axios from "axios";
 import { server } from "../../server";
 
+
+export async function uploadFile(file){
+  const formData = new FormData();
+
+  formData.append("file", file);
+  formData.append("upload_preset", "spiderman");
+
+  const response = await axios.post(`https://api.cloudinary.com/v1_1/diztvrcsi/upload`, formData)
+  return response?.data?.secure_url;
+}
+
 // create category
 export const createCategory =
   (
@@ -14,23 +25,25 @@ export const createCategory =
           type: "categoryCreateRequest",
         });
 
-        console.log("Payload Request", { name,
-          description,
-          image })
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('image', image);
+
+        const url = await uploadFile(image);
+
+        const images = [url];
+
+
         const { data } = await axios.post(
           `${server}/category/create-category`,
-          formData, 
+          {name, description, images}
         );
 
-        console.log('category', formData)
+
+        console.log("Payload Request", data)
+
         dispatch({
           type: "categoryCreateSuccess",
-          payload: data.data,
+          payload: data.category,
         });
+        console.log('category', data)
       } catch (error) {
         dispatch({
           type: "categoryCreateFail",
@@ -47,11 +60,12 @@ export const getAllCategories = () => async (dispatch) => {
     });
 
     const { data } = await axios.get(`${server}/category/`);
-    console.log('category in the get', data)
+    console.log('category in the get', data?.categorys)
     dispatch({
       type: "getAllCategoriesSuccess",
-      payload: data.products,
+      payload: data.categorys,
     });
+    
   } catch (error) {
     dispatch({
       type: "getAllCategoriesFailed",
