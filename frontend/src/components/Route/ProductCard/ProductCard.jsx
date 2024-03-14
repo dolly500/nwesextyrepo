@@ -77,7 +77,7 @@ const ProductCard = ({ data,isEvent }) => {
         <Link to={`${isEvent === true ? `/product/${data?._id}?isEvent=true` : `/product/${data?._id}`}`}>
           <h4 className="pb-3 font-[500]">
             {data?.name?.length > 40 ? data?.name?.slice(0, 40) + "..." : data?.name}
-          </h4>?
+          </h4>
 
           <div className="flex">
           <Ratings rating={data?.ratings} />

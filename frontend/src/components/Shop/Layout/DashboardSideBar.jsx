@@ -1,5 +1,5 @@
 import React from "react";
-import { AiOutlineFolderAdd, AiOutlineGift } from "react-icons/ai";
+import { AiOutlineFolderAdd, AiOutlineGift, AiOutlinePlusCircle  } from "react-icons/ai";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { CiMoneyBill, CiSettings } from "react-icons/ci";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
@@ -228,7 +228,7 @@ const DashboardSideBar = ({ active }) => {
 
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-all-categories" className="w-full flex items-center">
-        <AiOutlineFolderAdd
+        <AiOutlinePlusCircle 
             size={30}
             color={`${active === 12 ? "#8E376A" : "#555"}`}
           />

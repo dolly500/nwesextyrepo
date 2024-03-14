@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AiOutlineHeart,
   AiOutlineSearch,
@@ -23,7 +23,7 @@ import Navbar from "./Navbar";
 import Modal from "react-modal";
 
 
-const Header = ({ activeHeading, data, categoriesData }) => {
+const Header = ({ activeHeading, data }) => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { isSeller } = useSelector((state) => state.seller);
@@ -35,6 +35,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
   const [dropDown, setDropDown] = useState(false);
+  const [categories, setCategories] = useState([]);
   // const [Messages, setMessages] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
@@ -69,6 +70,18 @@ const Header = ({ activeHeading, data, categoriesData }) => {
       setActive(false);
     }
   });
+
+  useEffect(() => {
+    axios.get(`${server}/category`, { withCredentials: true })
+      .then((res) => {
+        setCategories(res.data.categorys);
+        console.log('api', res.data.categorys)
+      })
+      
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  }, []);
 
 
   const handlePayment = async () => {
@@ -201,7 +214,7 @@ const Header = ({ activeHeading, data, categoriesData }) => {
               />
               {dropDown ? (
                 <DropDown
-                  categoriesData={categoriesData}
+                  categories={categories}
                   setDropDown={setDropDown}
                 />
               ) : null}

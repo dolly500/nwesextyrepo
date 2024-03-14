@@ -38,6 +38,7 @@ const CreateEvent = () => {
     }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
+      window.location.reload();
   })
   }, [dispatch, error, success, navigate]);
 
