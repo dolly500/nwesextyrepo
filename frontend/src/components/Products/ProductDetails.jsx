@@ -30,7 +30,7 @@ const ProductDetails = ({ data }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAllProductsShop(data && data?.shop._id));
+    dispatch(getAllProductsShop(data && data?.shop?._id));
     if (wishlist && wishlist.find((i) => i._id === data?._id)) {
       setClick(true);
     } else {
@@ -115,7 +115,7 @@ const ProductDetails = ({ data }) => {
   };
 
   return (
-    <div className="bg-white text-black">
+    <div className="bg-black text-white">
       {data ? (
         <div className={`${styles.section} w-[90%] 800px:w-[80%]`}>
           <div className="w-full py-5">
@@ -206,7 +206,7 @@ const ProductDetails = ({ data }) => {
                   </span>
                 </div>
                 <div className="flex items-center pt-8">
-                  <Link to={`/shop/preview/${data?.shop._id}`}>
+                  <Link to={`/shop/preview/${data?.shop?._id}`}>
                     <img
                       src={`${data?.shop?.avatar?.url}`}
                       alt=""
@@ -214,9 +214,9 @@ const ProductDetails = ({ data }) => {
                     />
                   </Link>
                   <div className="pr-8">
-                    <Link to={`/shop/preview/${data?.shop._id}`}>
+                    <Link to={`/shop/preview/${data?.shop?._id}`}>
                       <h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                        {data.shop.name}
+                        {data?.shop?.name}
                       </h3>
                     </Link>
                     <h5 className="pb-3 text-[15px]">
@@ -224,7 +224,7 @@ const ProductDetails = ({ data }) => {
                     </h5>
                   </div>
                   <div
-                    className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
+                    className={`${styles.button} bg-[blue] mt-4 !rounded !h-11 p-1`}
                     onClick={handleMessageSubmit}
                   >
                     <span className="text-white flex items-center">
@@ -302,7 +302,7 @@ const ProductDetailsInfo = ({
       </div>
       {active === 1 ? (
         <>
-          <p className="py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
+          <p className="py-2 text-[18px] leading-8 pb-10 whitespace-pre-line text-black">
             {data.description}
           </p>
         </>
@@ -314,7 +314,7 @@ const ProductDetailsInfo = ({
             data.reviews.map((item, index) => (
               <div className="w-full flex my-2">
                 <img
-                  src={`${item.user.avatar?.url}`}
+                  src={`${item?.user?.avatar?.url}`}
                   alt=""
                   className="w-[50px] h-[50px] rounded-full"
                 />
@@ -328,7 +328,7 @@ const ProductDetailsInfo = ({
               </div>
             ))}
 
-          <div className="w-full flex justify-center">
+          <div className="w-full flex justify-center text-black">
             {data && data.reviews.length === 0 && (
               <h5>No Reviews have for this product!</h5>
             )}
@@ -339,7 +339,7 @@ const ProductDetailsInfo = ({
       {active === 3 && (
         <div className="w-full block 800px:flex p-5">
           <div className="w-full 800px:w-[50%]">
-            <Link to={`/shop/preview/${data.shop._id}`}>
+            <Link to={`/shop/preview/${data?.shop?._id}`}>
               <div className="flex items-center">
                 <img
                   src={`${data?.shop?.avatar?.url}`}
@@ -347,30 +347,30 @@ const ProductDetailsInfo = ({
                   alt=""
                 />
                 <div className="pl-3">
-                  <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
-                  <h5 className="pb-2 text-[15px]">
+                  <h3 className={`${styles.shop_name}`}>{data?.shop?.name}</h3>
+                  <h5 className="pb-2 text-[15px] text-black">
                     ({averageRating}/5) Ratings
                   </h5>
                 </div>
               </div>
             </Link>
-            <p className="pt-2">{data.shop.description}</p>
+            <p className="pt-2 text-black">{data?.shop?.description}</p>
           </div>
           <div className="w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end">
             <div className="text-left">
-              <h5 className="font-[600]">
+              <h5 className="font-[600] text-black">
                 Joined on:{" "}
                 <span className="font-[500]">
                   {data.shop?.createdAt?.slice(0, 10)}
                 </span>
               </h5>
-              <h5 className="font-[600] pt-3">
+              <h5 className="font-[600] pt-3 text-black">
                 Total Products:{" "}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
-              <h5 className="font-[600] pt-3">
+              <h5 className="font-[600] pt-3 text-black">
                 Total Reviews:{" "}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
@@ -378,7 +378,7 @@ const ProductDetailsInfo = ({
                 <div
                   className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}
                 >
-                  <h4 className="text-white">Visit Shop</h4>
+                 <Link to='/products'> <h4 className="text-white">Visit Shop</h4></Link>
                 </div>
               </Link>
             </div>
