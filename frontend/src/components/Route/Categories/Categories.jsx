@@ -12,6 +12,7 @@ const Categories = () => {
   useEffect(() => {
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
         setData(res.data.categorys);
+        console.log('category frontend', res.data.categorys)
     })
   }, []);
   return (
@@ -50,7 +51,7 @@ const Categories = () => {
               return (
                 <div
                   className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 cursor-pointer"
-                  key={i._id}
+                  key={i?._id}
                   onClick={() => handleSubmit(i)}
                 >
 

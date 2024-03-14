@@ -28,7 +28,7 @@ const CategoryForm = () => {
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
-  }, [dispatch, error, success, navigate]);
+  }, [error, success, navigate]);
 
   const handleImageChange = (e) => {
     setFile(e.target.files[0]);

@@ -16,7 +16,7 @@ export const createevent = (data) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: "eventCreateFail",
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };

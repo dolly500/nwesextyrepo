@@ -191,7 +191,7 @@ const ProductDetails = ({ data }) => {
                         size={30}
                         className="cursor-pointer"
                         onClick={() => addToWishlistHandler(data)}
-                        color={click ? "red" : "#333"}
+                        color={click ? "red" : "#fff"}
                         title="Add to wishlist"
                       />
                     )}
