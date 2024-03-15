@@ -2,15 +2,25 @@ import axios from "axios";
 import { server } from "../../server";
 
 
-export async function uploadFile(file){
-  const formData = new FormData();
+// export async function uploadFile(file){
+//   const formData = new FormData();
 
-  formData.append("file", file);
-  formData.append("upload_preset", "spiderman");
+//   formData.append("file", file);
+//   formData.append("upload_preset", "spiderman");
 
-  const response = await axios.post(`https://api.cloudinary.com/v1_1/diztvrcsi/upload`, formData)
-  return response?.data?.secure_url;
+//   const response = await axios.post(`https://api.cloudinary.com/v1_1/diztvrcsi/upload`, formData)
+//   return response?.data?.secure_url;
+// }
+
+export async function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 }
+
 
 // create category
 export const createCategory =
@@ -26,9 +36,9 @@ export const createCategory =
         });
 
 
-        const url = await uploadFile(image);
+        const base64 = await getBase64(image);
 
-        const images = [url];
+        const images = [base64]
 
 
         const { data } = await axios.post(
@@ -87,6 +97,8 @@ export const deleteCategory = (id) => async (dispatch) => {
         withCredentials: true,
       }
     );
+
+    console.log('delete category', data)
 
     dispatch({
       type: "deleteCategorySuccess",
