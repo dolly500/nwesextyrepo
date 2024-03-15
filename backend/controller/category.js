@@ -98,7 +98,6 @@ router.put(
 // delete category
 router.delete(
   "/:id",
-  isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const category = await Category.findById(req.params.id);

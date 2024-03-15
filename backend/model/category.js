@@ -9,14 +9,18 @@ const categorySchema = new mongoose.Schema({
         type: String,
         required: [true, "Please enter your product description!"],
     },
-    images: {
-        public_id: {
-            type: String,
+    images:[
+        {
+            public_id: {
+                type: String,
+                required: true,
+              },
+              url: {
+                type: String,
+                required: true,
+              },
         },
-        url: {
-            type: String,
-        },
-    },
+    ],
     products: [
         {
             type: mongoose.Schema.Types.ObjectId,

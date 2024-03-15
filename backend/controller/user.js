@@ -221,8 +221,6 @@ router.post(
 
 
 
-
-
 // load user
 router.get(
   "/getuser",

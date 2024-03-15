@@ -376,6 +376,17 @@ router.get(
   })
 );
 
+
+
+
+
+
+
+
+
+
+
+
 // delete seller ---admin
 router.delete(
   "/delete-seller/:id",
