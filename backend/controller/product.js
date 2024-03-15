@@ -68,7 +68,7 @@ router.post(
 
 // get product by ID
 router.get(
-  "/get-product/:id",
+  "/get-all-products/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const productId = req.params.id;
@@ -92,71 +92,36 @@ router.get(
   })
 );
 
-
-
-
-
-// Delete a product from a shop
+// delete Product by Id
 router.delete(
-  "/delete-product/:productId",
+  "/delete-product/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const productId = req.params.productId;
-
-      // Find the product by ID and remove it
-      const product = await Product.findById(productId);
+      const product = await Product.findById(req.params.id);
 
       if (!product) {
-        return next(new ErrorHandler("Product not found", 404));
+        return next(
+          new ErrorHandler("Product is not found with this id", 404)
+        );
       }
 
-      // If the product is associated with a category, remove it from the category's products array
-       // Delete images associated with the event from Cloudinary
-       for (let i = 0; i < product.images.length; i++) {
-        const result = await cloudinary.v2.uploader.destroy(product.images[i].public_id);
-      }
+      // await category.remove();
+      await Product.findByIdAndDelete(req.params.id);
 
-      await Event.findByIdAndDelete(productId);
-
-      res.status(200).json({
+      res.status(201).json({
         success: true,
-        message: "Product deleted successfully"
+        message: "Product Deleted successfully!",
       });
     } catch (error) {
+      console.log(new ErrorHandler(error, 400));
       return next(new ErrorHandler(error, 400));
     }
   })
 );
 
-router.delete(
-  "/delete-product/:id",
-  
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const shopId = req.params.id;
-      
-      const shop = await Product.findById(shopId);
-      if (!Shop) {
-        return next(new ErrorHandler("Product not found with this id", 404));
-      }
 
-      // Delete images associated with the event from Cloudinary
-      for (let i = 0; i < shop.images.length; i++) {
-        const result = await cloudinary.v2.uploader.destroy(shop.images[i].public_id);
-      }
 
-      await Product.findByIdAndDelete(shopId);
 
-      res.status(200).json({
-        success: true,
-        message: "Product deleted successfully🤡",
-        deletedEvent: shop // Optionally return the deleted event for reference
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 400));
-    }
-  })
-);
 
 
 // get all products

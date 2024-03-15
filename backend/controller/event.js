@@ -106,25 +106,25 @@ router.delete(
   "/delete-event/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const eventId = req.params.id;
       
-      const event = await Event.findById(eventId);
+      const event = await Event.findById(req.params.id);
+
       if (!event) {
-        return next(new ErrorHandler("Event not found with this id", 404));
+        return next(
+          new ErrorHandler("Event is not found with this id", 404)
+        );
       }
 
-      // Delete images associated with the event from Cloudinary
-      for (let i = 0; i < event.images.length; i++) {
-        const result = await cloudinary.v2.uploader.destroy(event.images[i].public_id);
-      }
+      // await category.remove();
+      await Event.findByIdAndDelete(req.params.id);
 
-      await Event.findByIdAndDelete(eventId);
-
-      res.status(200).json({
+      res.status(201).json({
         success: true,
-        message: "Event deleted successfully",
-        deletedEvent: event // Optionally return the deleted event for reference
+        message: "Event Deleted successfully!",
       });
+     
+
+     
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }

@@ -121,5 +121,31 @@ router.delete(
     }
   })
 );
+// get Category by ID
+router.get(
+  "/get-all-category/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const categoryId = req.params.id;
+
+      const category = await Category.findById(categoryId);
+
+      if (!category) {
+        return res.status(404).json({
+          success: false,
+          message: 'Category not found',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        category,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
 
 module.exports = router;
