@@ -74,19 +74,29 @@ router.get("/get-all-events", async (req, res, next) => {
   }
 });
 
-// get all events of a shop
+
+// get event by ID
 router.get(
-  "/get-all-events/:id",
+  "/get-events/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const events = await Event.find({ shopId: req.params.id });
+      const eventId = req.params.id;
 
-      res.status(201).json({
+      const event = await Event.findById(eventId);
+
+      if (!event) {
+        return res.status(404).json({
+          success: false,
+          message: 'Event not found',
+        });
+      }
+
+      res.status(200).json({
         success: true,
-        events,
+        event,
       });
     } catch (error) {
-      return next(new ErrorHandler(error, 400));
+      return next(new ErrorHandler(error.message, 400));
     }
   })
 );
