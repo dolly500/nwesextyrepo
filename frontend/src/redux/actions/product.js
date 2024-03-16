@@ -17,6 +17,8 @@ export const createProduct = (data) =>
         type: "productCreateSuccess",
         payload: d.product,
       });
+
+      console.log('pro', d)
     } catch (error) {
       dispatch({
         type: "productCreateFail",
@@ -85,7 +87,7 @@ export const getAllProducts = () => async (dispatch) => {
     const { data } = await axios.get(`${server}/product/get-all-products`);
     dispatch({
       type: "getAllProductsSuccess",
-      payload: data.products,
+      payload: data.allProducts,
     });
     console.log("Received data:", data);
 
