@@ -8,6 +8,7 @@ const Order = require("../model/order");
 const Shop = require("../model/shop");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Event = require("../model/event");
 const path = require("path");
 const fs = require('fs').promises;
 
@@ -118,12 +119,6 @@ router.delete(
     }
   })
 );
-
-
-
-
-
-
 // get all products
 router.get(
   "/get-all-products",
