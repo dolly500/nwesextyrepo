@@ -35,13 +35,12 @@ export const getAllProductsShop = (id) => async (dispatch) => {
     });
 
     const { data } = await axios.get(
-      `${server}/product/get-all-products-shop/${id}`
+      `${server}/product/get-all-products`, {withCredentials: true}
     );
 
-    console.log("Received data:", data);
     dispatch({
       type: "getAllProductsShopSuccess",
-      payload: data.product,
+      payload: data.products,
     });
   } catch (error) {
     dispatch({
@@ -59,7 +58,7 @@ export const deleteProduct = (id) => async (dispatch) => {
     });
 
     const { data } = await axios.delete(
-      `${server}/product/get-all-products-shop/${id}`,
+      `${server}/product/delete-product/${id}`,
       {
         withCredentials: true,
       }
@@ -87,9 +86,8 @@ export const getAllProducts = () => async (dispatch) => {
     const { data } = await axios.get(`${server}/product/get-all-products`);
     dispatch({
       type: "getAllProductsSuccess",
-      payload: data.allProducts,
+      payload: data.products,
     });
-    console.log("Received data:", data);
 
   } catch (error) {
     dispatch({

@@ -56,7 +56,7 @@ const Categories = () => {
                 >
 
                   <img
-                    src={i?.image?.url}
+                    src={i?.images?.[0]?.url}
                     className="w-full h-48 object-cover"
                     alt=""
                   />

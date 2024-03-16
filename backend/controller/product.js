@@ -8,6 +8,7 @@ const Order = require("../model/order");
 const Shop = require("../model/shop");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Event = require("../model/event");
 const path = require("path");
 const fs = require('fs').promises;
 
@@ -105,7 +106,7 @@ router.delete(
       const shopId = req.params.id;
       
       const shop = await Product.findById(shopId);
-      if (!Shop) {
+      if (!shop) {
         return next(new ErrorHandler("Product not found with this id", 404));
       }
 
