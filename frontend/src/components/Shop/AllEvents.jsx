@@ -25,7 +25,7 @@ const AllEvents = () => {
   }
 
   const columns = [
-    { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Event Id", minWidth: 150, flex: 0.7 },
     {
       field: "name",
       headerName: "Name",
