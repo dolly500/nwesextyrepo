@@ -22,7 +22,7 @@ const HomePage = () => {
     // When the component mounts, scroll to the top of the page
     window.scrollTo(0, 0);
     axios.get(`${server}/category/`, {withCredentials: true}).then((res) => {
-      setCategoriesData(res.data.categorys);
+      setCategoriesData(res?.data?.categorys);
   }).catch((error) => {
     console.error('Error fetching category data:', error);
   });

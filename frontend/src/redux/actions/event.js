@@ -28,7 +28,7 @@ export const getAllEventsShop = (id) => async (dispatch) => {
       type: "getAlleventsShopRequest",
     });
 
-    const { data } = await axios.get(`${server}/event/get-all-events/${id}`);
+    const { data } = await axios.get(`${server}/event/get-events/${id}`);
 
     console.log("Received data:", data);
     dispatch({
@@ -38,7 +38,7 @@ export const getAllEventsShop = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: "getAlleventsShopFailed",
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };
