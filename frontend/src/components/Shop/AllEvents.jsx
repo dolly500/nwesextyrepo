@@ -19,10 +19,10 @@ const AllEvents = () => {
     dispatch(getAllEventsShop(seller._id));
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(deleteEvent(id));
+  const handleDelete = async (id) => {
+    await dispatch(deleteEvent(id));
     window.location.reload();
-  }
+  };
 
   const columns = [
     { field: "id", headerName: "Event Id", minWidth: 150, flex: 0.7 },
@@ -84,9 +84,7 @@ const AllEvents = () => {
       renderCell: (params) => {
         return (
           <>
-            <Button
-            onClick={() => handleDelete(params.id)}
-            >
+            <Button onClick={() => handleDelete(params.id)}>
               <AiOutlineDelete size={20} />
             </Button>
           </>
@@ -98,7 +96,7 @@ const AllEvents = () => {
   const row = [];
 
   events &&
-  events.forEach((item) => {
+    events.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
@@ -108,7 +106,7 @@ const AllEvents = () => {
       });
     });
 
-    console.log("events", events)
+  console.log("events", events);
 
   return (
     <>

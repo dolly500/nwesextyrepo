@@ -9,8 +9,8 @@ export const createpost = (data) => async (dispatch) => {
     });
 
     const { d } = await axios.post(`${server}/post/create-post`, data);
-    console.log('post', data); 
-    
+    console.log("post", data);
+
     dispatch({
       type: "postCreateSuccess",
       payload: d.post,
@@ -30,7 +30,7 @@ export const getAllPostsShop = (id) => async (dispatch) => {
       type: "getAllpostsShopRequest",
     });
 
-    const { data } = await axios.get(`${server}/post/get-all-posts/${id}`);
+    const { data } = await axios.get(`${server}/post/get-all-posts`);
     dispatch({
       type: "getAllpostsShopSuccess",
       payload: data.posts,
@@ -51,7 +51,7 @@ export const deletePost = (id) => async (dispatch) => {
     });
 
     const { data } = await axios.delete(
-      `${server}/post/delete-shop-post/${id}`,
+      `${server}/post/delete-shop-Post/${id}`,
       {
         withCredentials: true,
       }
