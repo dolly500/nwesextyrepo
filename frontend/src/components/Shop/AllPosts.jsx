@@ -62,7 +62,7 @@ const AllPosts = () => {
       flex: 0.8,
       minWidth: 120,
       headerName: "",
-      type: "number",
+      type: "number ",
       sortable: false,
       renderCell: (params) => {
         return (
