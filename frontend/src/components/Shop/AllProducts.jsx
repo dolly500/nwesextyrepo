@@ -17,11 +17,11 @@ const AllProducts = () => {
     dispatch(getAllProductsShop(seller._id));
   }, [dispatch]);
 
-  console.log('After API call, products:', products);
+  console.log("After API call, products:", products);
 
-  const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
-    // window.location.reload();
+  const handleDelete = async (id) => {
+    await dispatch(deleteProduct(id));
+    window.location.reload();
   };
 
   const columns = [
@@ -37,7 +37,7 @@ const AllProducts = () => {
       headerName: "Product Price",
       minWidth: 100,
       flex: 0.6,
-      type: "number", 
+      type: "number",
     },
     {
       field: "Stock",
@@ -105,7 +105,7 @@ const AllProducts = () => {
       });
     });
 
-    console.log('product', products)
+  console.log("product", products);
 
   return (
     <>

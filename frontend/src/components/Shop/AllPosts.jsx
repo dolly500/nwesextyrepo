@@ -17,10 +17,10 @@ const AllPosts = () => {
     dispatch(getAllPostsShop(seller._id));
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(deletePost(id));
+  const handleDelete = async (id) => {
+    await dispatch(deletePost(id));
     window.location.reload();
-  }
+  };
 
   const columns = [
     { field: "id", headerName: "Post Id", minWidth: 150, flex: 0.7 },
@@ -36,9 +36,7 @@ const AllPosts = () => {
       minWidth: 100,
       flex: 0.6,
     },
-    
 
-    
     {
       field: "Preview",
       flex: 0.8,
@@ -60,32 +58,28 @@ const AllPosts = () => {
     },
 
     {
-        field: "Delete",
-        flex: 0.8,
-        minWidth: 120,
-        headerName: "",
-        type: "number",
-        sortable: false,
-        renderCell: (params) => {
-          return (
-            <>
-              <Button
-              onClick={() => handleDelete(params.id)}
-              >
-                <AiOutlineDelete size={20} />
-              </Button>
-            </>
-          );
-        },
+      field: "Delete",
+      flex: 0.8,
+      minWidth: 120,
+      headerName: "",
+      type: "number ",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <>
+            <Button onClick={() => handleDelete(params.id)}>
+              <AiOutlineDelete size={20} />
+            </Button>
+          </>
+        );
       },
-    ];
-  
-  
+    },
+  ];
 
   const row = [];
 
   posts &&
-  posts.forEach((item) => {
+    posts.forEach((item) => {
       row.push({
         id: item._id,
         title: item.title,
@@ -93,7 +87,7 @@ const AllPosts = () => {
       });
     });
 
-  console.log("post log", posts)
+  console.log("post log", posts);
 
   return (
     <>
