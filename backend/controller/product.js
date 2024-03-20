@@ -109,6 +109,9 @@ router.delete(
       // await category.remove();
       await Product.findByIdAndDelete(req.params.id);
 
+      // Log a message after deletion
+      console.log("Product deleted:", product);
+
       res.status(201).json({
         success: true,
         message: "Product Deleted successfully!",
