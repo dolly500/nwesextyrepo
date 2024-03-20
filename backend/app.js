@@ -54,6 +54,8 @@ const order = require("./controller/order");
 const conversation = require("./controller/conversation");
 const message = require("./controller/message");
 const withdraw = require("./controller/withdraw");
+const questionaire = require("./controller/questionaire");
+
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/conversation", conversation);
@@ -67,6 +69,7 @@ app.use("/api/v2/post", post);
 app.use("/api/v2/coupon", coupon);
 app.use("/api/v2/payment", payment);
 app.use("/api/v2/withdraw", withdraw);
+app.use("/api/v2/questionaire", questionaire);
 
 
 // app.use("/api/v2/", require("../backend/routes/admin.route"));
