@@ -35,16 +35,17 @@ export const getAllEventsShop = (id) => async (dispatch) => {
     }
     );
 
-
-    console.log("Received data:", data);
+    
     dispatch({
       type: "getAlleventsShopSuccess",
       payload: data.event,
     });
+
+    console.log("Received data:", data);
   } catch (error) {
     dispatch({
       type: "getAlleventsShopFailed",
-      payload: error?.response?.data?.message,
+      payload: error.response.data.message,
     });
   }
 };
@@ -84,6 +85,8 @@ export const getAllEvents = () => async (dispatch) => {
       type: "getAlleventsSuccess",
       payload: data.events,
     });
+
+    console.log('all events', data)
   } catch (error) {
     dispatch({
       type: "getAlleventsFailed",

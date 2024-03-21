@@ -98,12 +98,14 @@ export const deleteCategory = (id) => async (dispatch) => {
       }
     );
 
-    console.log('delete category', data)
+  
 
     dispatch({
       type: "deleteCategorySuccess",
       payload: data.message,
     });
+
+    console.log('delete category', data)
   } catch (error) {
     dispatch({
       type: "deleteCategoryFailed",
