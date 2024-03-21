@@ -15,8 +15,8 @@ const AllCategories = () => {
     dispatch(getAllCategories());
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(deleteCategory(id));
+  const handleDelete = async (id) => {
+    await dispatch(deleteCategory(id));
     window.location.reload();
   };
 

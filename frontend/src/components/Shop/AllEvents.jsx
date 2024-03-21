@@ -23,7 +23,7 @@ const AllEvents = () => {
   }, [dispatch]);
 
   const handleDelete = async (id) => {
-    dispatch(deleteEvent(id));
+    await dispatch(deleteEvent(id));
     window.location.reload();
   };
 
