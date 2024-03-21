@@ -6,22 +6,26 @@ const questionnaireSchema = new mongoose.Schema({
     enum: ['Christianity', 'Islam', 'Others'],
     required: true
   },
-  genderOptions: {
+  gender: {
     type: String,
     enum: ['Male', 'Female'],
     required: true
   },
-  relationshipStatusOptions: {
+  relationshipStatus: {
     type: String,
     enum: ['Single', 'Married', 'Divorced', 'Separated', 'Others'],
     required: true
   },
-  sexLife: {
+  helpReason: {
     type: String,
     enum: ['Divorce', 'Adoption', 'Infertility', 'Infidelity', 'Pregnancy', 'Postpartum depression', 'Others'],
     required: true
   },
-  consultationPrice: {
+  optionsAvailable: {
+    type: String,
+    required: true
+  },
+  consultationFee: {
     type: String,
     required: true
   },
