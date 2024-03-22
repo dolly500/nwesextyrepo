@@ -58,6 +58,7 @@ import {
   ShopAllEvents,
   ShopAllOrders,
   ShopAllPosts,
+  ShopAllQuestionaire,
   ShopAllProducts,
   ShopAllRefunds,
   ShopCreateEvents,
@@ -288,6 +289,14 @@ const App = () => {
           element={
             <SellerProtectedRoute>
               <ShopAllPosts />
+            </SellerProtectedRoute>
+          }
+        />
+
+      <Route path="/dashboard-questionaire"
+          element={
+            <SellerProtectedRoute>
+              <ShopAllQuestionaire />
             </SellerProtectedRoute>
           }
         />

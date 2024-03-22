@@ -1,40 +1,62 @@
 // src/components/QuestionnaireForm.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link} from "react-router-dom";
 import logo from '../static/imgs/logo.png'
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { server } from '../server';
+import { createQuestionaire } from '../redux/actions/questionaire'
+
 
 const QuestionnaireForm = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const { success, error } = useSelector((state) => state.category);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
-      e.preventDefault();
+  const [religion, setReligion] = useState("");
+  const [gender, setGender] = useState("");
+  const [relationshipStatus, setrelationshipStatus] = useState("");
+  const [helpReason, sethelpReason] = useState("");
+  const [optionsAvailable, setoptionsAvailable] = useState("");
+  const [consultationFee, setconsultationFee] = useState("");
+  const [therapyType, settherapyType] = useState("");
+  const [categories, setCategories] = useState();
 
-      try {
-          const response = await axios.post('https://api.example.com/submit-questionnaire', {
-              // Include form data here
-              religion: e.target.religion.value,
-              gender: e.target.gender.value,
-              relationshipStatus: e.target.relationshipStatus.value,
-              // ... other form fields
-          });
 
-          if (response.status === 200) {
-              // Form submitted successfully
-              setShowPopup(true);
-          } else {
-              // Handle error scenarios
-              console.error('Form submission failed');
-          }
-      } catch (error) {
-          console.error('Error during form submission:', error);
-      }
+
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+    if (success) {
+      toast.success("Category created successfully!");
+      navigate("/");
+    }
+    axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
+      setCategories(res.data.categorys);
+  })
+  }, [error, success, navigate]);
+
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    dispatch(
+      createQuestionaire({
+        religion,
+        gender,
+        relationshipStatus,
+        helpReason,
+        optionsAvailable,
+        consultationFee,
+        therapyType
+      })
+    );
   };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
   return (
     <div className="w-full bg-white">
     <div className="max-w-md mx-auto mt-8 p-4 shadow-md rounded">
@@ -55,7 +77,8 @@ const QuestionnaireForm = () => {
           <label htmlFor="religion" className="block text-sm font-medium text-gray-600">
             Religion
           </label>
-          <select id="religion" name="religion" className="mt-1 p-2 w-full border rounded-md">
+          <select id="religion" name="religion" value={religion} onChange={(e) => setReligion(e.target.value)}
+       className="mt-1 p-2 w-full border rounded-md">
           <option></option>
             <option>Christianity</option>
             <option>Islam</option>
@@ -67,7 +90,7 @@ const QuestionnaireForm = () => {
           <label htmlFor="gender" className="block text-sm font-medium text-gray-600">
             Gender
           </label>
-          <select id="gender" name="gender" className="mt-1 p-2 w-full border rounded-md">
+          <select id="gender" value={gender} onChange={(e) => setGender(e.target.value)}  name="gender" className="mt-1 p-2 w-full border rounded-md">
           <option></option>
             <option>Male</option>
             <option>Female</option>
@@ -82,6 +105,8 @@ const QuestionnaireForm = () => {
           <select
             id="relationshipStatus"
             name="relationshipStatus"
+            value={relationshipStatus}
+            onChange={(e) => setrelationshipStatus(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           >
             <option></option>
@@ -101,6 +126,8 @@ const QuestionnaireForm = () => {
             type="text"
             id="helpReason"
             name="helpReason"
+            value={helpReason}
+            onChange={(e) => sethelpReason(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           />
         </div>
@@ -112,6 +139,8 @@ const QuestionnaireForm = () => {
           <select
             id="optionsAvailable"
             name="optionsAvailable"
+            value={optionsAvailable}
+            onChange={(e) => setoptionsAvailable(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           >
             <option></option>
@@ -135,6 +164,8 @@ const QuestionnaireForm = () => {
             type="text"
             id="consultationFee"
             name="consultationFee"
+            value={consultationFee}
+            onChange={(e) => setconsultationFee(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           />
         </div>
@@ -143,7 +174,10 @@ const QuestionnaireForm = () => {
           <label htmlFor="therapyType" className="block text-sm font-medium text-gray-600">
             Types of Therapy
           </label>
-          <select id="therapyType" name="therapyType" className="mt-1 p-2 w-full border rounded-md">
+          <select id="therapyType" 
+          value={therapyType}
+          onChange={(e) => sethelpReason(e.target.value)}
+          name="therapyType" className="mt-1 p-2 w-full border rounded-md">
           <option></option>
             <option value="individual">Individual</option>
             <option value="couples">Couples</option>
@@ -158,21 +192,7 @@ const QuestionnaireForm = () => {
           Submit
         </button>
       </form>
-      {showPopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-          <div className="bg-white p-4 rounded-md">
-            <p className="text-center text-green-600 font-bold">
-              You have successfully filled the Questionnaire. Thank you!
-            </p>
-            <button
-              onClick={closePopup}
-              className="mt-4 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      
     </div>
     </div>
   );

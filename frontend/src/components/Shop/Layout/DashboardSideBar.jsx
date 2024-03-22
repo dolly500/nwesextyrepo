@@ -8,6 +8,7 @@ import { MdOutlineLocalOffer } from "react-icons/md";
 import { RxDashboard } from "react-icons/rx";
 import { VscNewFile } from "react-icons/vsc";
 import { Link } from "react-router-dom";
+import { FaQuestionCircle } from 'react-icons/fa';
 
 const DashboardSideBar = ({ active }) => {
   return (
@@ -121,6 +122,22 @@ const DashboardSideBar = ({ active }) => {
             }`}
           >
             All Posts
+          </h5>
+        </Link>
+      </div>
+
+      <div className="w-full flex items-center p-4">
+        <Link to="/dashboard-questionaire" className="w-full flex items-center">
+          <FaQuestionCircle
+            size={30}
+            color={`${active === 5 ? "#8E376A" : "#555"}`}
+          />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 5 ? "text-[#8E376A]" : "text-[#555]"
+            }`}
+          >
+            All Questionaire
           </h5>
         </Link>
       </div>

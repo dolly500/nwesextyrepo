@@ -22,7 +22,7 @@ export const createProduct = (data) =>
     } catch (error) {
       dispatch({
         type: "productCreateFail",
-        payload: error.response.data.message,
+        payload: error?.response?.data?.message,
       });
     }
   };
