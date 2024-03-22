@@ -18,11 +18,11 @@ const questionnaireSchema = new mongoose.Schema({
   },
   helpReason: {
     type: String,
-    enum: ['Divorce', 'Adoption', 'Infertility', 'Infidelity', 'Pregnancy', 'Postpartum depression', 'Others'],
     required: true
   },
   optionsAvailable: {
     type: String,
+    enum: ['Your Sex Life','Differences with your spouse', 'Divorce', 'Adoption', 'Infertility', 'Infidelity', 'Pregnancy', 'Postpartum depression', 'Others'],
     required: true
   },
   consultationFee: {
