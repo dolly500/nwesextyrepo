@@ -17,7 +17,7 @@ const {
 
 
 } = require("../validators/userValidator");
-
+const authService = require('../services/auth.service');
 
 
 
@@ -168,8 +168,29 @@ router.post(
   })
 );
 
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const userData = await authService.getUserByMail(req.body.email);
+    passwordForgotMail(userData);
+    res.status(201).json({
+      status: true,
+      message: 'You just received a mail... Check through to perform the next line of action..',
+    });
+  } catch (error) {
+  
+    res.status(500).json({ status: 'error', message: 'Forgot Password Failed...' });
+  }
+});
 
-
+router.put('/reset-password', async (req, res) => {
+  try {
+    await authService.resetPassword(req.body);
+    res.status(200).json({ status: 'success', message: 'Password Reset Successful...' });
+  } catch (error) {
+   
+    res.status(500).json({ status: 'error', message: 'Password Reset Failed...' });
+  }
+});
 
 
 

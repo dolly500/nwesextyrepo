@@ -9,7 +9,7 @@ router.post(
   "/create-questionnaire",
   catchAsyncErrors(async (req, res) => {
     try {
-    const { religion, gender, relationshipStatus,  helpReason, optionsAvailable,consultationFee, therapyOption } = req.body;
+    const { religion, gender, relationshipStatus,  helpReason, optionsAvailable,consultationFee, therapyType } = req.body;
 
       const questionnaire = new Questionnaire({
         religion,
@@ -18,7 +18,7 @@ router.post(
         helpReason,
         optionsAvailable,
         consultationFee,
-        therapyOption
+        therapyType
       });
 
       await questionnaire.save();
@@ -91,7 +91,7 @@ router.put(
   "/:id",
   catchAsyncErrors(async (req, res) => {
     try {
-      const { religion, gender, relationshipStatus,  helpReason, optionsAvailable,consultationFee, therapyOption } = req.body;
+      const { religion, gender, relationshipStatus,  helpReason, optionsAvailable,consultationFee, therapyType } = req.body;
       const questionnaire = await Questionnaire.findByIdAndUpdate(
         req.params.id,
         {
@@ -101,7 +101,7 @@ router.put(
           helpReason,
           optionsAvailable,
           consultationFee,
-          therapyOption
+          therapyType
           
         },
         { new: true, runValidators: true }

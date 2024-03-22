@@ -29,7 +29,7 @@ const questionnaireSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  therapyOption: {
+  therapyType: {
     type: String,
     enum: ['Individual', 'Couples', 'Teens'],
     required: true
