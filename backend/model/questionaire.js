@@ -7,12 +7,12 @@ const questionnaireSchema = new mongoose.Schema({
     required: true
   },
   gender: {
-    type: String,
+    type: [String],
     enum: ['Male', 'Female'],
     required: true
   },
   relationshipStatus: {
-    type: String,
+    type: [String],
     enum: ['Single', 'Married', 'Divorced', 'Separated', 'Others'],
     required: true
   },
@@ -21,7 +21,7 @@ const questionnaireSchema = new mongoose.Schema({
     required: true
   },
   optionsAvailable: {
-    type: String,
+    type: [String],
     enum: ['Your Sex Life','Differences with your spouse', 'Divorce', 'Adoption', 'Infertility', 'Infidelity', 'Pregnancy', 'Postpartum depression', 'Others'],
     required: true
   },
@@ -30,7 +30,7 @@ const questionnaireSchema = new mongoose.Schema({
     required: true
   },
   therapyType: {
-    type: String,
+    type: [String],
     enum: ['Individual', 'Couples', 'Teens'],
     required: true
   }
