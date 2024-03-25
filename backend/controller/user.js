@@ -212,7 +212,50 @@ router.post('/forgot-password', catchAsyncErrors(async (req, res, next) => {
  })
 );
 
+// Reset-Password
 router.put('/reset-password', catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { error, value } = resetPasswordSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset failed",
+      });
+    }
+
+    const { email, resetToken, newPassword } = value;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    // Validate the reset token
+    if (!validateResetToken(user.resetTokenHash, resetToken)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid or expired reset token" });
+    }
+
+    // Reset the user's password using bcrypt
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 is the number of salt rounds
+    user.password = hashedPassword;
+    user.resetToken = null; // Clear the reset token after use
+    user.resetTokenHash = null; // Clear the reset token hash after use
+    user.resetTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      data: { email: user.email },
+      message: "Password reset successful",
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
  
 })
 );
