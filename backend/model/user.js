@@ -88,8 +88,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
-  resetPasswordToken: String,
-  resetPasswordTime: Date,
+  
 });
 
 

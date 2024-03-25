@@ -10,6 +10,7 @@ router.post(
   catchAsyncErrors(async (req, res) => {
     try {
     const { religion, gender, relationshipStatus,  helpReason, optionsAvailable,consultationFee, therapyType } = req.body;
+    
 
       const questionnaire = new Questionnaire({
         religion,
