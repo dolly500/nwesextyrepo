@@ -1,43 +1,46 @@
-const User = require('../model/user');
-const bcrypt = require('bcryptjs');
+const nodemailer = require("nodemailer");
+const bcrypt = require('bcrypt');
 
-const resetPassword = async (userInfo) => {
-    const { isEmailReceived } = await User.findOne({ email: userInfo.email });
-    if (isEmailReceived === false) {
-      throw new Error('Kindly visit your mail for the link sent for the password reset');
-    }
-    
-    const hashedPassword = await bcrypt.hash(userInfo.password, 10);
-    await User.findOneAndUpdate(
-      { email: userInfo.email },
-      { password: hashedPassword },
-      { new: true }
-    );
-  
-    return await User.findOneAndUpdate(
-      { email: userInfo.email },
-      { isEmailReceived: false },
-      { new: true }
-    );
+
+
+
+const hashFunction = async (data) => {
+  const saltRounds = 10; // Number of salt rounds
+  return bcrypt.hash(data, saltRounds);
+};
+// Use the transporter to send emails
+const sendResetTokenByEmail = async (email, resetToken) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.SMPT_MAIL,
+        pass: process.env.SMPT_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: false // do not verify the certificate
+      }
+    });
+
+    const mailOptions = {
+      from: process.env.SMPT_MAIL,
+      to: email,
+      subject: "Password Reset",
+      text: `Here is your password reset Password: ${resetToken}\n\nPlease copy this token and use it in the password reset form on our website.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
 
+const generateResetToken = async () => {
+  const token =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
+  const hash = await hashFunction(token);
+  return { token, hash };
+};
 
-const getUserByMail = async (email) => {
-    const checkUser = await User.findOne({ email }).select('-password');
-    if (!checkUser) {
-      throw new ApiError(400, 'Oops! a user with this email does not exist...');
-    }
-  
-    const token = await tokenService.generateAuthTokens(checkUser);
-    const userToken = token.access.token;
-    const verificationLink = `https://allsextoyss.vercel.app/api/v1/auth/confirm/email/${checkUser._id}?token=${checkUser._id}`;
-  
-    //ForgotPasswordMail(checkUser.email, verificationLink);
-    return checkUser;
-  };
-  
-module.exports = {
-    resetPassword,
-    getUserByMail
-
-}
+module.exports = { sendResetTokenByEmail,generateResetToken};

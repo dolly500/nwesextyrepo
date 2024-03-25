@@ -17,7 +17,10 @@ const {
 
 
 } = require("../validators/userValidator");
-const authService = require('../services/auth.service');
+const {
+  sendResetTokenByEmail,
+  generateResetToken
+ } = require('../services/auth.service');
 
 
 
@@ -168,29 +171,94 @@ router.post(
   })
 );
 
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', catchAsyncErrors(async (req, res, next) => {
   try {
-    const userData = await authService.getUserByMail(req.body.email);
-    passwordForgotMail(userData);
-    res.status(201).json({
-      status: true,
-      message: 'You just received a mail... Check through to perform the next line of action..',
-    });
-  } catch (error) {
-  
-    res.status(500).json({ status: 'error', message: 'Forgot Password Failed...' });
-  }
-});
+    const { error, value } = forgotPasswordSchema.validate(req.body);
 
-router.put('/reset-password', async (req, res) => {
-  try {
-    await authService.resetPassword(req.body);
-    res.status(200).json({ status: 'success', message: 'Password Reset Successful...' });
-  } catch (error) {
-   
-    res.status(500).json({ status: 'error', message: 'Password Reset Failed...' });
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset email failed",
+      });
+    }
+
+    const { email } = value;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    // Generate a reset token and save its hash in the user document
+    const { token, hash } = await generateResetToken();
+    user.resetToken = token;
+    user.resetTokenHash = hash;
+    user.resetTokenExpiry = Date.now() + 3600000; // Token expiry time (1 hour)
+    await user.save();
+
+    // Send the reset token via email
+    await sendResetTokenByEmail(user.email, token);
+
+    res.status(200).json({
+      success: true,
+      data: { email: user.email },
+      message: "Password reset email sent",
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
   }
-});
+ 
+ })
+);
+
+// Reset-Password
+router.put('/reset-password', catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { error, value } = resetPasswordSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset failed",
+      });
+    }
+
+    const { email, resetToken, newPassword } = value;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    // Validate the reset token
+    if (!validateResetToken(user.resetTokenHash, resetToken)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid or expired reset token" });
+    }
+
+    // Reset the user's password using bcrypt
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 is the number of salt rounds
+    user.password = hashedPassword;
+    user.resetToken = null; // Clear the reset token after use
+    user.resetTokenHash = null; // Clear the reset token hash after use
+    user.resetTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      data: { email: user.email },
+      message: "Password reset successful",
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+ 
+})
+);
 
 
 
