@@ -16,47 +16,41 @@ const QuestionnaireForm = () => {
   const dispatch = useDispatch();
 
   const [religion, setReligion] = useState("");
-  const [gender, setGender] = useState("");
-  const [relationshipStatus, setrelationshipStatus] = useState("");
-  const [helpReason, sethelpReason] = useState("");
-  const [optionsAvailable, setoptionsAvailable] = useState("");
-  const [consultationFee, setconsultationFee] = useState("");
-  const [therapyType, settherapyType] = useState("");
-  const [categories, setCategories] = useState();
-
-
-
+  const [gender, setGender] = useState(""); // Change to string
+  const [relationshipStatus, setRelationshipStatus] = useState(""); // Change to string
+  const [helpReason, setHelpReason] = useState("");
+  const [optionsAvailable, setOptionsAvailable] = useState([]);
+  const [consultationFee, setConsultationFee] = useState("");
+  const [therapyType, setTherapyType] = useState(""); // Change to string
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     if (error) {
       toast.error(error);
     }
     if (success) {
-      toast.success("Category created successfully!");
+      toast.success("Questionnaire created successfully!");
       navigate("/");
     }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
-  })
+    })
   }, [error, success, navigate]);
-
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(
-      createQuestionaire({
-        religion,
-        gender,
-        relationshipStatus,
-        helpReason,
-        optionsAvailable,
-        consultationFee,
-        therapyType
-      })
-    );
+    dispatch(createQuestionaire({
+      religion,
+      gender,
+      relationshipStatus,
+      helpReason,
+      optionsAvailable,
+      consultationFee,
+      therapyType
+    }));
   };
+
   return (
     <div className="w-full bg-white">
     <div className="max-w-md mx-auto mt-8 p-4 shadow-md rounded">
@@ -106,7 +100,7 @@ const QuestionnaireForm = () => {
             id="relationshipStatus"
             name="relationshipStatus"
             value={relationshipStatus}
-            onChange={(e) => setrelationshipStatus(e.target.value)}
+            onChange={(e) => setRelationshipStatus(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           >
             <option></option>
@@ -127,7 +121,7 @@ const QuestionnaireForm = () => {
             id="helpReason"
             name="helpReason"
             value={helpReason}
-            onChange={(e) => sethelpReason(e.target.value)}
+            onChange={(e) => setHelpReason(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           />
         </div>
@@ -140,7 +134,7 @@ const QuestionnaireForm = () => {
             id="optionsAvailable"
             name="optionsAvailable"
             value={optionsAvailable}
-            onChange={(e) => setoptionsAvailable(e.target.value)}
+            onChange={(e) => setOptionsAvailable(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           >
             <option></option>
@@ -165,7 +159,7 @@ const QuestionnaireForm = () => {
             id="consultationFee"
             name="consultationFee"
             value={consultationFee}
-            onChange={(e) => setconsultationFee(e.target.value)}
+            onChange={(e) => setConsultationFee(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md"
           />
         </div>
@@ -176,12 +170,12 @@ const QuestionnaireForm = () => {
           </label>
           <select id="therapyType" 
           value={therapyType}
-          onChange={(e) => sethelpReason(e.target.value)}
+          onChange={(e) => setTherapyType(e.target.value)}
           name="therapyType" className="mt-1 p-2 w-full border rounded-md">
           <option></option>
-            <option value="individual">Individual</option>
-            <option value="couples">Couples</option>
-            <option value="teens">Teens</option>
+            <option value="Individual">Individual</option>
+            <option value="Couples">Couples</option>
+            <option value="Teens">Teens</option>
           </select>
         </div>
 

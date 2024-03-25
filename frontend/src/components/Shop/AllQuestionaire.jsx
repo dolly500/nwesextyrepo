@@ -9,7 +9,7 @@ import Loader from "../Layout/Loader";
 
 const AllQuestionaire = () => {
   const { questionaires = [], isLoading } = useSelector((state) => state.questionaires || {});
-
+  console.log('our question', questionaires)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,19 +66,21 @@ const AllQuestionaire = () => {
   const row = [];
 
   questionaires && 
-    questionaires.forEach((item) => {
+    questionaires?.forEach((item) => {
     row.push({
         id: item._id,
         religion: item.religion,
-        gender: item.gender,
-        relationshipStatus: item.relationshipStatus,
+        gender: item.gender.join(", "),
+        relationshipStatus: item.relationshipStatus.join(", "),
         helpReason: item.helpReason,
-        optionsAvailable: item.optionsAvailable,
+        optionsAvailable: item.optionsAvailable.join(", "),
         consultationFee: item.consultationFee,
-        therapyType: item.therapyType,
+        therapyType: item.therapyType.join(", "),
     })
 
 })
+
+console.log('questionaire', questionaires)
 
   return (
     <>

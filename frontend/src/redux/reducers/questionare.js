@@ -19,6 +19,22 @@ export const questionaireReducer = createReducer(initialState, {
       state.success = false;
     },
 
+   // get all questionaire odf the shop by id
+
+  getAllQuestionaireShopRequest: (state) => {
+    state.isLoading = true;
+  },
+  getAllQuestionaireShopSuccess: (state, action) => {
+    state.isLoading = false;
+    state.questionaire = action.payload;
+    console.log('payload reducersss', action.payload)
+  },
+
+  getAllQuestionaireShopFailed: (state, action) => {
+    state.isLoading = false;
+    state.error = action.payload;
+  },
+
     // delete questionaire
   deleteQuestionaireRequest: (state) => {
     state.isLoading = true;
@@ -30,7 +46,9 @@ export const questionaireReducer = createReducer(initialState, {
   deleteQuestionaireFailed: (state, action) => {
     state.isLoading = false;
     state.error = action.payload;
+   
   },
+
 
   // get all questionaire
   getAllQuestionaireRequest: (state) => {
@@ -39,6 +57,7 @@ export const questionaireReducer = createReducer(initialState, {
   getAllQuestionaireSuccess: (state, action) => {
     state.isLoading = false;
     state.questionaires = action.payload;
+    console.log('payload reducers', action.payload)
   },
   getAllQuestionaireFailed: (state, action) => {
     state.isLoading = false;
