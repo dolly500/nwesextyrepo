@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Button } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getAllQuestionaire, deleteQuestionaire } from "../../redux/actions/questionaire";
+import {
+  getAllQuestionaire,
+  deleteQuestionaire,
+} from "../../redux/actions/questionaire";
 import Loader from "../Layout/Loader";
 
 const AllQuestionaire = () => {
   const [rows, setRows] = useState([]);
-  const { questionaires, isLoading } = useSelector((state) => state.questionaire || {});
+  const { questionaires, isLoading } = useSelector(
+    (state) => state.questionaire || {}
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,11 +46,36 @@ const AllQuestionaire = () => {
     { field: "id", headerName: "Questionaire Id", minWidth: 150, flex: 0.7 },
     { field: "religion", headerName: "Religion", minWidth: 180, flex: 1.4 },
     { field: "gender", headerName: "Gender", minWidth: 100, flex: 0.6 },
-    { field: "relationshipStatus", headerName: "Relationship Status", minWidth: 130, flex: 0.8 },
-    { field: "helpReason", headerName: "Help Reason", minWidth: 150, flex: 0.8 },
-    { field: "optionsAvailable", headerName: "Options Available", minWidth: 180, flex: 1.4 },
-    { field: "consultationFee", headerName: "Consultation Fee", minWidth: 130, flex: 0.8 },
-    { field: "therapyType", headerName: "Therapy Type", minWidth: 120, flex: 0.8 },
+    {
+      field: "relationshipStatus",
+      headerName: "Relationship Status",
+      minWidth: 130,
+      flex: 0.8,
+    },
+    {
+      field: "helpReason",
+      headerName: "Help Reason",
+      minWidth: 150,
+      flex: 0.8,
+    },
+    {
+      field: "optionsAvailable",
+      headerName: "Options Available",
+      minWidth: 180,
+      flex: 1.4,
+    },
+    {
+      field: "consultationFee",
+      headerName: "Consultation Fee",
+      minWidth: 130,
+      flex: 0.8,
+    },
+    {
+      field: "therapyType",
+      headerName: "Therapy Type",
+      minWidth: 120,
+      flex: 0.8,
+    },
     {
       field: "Preview",
       headerName: "",
