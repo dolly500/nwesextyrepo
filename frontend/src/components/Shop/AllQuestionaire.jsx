@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@material-ui/core";
 import { DataGrid } from "@material-ui/data-grid";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
@@ -8,13 +8,29 @@ import { getAllQuestionaire, deleteQuestionaire } from "../../redux/actions/ques
 import Loader from "../Layout/Loader";
 
 const AllQuestionaire = () => {
-  const { questionaires = [], isLoading } = useSelector((state) => state.questionaires || {});
-  console.log('our question', questionaires)
+  const [rows, setRows] = useState([]);
+  const { questionaires, isLoading } = useSelector((state) => state.questionaire || {});
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllQuestionaire());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (questionaires) {
+      const updatedRows = questionaires.map((item) => ({
+        id: item._id,
+        religion: item.religion,
+        gender: item.gender.join(", "),
+        relationshipStatus: item.relationshipStatus.join(", "),
+        helpReason: item.helpReason,
+        optionsAvailable: item.optionsAvailable.join(", "),
+        consultationFee: item.consultationFee,
+        therapyType: item.therapyType.join(", "),
+      }));
+      setRows(updatedRows);
+    }
+  }, [questionaires]);
 
   const handleDelete = async (id) => {
     await dispatch(deleteQuestionaire(id));
@@ -55,32 +71,13 @@ const AllQuestionaire = () => {
       sortable: false,
       renderCell: (params) => {
         return (
-          <Button onClick={() => handleDelete(params.id)}>
+          <Button onClick={() => handleDelete(params.row.id)}>
             <AiOutlineDelete size={20} />
           </Button>
         );
       },
     },
   ];
-
-  const row = [];
-
-  questionaires && 
-    questionaires?.forEach((item) => {
-    row.push({
-        id: item._id,
-        religion: item.religion,
-        gender: item.gender.join(", "),
-        relationshipStatus: item.relationshipStatus.join(", "),
-        helpReason: item.helpReason,
-        optionsAvailable: item.optionsAvailable.join(", "),
-        consultationFee: item.consultationFee,
-        therapyType: item.therapyType.join(", "),
-    })
-
-})
-
-console.log('questionaire', questionaires)
 
   return (
     <>
@@ -89,7 +86,7 @@ console.log('questionaire', questionaires)
       ) : (
         <div className="w-full mx-8 pt-1 mt-10">
           <DataGrid
-            rows={row}
+            rows={rows}
             columns={columns}
             pageSize={10}
             disableSelectionOnClick

@@ -18,16 +18,16 @@ export const questionaireReducer = createReducer(initialState, {
       state.error = action.payload;
       state.success = false;
     },
-
-   // get all questionaire odf the shop by id
+ 
+   // get all questionaire of the shop by id
 
   getAllQuestionaireShopRequest: (state) => {
-    state.isLoading = true;
+    state.isLoading = true; 
   },
   getAllQuestionaireShopSuccess: (state, action) => {
     state.isLoading = false;
     state.questionaire = action.payload;
-    console.log('payload reducersss', action.payload)
+    console.log('payload reducersss', state.questionaire)
   },
 
   getAllQuestionaireShopFailed: (state, action) => {
@@ -35,19 +35,6 @@ export const questionaireReducer = createReducer(initialState, {
     state.error = action.payload;
   },
 
-    // delete questionaire
-  deleteQuestionaireRequest: (state) => {
-    state.isLoading = true;
-  },
-  deleteQuestionaireSuccess: (state, action) => {
-    state.isLoading = false;
-    state.message = action.payload;
-  },
-  deleteQuestionaireFailed: (state, action) => {
-    state.isLoading = false;
-    state.error = action.payload;
-   
-  },
 
 
   // get all questionaire
@@ -57,7 +44,7 @@ export const questionaireReducer = createReducer(initialState, {
   getAllQuestionaireSuccess: (state, action) => {
     state.isLoading = false;
     state.questionaires = action.payload;
-    console.log('payload reducers', action.payload)
+    console.log('payload reducers', state.questionaires)
   },
   getAllQuestionaireFailed: (state, action) => {
     state.isLoading = false;
@@ -67,5 +54,21 @@ export const questionaireReducer = createReducer(initialState, {
   clearErrors: (state) => {
     state.error = null;
   },
+
+
+
+     // delete questionaire
+     deleteQuestionaireRequest: (state) => {
+      state.isLoading = true;
+    },
+    deleteQuestionaireSuccess: (state, action) => {
+      state.isLoading = false;
+      state.message = action.payload;
+    },
+    deleteQuestionaireFailed: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+     
+    },
 
 })
