@@ -6,7 +6,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
-const sendToken = require("../utils/jwtToken");
+const { sendToken } = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const {
   createShopSchema,
@@ -153,18 +153,8 @@ router.post(
         return next(new ErrorHandler("Incorrect email or password", 400));
       }
 
-      // Include user data in the response
-      res.status(200).json({
-        success: true,
-        message: "User logged in successfully",
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          avatar: user.avatar
-          // Include other fields as needed
-        }
-      });
+      // Send token and set cookie
+      sendToken(user, 200, res); // Assuming 200 is the status code for success
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
