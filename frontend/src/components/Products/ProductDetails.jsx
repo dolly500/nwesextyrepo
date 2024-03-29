@@ -207,11 +207,11 @@ const ProductDetails = ({ data }) => {
                 </div>
                 <div className="flex items-center pt-8">
                   <Link to={`/shop/preview/${data?.shop?._id}`}>
-                    <img
+                    {/* <img
                       src={`${data?.shop?.avatar?.url}`}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
-                    />
+                    /> */}
                   </Link>
                   <div className="pr-8">
                     <Link to={`/shop/preview/${data?.shop?._id}`}>
@@ -227,9 +227,11 @@ const ProductDetails = ({ data }) => {
                     className={`${styles.button} bg-[blue] mt-4 !rounded !h-11 p-1`}
                     onClick={handleMessageSubmit}
                   >
-                    <span className="text-white flex items-center">
-                      Send Message Now <AiOutlineMessage className="ml-1" />
-                    </span>
+                    <Link to='/contact'>
+                      <span className="text-white flex items-center">
+                        Contact Us <AiOutlineMessage className="ml-1" />
+                      </span>
+                    </Link>
                   </div>
                 </div>
               </div>
