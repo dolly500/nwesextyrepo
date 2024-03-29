@@ -9,6 +9,8 @@ import { format } from "timeago.js";
 import Header from "../components/Layout/Header";
 import { server } from "../server";
 import styles from "../styles/styles";
+import SimplePeer from "simple-peer";
+
 const ENDPOINT = "https://socket-ecommerce-tu68.onrender.com/";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
@@ -214,12 +216,14 @@ const UserInbox = () => {
           <Header />
           <div className="bg-[#fff] flex flex-col justify-center align-center m-auto w-1/2 p-20 h-full rounded-lg h-full mt-24">
           <h1 className="text-center text-[30px] py-3 font-Poppins">
-            Choose Seller To Message
+            Choose Therapists To Message
           </h1>
           {/* All messages list */}
           {conversations &&
-            conversations.map((item, index) => (
-              <MessageList
+            conversations.map((item, index) => {
+              console.log("Rendering MessageList:", item); 
+              return(
+                <MessageList
                 data={item}
                 key={index}
                 index={index}
@@ -232,14 +236,24 @@ const UserInbox = () => {
                 setActiveStatus={setActiveStatus}
                 loading={loading}
               />
-            ))}
+              )
+            })} 
 
           </div>
         </>
       )}
 
       {open && (
-        <SellerInbox
+        
+       <>
+       {console.log("Rendering SellerInbox:", {
+      newMessage,
+      messages,
+      sellerId: user._id,
+      userData,
+      activeStatus,
+    })}
+         <SellerInbox
           setOpen={setOpen}
           newMessage={newMessage}
           setNewMessage={setNewMessage}
@@ -251,6 +265,8 @@ const UserInbox = () => {
           scrollRef={scrollRef}
           handleImageUpload={handleImageUpload}
         />
+        <VoiceCall /> {/* Add the VoiceCall component here */}
+       </>
       )}
     </div>
   );
@@ -443,5 +459,55 @@ const SellerInbox = ({
     </div>
   );
 };
+
+// VoiceCall component
+const VoiceCall = () => {
+  const socketRef = useRef(); 
+  const peerRef = useRef();
+  const userVideoRef = useRef();
+  const partnerVideoRef = useRef();
+
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+      userVideoRef.current.srcObject = stream;
+      peerRef.current = new SimplePeer({ initiator: true, trickle: false, stream });
+      peerRef.current.on('signal', (data) => {
+        // Send signal data to your peer
+      });
+      peerRef.current.on('stream', (stream) => {
+        partnerVideoRef.current.srcObject = stream;
+      });
+    });
+
+    // Cleanup function
+    return () => {
+      peerRef.current.destroy();
+    };
+  }, []);
+
+  const callPeer = () => {
+    // Implement calling logic
+    // Retrieve signal data from the peerRef.current instance
+  const signalData = peerRef.current.signal();
+
+  // Emit signal data to the signaling server
+  socketRef.current.emit('call', signalData);
+
+  // Listen for response from the other peer
+  socketRef.current.on('response', (responseData) => {
+    // Signal back to the other peer with the response data
+    peerRef.current.signal(responseData);
+  });
+  };
+
+  return (
+    <div>
+      <video playsInline muted ref={userVideoRef} autoPlay />
+      <video playsInline ref={partnerVideoRef} autoPlay />
+      <button onClick={callPeer}>Call Therapist</button>
+    </div>
+  );
+};
+
 
 export default UserInbox;
