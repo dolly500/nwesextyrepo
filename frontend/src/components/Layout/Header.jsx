@@ -100,38 +100,64 @@ const Header = ({ activeHeading, data }) => {
           ],
         },
       });
-
+  
       // After getting the response from the server, redirect to Paystack payment page
       window.location.href = response.data.data.authorization_url;
+      
+      // Create a conversation and navigate to inbox after payment success
+      if (isAuthenticated) {
+        const groupTitle = data._id + user._id;
+        const userId = user._id;
+        const sellerId = data.shop._id;
+  
+        await axios.post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/inbox?${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+      }
+      else {
+        navigate(`/inbox`);
+      }
     } catch (error) {
       console.error('Error initiating payment:', error);
       // Handle error appropriately (e.g., show an error message to the user)
     }
   };
+  
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
-      navigate(`/inbox`)
-      console.log("data", data)
-        const groupTitle = data._id + user._id;
-        const userId = user._id;
-        const sellerId = data.shop._id;
-        await axios
-          .post(`${server}/conversation/create-new-conversation`, {
-            groupTitle,
-            userId,
-            sellerId,
-          })
-          .then((res) => {
-            navigate(`/inbox?${res.data.conversation._id}`);
-          })
-          .catch((error) => {
-            toast.error(error.response.data.message);
-          });
-    } else {
-      // toast.error("Please login to create a conversation");
       openModal();
+    } else{
+      alert("Please Log In!")
     }
+    // else {
+    //   // toast.error("Please login to create a conversation");
+    //   navigate(`/inbox`)
+    //   console.log("data", data)
+    //     const groupTitle = data._id + user._id;
+    //     const userId = user._id;
+    //     const sellerId = data.shop._id;
+    //     await axios
+    //       .post(`${server}/conversation/create-new-conversation`, {
+    //         groupTitle,
+    //         userId,
+    //         sellerId,
+    //       })
+    //       .then((res) => {
+    //         navigate(`/inbox?${res.data.conversation._id}`);
+    //       })
+    //       .catch((error) => {
+    //         toast.error(error.response.data.message);
+    //       });
+    // }
   };
 
   return (
