@@ -69,7 +69,7 @@ const Header = ({ activeHeading, data }) => {
     } else {
       setActive(false);
     }
-  });
+});
 
   useEffect(() => {
     axios.get(`${server}/category`, { withCredentials: true })
