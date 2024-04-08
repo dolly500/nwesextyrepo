@@ -87,7 +87,7 @@ const Header = ({ activeHeading, data }) => {
   const handlePayment = async () => {
     try {
       // Make a request to your server to initiate the payment
-      const response = await axios.post('/api/paystack/initialize-payment', {
+      const response = await axios.post('', {
         amount: 5000, // Set your desired amount
         email: '', // Set the customer's email
         metadata: {
