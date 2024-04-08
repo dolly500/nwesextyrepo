@@ -94,14 +94,18 @@ router.put(
         lastMessageId,
       });
 
+      // Retrieve the updated conversation data after the update operation
+      const updatedConversation = await Conversation.findById(req.params.id);
+
       res.status(201).json({
         success: true,
-        conversation,
+        conversation: updatedConversation, // Include the updated conversation data in the response
       });
     } catch (error) {
       return next(new ErrorHandler(error), 500);
     }
   })
 );
+
 
 module.exports = router;
