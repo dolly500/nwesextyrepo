@@ -21,8 +21,7 @@ const {
   sendResetTokenByEmail,
   generateResetToken
  } = require('../services/auth.service');
-
-
+const Shop = require("../model/shop");
 
 // create user
 router.post("/create-user", async (req, res, next) => {
@@ -538,5 +537,8 @@ router.delete(
     }
   })
 );
+
+
+
 
 module.exports = router;

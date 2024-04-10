@@ -309,6 +309,27 @@ router.put(
   })
 );
 
+// all sellers for users
+
+router.get(
+  "/get-all-sellers-info",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const sellers = await Shop.find().sort({
+        createdAt: -1,
+      });
+      res.status(201).json({
+        success: true,
+        sellers,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
 // all sellers --- for admin
 router.get(
   "/admin-all-sellers",
@@ -328,9 +349,6 @@ router.get(
     }
   })
 );
-
-
-
 
 
 
