@@ -20,7 +20,7 @@ const DashboardHero = () => {
      dispatch(getAllProductsShop(seller._id));
   }, [dispatch]);
 
-  const availableBalance = seller?.availableBalance.toFixed(2);
+  const availableBalance = seller?.availableBalance?.toFixed(2);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },

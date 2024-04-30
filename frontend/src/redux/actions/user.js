@@ -27,13 +27,8 @@ export const loadUser = () => async (dispatch) => {
 export const loadSeller = () => async (dispatch) => {
   try {
     dispatch({
-<<<<<<< HEAD
-      type: "LoadSellerRequest",
-    }); 
-=======
       type: 'LoadSellerRequest',
     });
->>>>>>> dea38580da2d992151d2b3ca20a74fc1b1379029
     const { data } = await axios.get(`${server}/shop/getSeller`, {
       withCredentials: true,
     });
