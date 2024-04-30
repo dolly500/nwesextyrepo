@@ -213,7 +213,7 @@ const UserInbox = () => {
           <Header />
           <div className="bg-[#fff] flex flex-col justify-center align-center m-auto w-1/2 p-20 h-full rounded-lg mt-24">
             <h1 className="text-center text-[30px] py-3 font-Poppins">Choose Therapists To Message</h1>
-            {/* All messages list */}
+            {/* All messages list here*/}
 
             <div className="border border-gray-400 p-2">
               <div>{sellers.name}</div>
