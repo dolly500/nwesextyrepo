@@ -169,24 +169,15 @@ router.post(
 
 
 
-
-
-
-
-
-
 // // load shop
 router.get(
   "/getSeller",
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const seller = await Shop.findById(req.seller._id);
-
-      if (!seller) {
-        return next(new ErrorHandler("User doesn't exists", 400));
-      }
-
+      const seller = await Shop.find().sort({
+        createdAt: -1,
+      });
       res.status(200).json({
         success: true,
         seller,
@@ -204,12 +195,9 @@ router.get(
    isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const seller = await Shop.findById(req.seller._id);
-
-      if (!seller) {
-        return next(new ErrorHandler("User doesn't exists", 400));
-      }
-
+      const seller = await Shop.find().sort({
+        createdAt: -1,
+      });
       res.status(200).json({
         success: true,
         seller,
