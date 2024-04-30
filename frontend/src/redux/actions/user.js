@@ -28,14 +28,19 @@ export const loadSeller = () => async (dispatch) => {
   try {
     dispatch({
       type: "LoadSellerRequest",
-    });
+    }); 
     const { data } = await axios.get(`${server}/shop/getSeller`, {
       withCredentials: true,
     });
+    
+     // Log after the API call is successful
+     console.log("Received seller data:", data);
+     
     dispatch({
       type: "LoadSellerSuccess",
       payload: data.seller,
     });
+   
   } catch (error) {
     dispatch({
       type: "LoadSellerFail",
