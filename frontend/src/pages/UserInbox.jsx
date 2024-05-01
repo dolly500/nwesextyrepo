@@ -207,67 +207,77 @@ const UserInbox = () => {
   }, [messages]);
 
   return (
-    <div className="w-full">
-      {!open && (
-        <>
-          <Header />
-          <div className="bg-[#fff] flex flex-col justify-center align-center m-auto w-1/2 p-20 h-full rounded-lg mt-24">
-            <h1 className="text-center text-[30px] py-3 font-Poppins">Choose Therapists To Message</h1>
-            {/* All messages list here*/}
+<div className="w-full">
+  {!open && (
+    <>
+      <Header />
+      <div className="bg-[#fff] flex flex-col justify-center items-center m-auto md:w-1/2 p-8 md:p-20 rounded-lg mt-24">
+        <h1 className="text-center text-[30px] py-3 font-Poppins">Choose Therapists To Message</h1>
+        {/* All messages list here*/}
 
-            <div className="border border-gray-400 p-2">
-              <div>{sellers.name}</div>
-              <div>{sellers.email}</div>
-            </div>
-
-            {conversations &&
-              conversations.map((item, index) => {
-                console.log('Rendering MessageList:', item);
-                return (
-                  <MessageList
-                    data={item}
-                    key={index}
-                    index={index}
-                    setOpen={setOpen}
-                    setCurrentChat={setCurrentChat}
-                    me={user?._id}
-                    setUserData={setUserData}
-                    userData={userData}
-                    online={onlineCheck(item)}
-                    setActiveStatus={setActiveStatus}
-                    loading={loading}
-                  />
-                );
-              })}
-          </div>
-        </>
-      )}
-
-      {open && (
-        <>
-          {console.log('Rendering SellerInbox:', {
-            newMessage,
-            messages,
-            sellerId: user._id,
-            userData,
-            activeStatus,
+        <div>
+          {sellers && Array.isArray(sellers) && sellers.length > 0 ? (
+            sellers.map(seller => (
+              <div key={seller._id} className="border border-gray-400 p-2 mb-4">
+                <div>{seller.name}</div>
+                <div>{seller.email}</div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center">No Therapist Available</div>
+          )}
+        </div>
+        {conversations &&
+          conversations.map((item, index) => {
+            console.log('Rendering MessageList:', item);
+            return (
+              <MessageList
+                data={item}
+                key={index}
+                index={index}
+                setOpen={setOpen}
+                setCurrentChat={setCurrentChat}
+                me={user?._id}
+                setUserData={setUserData}
+                userData={userData}
+                online={onlineCheck(item)}
+                setActiveStatus={setActiveStatus}
+                loading={loading}
+              />
+            );
           })}
-          <SellerInbox
-            setOpen={setOpen}
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            sendMessageHandler={sendMessageHandler}
-            messages={messages}
-            sellerId={user._id}
-            userData={userData}
-            activeStatus={activeStatus}
-            scrollRef={scrollRef}
-            handleImageUpload={handleImageUpload}
-          />
-          <VoiceCall /> {/* Add the VoiceCall component here */}
-        </>
-      )}
-    </div>
+      </div>
+    </>
+  )}
+
+  {open && (
+    <>
+      {console.log('Rendering SellerInbox:', {
+        newMessage,
+        messages,
+        sellerId: user._id,
+        userData,
+        activeStatus,
+      })}
+      <SellerInbox
+        setOpen={setOpen}
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        sendMessageHandler={sendMessageHandler}
+        messages={messages}
+        sellerId={user._id}
+        userData={userData}
+        activeStatus={activeStatus}
+        scrollRef={scrollRef}
+        handleImageUpload={handleImageUpload}
+      />
+      <VoiceCall /> {/* Add the VoiceCall component here */}
+    </>
+  )}
+</div>
+
+      
+
   );
 };
 
