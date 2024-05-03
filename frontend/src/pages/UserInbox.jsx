@@ -9,8 +9,7 @@ import { format } from 'timeago.js';
 import Header from '../components/Layout/Header';
 import { server } from '../server';
 import styles from '../styles/styles';
-import SimplePeer from 'simple-peer';
-import { Navigate } from 'react-router-dom';
+
 
 const ENDPOINT = 'https://socket-ecommerce-tu68.onrender.com/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
@@ -94,7 +93,7 @@ const UserInbox = () => {
     const getMessage = async () => {
       try {
         const response = await axios.get(`${server}/message/get-all-messages/${currentChat?._id}`);
-        setMessages(response.data.messages);
+        setMessages(response?.data?.messages);
       } catch (error) {
         console.log(error);
       }
@@ -107,11 +106,11 @@ const UserInbox = () => {
     e.preventDefault();
 
     const message = {
-      sender: user._id,
+      sender: user?._id,
       text: newMessage,
-      conversationId: currentChat._id,
+      conversationId: currentChat?._id,
     };
-    const receiverId = currentChat.members.find((member) => member !== user?._id);
+    const receiverId = currentChat?.members?.find((member) => member !== user?._id);
 
     socketId.emit('sendMessage', {
       senderId: user?._id,
@@ -124,7 +123,7 @@ const UserInbox = () => {
         await axios
           .post(`${server}/message/create-new-message`, message)
           .then((res) => {
-            setMessages([...messages, res.data.message]);
+            setMessages([...messages, res?.data?.message]);
             updateLastMessage();
           })
           .catch((error) => {
@@ -195,6 +194,16 @@ const UserInbox = () => {
     }
   };
 
+
+  const handleSellerClick = (seller) => {
+    console.log('inbox')
+    setOpen(true); // Open the SellerInbox
+    setCurrentChat(null); // Clear current chat
+    setUserData(seller); // Set the seller data
+
+  };
+  
+
   const updateLastMessageForImage = async () => {
     await axios.put(`${server}/conversation/update-last-message/${currentChat._id}`, {
       lastMessage: 'Photo',
@@ -218,7 +227,7 @@ const UserInbox = () => {
         <div>
           {sellers && Array.isArray(sellers) && sellers.length > 0 ? (
             sellers.map(seller => (
-              <div key={seller._id} className="border border-gray-400 p-2 mb-4">
+              <div key={seller._id} className="border border-gray-400 p-2 mb-4" onClick={() => handleSellerClick(seller)}>
                 <div>{seller.name}</div>
                 <div>{seller.email}</div>
               </div>
@@ -227,6 +236,8 @@ const UserInbox = () => {
             <div className="text-center">No Therapist Available</div>
           )}
         </div>
+
+        
         {conversations &&
           conversations.map((item, index) => {
             console.log('Rendering MessageList:', item);
@@ -271,7 +282,7 @@ const UserInbox = () => {
         scrollRef={scrollRef}
         handleImageUpload={handleImageUpload}
       />
-      <VoiceCall /> {/* Add the VoiceCall component here */}
+       {/* Add the VoiceCall component here */}
     </>
   )}
 </div>
@@ -375,53 +386,6 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
   );
 };
 
-// VoiceCall component
-const VoiceCall = () => {
-  const socketRef = useRef();
-  const peerRef = useRef();
-  const userVideoRef = useRef();
-  const partnerVideoRef = useRef();
 
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-      userVideoRef.current.srcObject = stream;
-      peerRef.current = new SimplePeer({ initiator: true, trickle: false, stream });
-      peerRef.current.on('signal', (data) => {
-        // Send signal data to your peer
-      });
-      peerRef.current.on('stream', (stream) => {
-        partnerVideoRef.current.srcObject = stream;
-      });
-    });
-
-    // Cleanup function
-    return () => {
-      peerRef.current.destroy();
-    };
-  }, []);
-
-  const callPeer = () => {
-    // Implement calling logic
-    // Retrieve signal data from the peerRef.current instance
-    const signalData = peerRef.current.signal();
-
-    // Emit signal data to the signaling server
-    socketRef.current.emit('call', signalData);
-
-    // Listen for response from the other peer
-    socketRef.current.on('response', (responseData) => {
-      // Signal back to the other peer with the response data
-      peerRef.current.signal(responseData);
-    });
-  };
-
-  return (
-    <div>
-      <video playsInline muted ref={userVideoRef} autoPlay />
-      <video playsInline ref={partnerVideoRef} autoPlay />
-      <button onClick={callPeer}>Call Therapist</button>
-    </div>
-  );
-};
 
 export default UserInbox;
