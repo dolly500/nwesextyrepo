@@ -189,14 +189,18 @@ router.get(
 );
 
  // load shop
+// load shop
 router.get(
   "/getSeller",
-   isAuthenticated,
+  isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const seller = await Shop.find().sort({
-        createdAt: -1,
-      });
+      const seller = await Shop.findById(req.seller._id);
+
+      if (!seller) {
+        return next(new ErrorHandler("User doesn't exists", 400));
+      }
+
       res.status(200).json({
         success: true,
         seller,
@@ -319,25 +323,6 @@ router.put(
   })
 );
 
-// all sellers for users
-
-router.get(
-  "/get-all-sellers-info",
-  isAuthenticated,
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const sellers = await Shop.find().sort({
-        createdAt: -1,
-      });
-      res.status(201).json({
-        success: true,
-        sellers,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
 
 
 // all sellers --- for admin
@@ -359,10 +344,6 @@ router.get(
     }
   })
 );
-
-
-
-
 
 
 

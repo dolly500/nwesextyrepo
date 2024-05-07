@@ -69,7 +69,7 @@ const productSchema = new mongoose.Schema({
   },
   shopId: {
     type: String,
-    required: true,
+   
   },
   shop: {
     type: Object,

@@ -3,14 +3,12 @@ const { isSeller, isAuthenticated, isAdmin } = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const router = express.Router();
 const Product = require("../model/product");
-const Category = require("../model/category");
 const Order = require("../model/order");
 const Shop = require("../model/shop");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
-const Event = require("../model/event");
-const path = require("path");
-const fs = require('fs').promises;
+
+
 
 // create product
 router.post(
@@ -22,36 +20,30 @@ router.post(
       if (!shop) {
         return next(new ErrorHandler("Shop Id is invalid!", 400));
       } else {
-          const { name, description, category, categoryId, tags, originalPrice, discountPrice, stock, shopId, shop, images, sold_out, ratings, reviews} = req.body;
+        let images = [];
 
-           // Process images
+        if (typeof req.body.images === "string") {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
+        }
+      
         const imagesLinks = [];
-        for (const image of images) {
-          const result = await cloudinary.v2.uploader.upload(image, {
+      
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.v2.uploader.upload(images[i], {
             folder: "products",
           });
+      
           imagesLinks.push({
             public_id: result.public_id,
             url: result.secure_url,
           });
         }
-
-        const productData = {
-          name,
-          description,
-          category,
-          categoryId,
-          tags,
-          sold_out,
-          ratings,
-          reviews,
-          originalPrice,
-          discountPrice,
-          stock,
-          images: imagesLinks, // Assign processed images
-          shopId,
-          shop,
-        };
+      
+        const productData = req.body;
+        productData.images = imagesLinks;
+        productData.shop = shop;
 
         const product = await Product.create(productData);
 
@@ -66,68 +58,59 @@ router.post(
   })
 );
 
-
-// get product by ID
+// get all products of a shop
 router.get(
-  "/get-all-products/:id",
+  "/get-all-products-shop/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const productId = req.params.id;
+      const products = await Product.find({ shopId: req.params.id });
 
-      const product = await Product.findById(productId);
-
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: 'Product not found',
-        });
-      }
-
-      res.status(200).json({
+      res.status(201).json({
         success: true,
-        product,
+        products,
       });
     } catch (error) {
-      return next(new ErrorHandler(error.message, 400));
+      return next(new ErrorHandler(error, 400));
     }
   })
 );
 
-// delete Product by Id
+// delete product of a shop
 router.delete(
-  "/delete-product/:id",
+  "/delete-shop-product/:id",
+  isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const product = await Product.findById(req.params.id);
 
       if (!product) {
-        return next(
-          new ErrorHandler("Product is not found with this id", 404)
+        return next(new ErrorHandler("Product is not found with this id", 404));
+      }    
+
+      for (let i = 0; 1 < product.images.length; i++) {
+        const result = await cloudinary.v2.uploader.destroy(
+          product.images[i].public_id
         );
       }
-
-      // await category.remove();
-      await Product.findByIdAndDelete(req.params.id);
-
-      // Log a message after deletion
-      console.log("Product deleted:", product);
+    
+      await product.remove();
 
       res.status(201).json({
         success: true,
         message: "Product Deleted successfully!",
       });
     } catch (error) {
-      console.log(new ErrorHandler(error, 400));
       return next(new ErrorHandler(error, 400));
     }
   })
 );
+
 // get all products
 router.get(
   "/get-all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const products = await Product.find();
+      const products = await Product.find().sort({ createdAt: -1 });
 
       res.status(201).json({
         success: true,
