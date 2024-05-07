@@ -188,7 +188,6 @@ router.get(
   })
 );
 
-
  // load shop
 router.get(
   "/getSeller",
@@ -345,6 +344,7 @@ router.get(
 router.get(
   "/admin-all-sellers",
   isAuthenticated,
+  isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const sellers = await Shop.find().sort({
