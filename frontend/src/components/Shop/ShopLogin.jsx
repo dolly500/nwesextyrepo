@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie"
 import { FaHome } from "react-icons/fa";
 import logo from '../../static/imgs/logo.png'
 
@@ -13,6 +14,7 @@ const ShopLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const expirationTime = new Date(Date.now() + 25 * 60 * 1000);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +29,8 @@ const ShopLogin = () => {
         { withCredentials: true }
       )
       .then((res) => {
+        Cookies.set('currentSeller', JSON.stringify(res.data.user), {sameSite: "Strict", expires: expirationTime})
+        localStorage.setItem("user", JSON.stringify(res.data.user))
         toast.success("Login Success!");
         navigate("/dashboard");
         window.location.reload(true); 

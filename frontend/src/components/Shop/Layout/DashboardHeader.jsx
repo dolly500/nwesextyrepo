@@ -10,6 +10,7 @@ import logo from "../../../static/imgs/logo.png";
 
 const DashboardHeader = () => {
   const { seller } = useSelector((state) => state.seller);
+  console.log('dashboard log', seller)
   return (
     <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
@@ -54,9 +55,9 @@ const DashboardHeader = () => {
               className="mx-5 cursor-pointer text-[#555] hover:text-[#8E376A]"
             />
           </Link>
-          <Link to={`/shop/${seller._id}`}>
+          <Link to={`/shop/${JSON.parse(localStorage.getItem("user"))._id}`}>
             <img
-              src={`${seller.avatar?.url}`}
+              src={`${JSON.parse(localStorage.getItem("user")).avatar}`}
               alt=""
               className="w-[50px] h-[50px] rounded-full object-cover"
             />

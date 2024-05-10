@@ -10,9 +10,12 @@ import axios from "axios";
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
+  console.log(seller)
   const { success, error } = useSelector((state) => state.products);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  
 
   const [images, setImages] = useState([]);
   const [name, setName] = useState("");
@@ -91,7 +94,7 @@ const CreateProduct = () => {
       discountPrice,
       stock,
       images,
-      shopId: seller._id,
+      shopId: JSON.parse(localStorage.getItem("user"))._id,
     }
     console.log("Request Payload:", data); 
     dispatch(

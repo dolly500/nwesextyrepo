@@ -194,25 +194,27 @@ const UserInbox = () => {
     }
   };
 
-
   const handleSellerClick = (seller) => {
-    console.log('inbox')
-    setOpen(true); // Open the SellerInbox
-    setCurrentChat(null); // Clear current chat
+    const chatRoomId = `seller_${seller._id}`; // Concatenate the seller's ID with a prefix
+    console.log('Opening chat room:', chatRoomId);
+    
+    // Open the SellerInbox with the unique chat room ID
+    setOpen(true);
+    setCurrentChat(chatRoomId); // Set the chat room ID
     setUserData(seller); // Set the seller data
-
   };
+  
   
 
   const updateLastMessageForImage = async () => {
     await axios.put(`${server}/conversation/update-last-message/${currentChat._id}`, {
       lastMessage: 'Photo',
-      lastMessageId: user._id,
+      lastMessageId: user?._id,
     });
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ beahaviour: 'smooth' });
+    scrollRef?.current?.scrollIntoView({ beahaviour: 'smooth' });
   }, [messages]);
 
   return (
@@ -335,11 +337,11 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
   return (
     <div className="w-[full] min-h-full flex flex-col justify-between p-5">
       {/* message header */}
-      <div className="w-full flex p-3 items-center justify-between bg-slate-200">
+      <div className="w-full flex p-3 items-center justify-between bg-pink-500">
         <div className="flex">
           <img src={`${userData?.avatar?.url}`} alt="" className="w-[60px] h-[60px] rounded-full" />
           <div className="pl-3">
-            <h1 className="text-[18px] font-[600]">{userData?.name}</h1>
+            <h1 className="text-[18px] font-[600]" style={{color: 'white'}}>{userData?.name}</h1>
             <h1>{activeStatus ? 'Active Now' : ''}</h1>
           </div>
         </div>

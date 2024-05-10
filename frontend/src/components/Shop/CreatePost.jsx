@@ -71,15 +71,19 @@ const handleCategoryChange = (e) => {
     images.forEach((image) => {
       newForm.append("images", image);
     });
+
+
     const data = {
       title,
       description,
       category,
       tags,
       images,
-      shopId: seller._id,
+      shopId: JSON.parse(localStorage.getItem("user"))._id,
+      shopToys: "",
     
     };
+    console.log('Request Payload', data)
     dispatch(createpost(data));
   };
 
