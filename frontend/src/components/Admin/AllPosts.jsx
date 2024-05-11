@@ -10,20 +10,20 @@ const AllPosts = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
    axios.get(`${server}/post/admin-all-posts`, {withCredentials: true}).then((res) =>{
-    setPosts(res.data.events);
+    setPosts(res.data.posts);
    })
   }, []);
 
   const columns = [
-    { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Posts Id", minWidth: 150, flex: 0.7 },
     {
-      field: "Post title",
+      field: "title",
       headerName: "Post title",
       minWidth: 180,
       flex: 1.4,
     },
     {
-      field: "Description",
+      field: "description",
       headerName: "Description",
       minWidth: 100,
       flex: 0.6,

@@ -111,6 +111,22 @@ const AdminSideBar = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
+        <Link to="/admin-posts" className="w-full flex items-center">
+        <MdOutlineLocalOffer
+            size={30}
+            color={`${active === 12 ? "#8E376A" : "#555"}`}
+          />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 5 ? "text-[crimson]" : "text-[#555]"
+            }`}
+          >
+            All Posts
+          </h5>
+        </Link>
+      </div>
+
+      <div className="w-full flex items-center p-4">
         <Link to="/admin-events" className="w-full flex items-center">
           <MdOutlineLocalOffer
             size={30}
