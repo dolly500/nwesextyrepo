@@ -60,7 +60,7 @@ export const deleteEvent = (id) => async (dispatch) => {
     const { data } = await axios.delete(`${server}/event/delete-event/${id}`, {
       withCredentials: true,
     });
-
+    console.log("event deleted successfully:", data.message);
     dispatch({
       type: "deleteeventSuccess",
       payload: data.message,

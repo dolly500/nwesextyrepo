@@ -14,15 +14,25 @@ const AllProducts = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllProductsShop(seller._id));
+    dispatch(getAllProductsShop(JSON.parse(localStorage.getItem("user"))._id));
   }, [dispatch]);
 
   console.log("After API call, products:", products);
 
+  // const handleDelete = async (id) => {
+  //   await dispatch(deleteProduct(id));
+  //   window.location.reload();
+  // };
+
   const handleDelete = async (id) => {
-    await dispatch(deleteProduct(id));
-    window.location.reload();
+    try {
+      const result = await dispatch(deleteProduct(id));
+      console.log("Delete Product Result:", result); // Log the result of the dispatch
+    } catch (error) {
+      console.error("Error Deleting Product:", error); // Log any errors that occur during deletion
+    }
   };
+  
 
   const columns = [
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },

@@ -19,12 +19,12 @@ const AllEvents = () => {
   
 
   useEffect(() => {
-    dispatch(getAllEvents(seller._id));
+    dispatch(getAllEvents(JSON.parse(localStorage.getItem("user"))._id));
   }, [dispatch]);
 
   const handleDelete = async (id) => {
     await dispatch(deleteEvent(id));
-    window.location.reload();
+    // window.location.reload();
   };
 
   const columns = [

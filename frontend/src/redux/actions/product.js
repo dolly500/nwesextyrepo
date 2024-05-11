@@ -56,14 +56,14 @@ export const deleteProduct = (id) => async (dispatch) => {
     dispatch({
       type: "deleteProductRequest",
     });
-
+    
     const { data } = await axios.delete(
       `${server}/product/delete-product/${id}`,
       {
         withCredentials: true,
       }
     );
-
+    console.log("Product deleted successfully:", data.message);
     dispatch({
       type: "deleteProductSuccess",
       payload: data.message,

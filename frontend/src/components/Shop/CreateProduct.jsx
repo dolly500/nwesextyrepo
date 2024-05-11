@@ -10,7 +10,6 @@ import axios from "axios";
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
-  console.log(seller)
   const { success, error } = useSelector((state) => state.products);
   const navigate = useNavigate();
   const dispatch = useDispatch();

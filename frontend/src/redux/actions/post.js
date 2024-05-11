@@ -56,7 +56,7 @@ export const deletePost = (id) => async (dispatch) => {
         withCredentials: true,
       }
     );
-
+    console.log("post deleted successfully:", data.message);
     dispatch({
       type: "deletepostSuccess",
       payload: data.message,
