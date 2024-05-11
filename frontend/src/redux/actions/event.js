@@ -29,7 +29,7 @@ export const getAllEventsShop = (id) => async (dispatch) => {
     });
 
 
-    const { data } = await axios.get(`${server}/event/get-events/${id}`,
+    const { data } = await axios.get(`${server}/event/get-all-events/${id}`,
     {
       withCredentials: true,
     }

@@ -57,7 +57,7 @@ const DashboardHeader = () => {
           </Link>
           <Link to={`/shop/${JSON.parse(localStorage.getItem("user"))._id}`}>
             <img
-              src={`${JSON.parse(localStorage.getItem("user")).avatar}`}
+              src={`${JSON.parse(localStorage.getItem("user")).avatar}}`}
               alt=""
               className="w-[50px] h-[50px] rounded-full object-cover"
             />
