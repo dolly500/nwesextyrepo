@@ -7,7 +7,7 @@ const AdminDashboardUsers = () => {
   return (
     <div>
     <AdminHeader />
-    <div className="w-full flex">
+    <div className="w-full flex bg-white">
       <div className="flex items-start justify-between w-full">
         <div className="w-[80px] 800px:w-[330px]">
           <AdminSideBar active={4} />

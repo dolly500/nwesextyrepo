@@ -5,6 +5,7 @@ import { FiPackage, FiShoppingBag } from 'react-icons/fi'
 import { MdOutlineLocalOffer } from 'react-icons/md'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import logo from '../../static/imgs/logo.png'
 
 const AdminHeader = () => {
     const {user} = useSelector((state) => state.user);
@@ -13,8 +14,9 @@ const AdminHeader = () => {
          <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       <div>
         <Link to="/">
-          <img
-            src="https://chbluxuries.com/img/favicon.jpg"
+        <img
+          className="h-full w-2/5"
+            src={logo}
             alt=""
           />
         </Link>

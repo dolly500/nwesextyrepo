@@ -6,8 +6,9 @@ import AdminDashboardProducts from "../pages/AdminDashboardProducts";
 import AdminDashboardSellers from "../pages/AdminDashboardSellers";
 import AdminDashboardUsers from "../pages/AdminDashboardUsers";
 import AdminDashboardWithdraw from "../pages/AdminDashboardWithdraw";
+import AdminCategoryPage from "../pages/AdminCategoryPage";
 
 export {
-  AdminDashboardEvents, AdminDashboardOrders, AdminDashboardPage, AdminDashboardPosts, AdminDashboardProducts, AdminDashboardSellers, AdminDashboardUsers, AdminDashboardWithdraw
+  AdminDashboardEvents, AdminCategoryPage, AdminDashboardOrders, AdminDashboardPage, AdminDashboardPosts, AdminDashboardProducts, AdminDashboardSellers, AdminDashboardUsers, AdminDashboardWithdraw
 };
 

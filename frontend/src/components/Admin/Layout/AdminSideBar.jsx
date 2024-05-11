@@ -6,6 +6,7 @@ import { CiMoneyBill, CiSettings } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { BsHandbag } from "react-icons/bs";
+import { AiOutlinePlusCircle } from "react-icons/ai"
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { AiOutlineSetting } from "react-icons/ai";
 
@@ -89,6 +90,22 @@ const AdminSideBar = ({ active }) => {
             }`}
           >
             All Products
+          </h5>
+        </Link>
+      </div>
+
+      <div className="w-full flex items-center p-4">
+        <Link to="/admin-category" className="w-full flex items-center">
+        <AiOutlinePlusCircle 
+            size={30}
+            color={`${active === 12 ? "#8E376A" : "#555"}`}
+          />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 5 ? "text-[crimson]" : "text-[#555]"
+            }`}
+          >
+            All Categories
           </h5>
         </Link>
       </div>

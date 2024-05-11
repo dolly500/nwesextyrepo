@@ -20,6 +20,7 @@ import {
   AdminDashboardProducts,
   AdminDashboardSellers,
   AdminDashboardUsers,
+  AdminCategoryPage,
   AdminDashboardWithdraw
 } from "./routes/AdminRoutes";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
@@ -196,11 +197,11 @@ const App = () => {
             </SellerProtectedRoute>
           }
         />
-        <Route path="/shop/:id"  element={
+        {/* <Route path="/shop/:id"  element={
             <SellerProtectedRoute>
               <ShopInfo />
             </SellerProtectedRoute>
-          } />
+          } /> */}
 
         <Route
           path="/settings"
@@ -378,6 +379,14 @@ const App = () => {
           element={
             <ProtectedAdminRoute>
               <AdminDashboardProducts />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
+          path="/admin-category"
+          element={
+            <ProtectedAdminRoute>
+              <AdminCategoryPage />
             </ProtectedAdminRoute>
           }
         />
