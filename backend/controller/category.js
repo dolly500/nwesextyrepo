@@ -27,7 +27,7 @@ router.post(
   "/create-category",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { name, description, images} = req.body;
+      const { name, description, images } = req.body;
       // Process images
       const imagesLinks = [];
       for (const image of images) {
@@ -133,7 +133,7 @@ router.get(
       if (!category) {
         return res.status(404).json({
           success: false,
-          message: 'Category not found',
+          message: "Category not found",
         });
       }
 
@@ -147,5 +147,26 @@ router.get(
   })
 );
 
+//Categories for admin
+
+router.get(
+  "/all-categories",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      // Assuming you have a Category model
+      const categories = await Category.find();
+
+      res.status(200).json({
+        success: true,
+        categories: categories,
+      });
+    } catch (error) {
+      console.error("Fetch categories error:", error);
+      return next(new ErrorHandler("Failed to fetch categories", 500));
+    }
+  })
+);
 
 module.exports = router;
