@@ -69,7 +69,7 @@ router.get("/get-all-events", async (req, res, next) => {
   }
 });
 
-// get all events of a shop
+// get all events of a shop by shopID
 router.get(
   "/get-all-events/:id",
   catchAsyncErrors(async (req, res, next) => {
@@ -86,34 +86,41 @@ router.get(
   })
 );
 
-// delete event of a shop
+// delete all events of a shop by shopID
 router.delete(
   "/delete-shop-event/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const event = await Event.findById(req.params.id);
+      const events = await Event.find({ shopId: req.params.id });
 
-      if (!product) {
-        return next(new ErrorHandler("Product is not found with this id", 404));
-      }    
-
-      for (let i = 0; 1 < product.images.length; i++) {
-        const result = await cloudinary.v2.uploader.destroy(
-          event.images[i].public_id
-        );
+      if (!events || events.length === 0) {
+        return next(new ErrorHandler("No events found with this shop id", 404));
       }
-    
-      await event.remove();
 
-      res.status(201).json({
+      // Delete images associated with each event
+      await Promise.all(events.map(async (event) => {
+        if (event.images && event.images.length > 0) {
+          await Promise.all(event.images.map(async (image) => {
+            await cloudinary.v2.uploader.destroy(image.public_id);
+          }));
+        }
+      }));
+
+      // Remove all events
+      await Event.deleteMany({ shopId: req.params.id });
+
+      res.status(200).json({
         success: true,
-        message: "Event Deleted successfully!",
+        message: "Events Deleted successfully!",
       });
     } catch (error) {
-      return next(new ErrorHandler(error, 400));
+      console.error("Delete event error:", error);
+      return next(new ErrorHandler("Failed to delete events", 400));
     }
   })
 );
+
+
 
 // all events --- for admin
 router.get(
