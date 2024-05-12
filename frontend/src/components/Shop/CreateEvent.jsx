@@ -29,13 +29,6 @@ const CreateEvent = () => {
 
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-    if (success) {
-      toast.success("Event created successfully!");
-      navigate("/dashboard");
-    }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
@@ -100,7 +93,7 @@ const CreateEvent = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newForm = new FormData();
@@ -121,7 +114,13 @@ const CreateEvent = () => {
       start_Date: startDate?.toISOString(),
       Finish_Date: endDate?.toISOString(),
     };
-    dispatch(createevent(data));
+
+    try {
+      await dispatch(createevent(data));
+      toast.success("Event added successfully");
+    } catch (error) {
+      toast.error("Failed to add Event");
+    }
   };
 
   return (

@@ -28,13 +28,6 @@ const CreateProduct = () => {
   const [categories, setCategories] = useState();
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-    if (success) {
-      toast.success("Product created successfully!");
-      navigate("/dashboard");
-    }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
   })
@@ -64,7 +57,7 @@ const CreateProduct = () => {
     setCategoryId(selectedCategoryId);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newForm = new FormData();
@@ -95,10 +88,13 @@ const CreateProduct = () => {
       images,
       shopId: JSON.parse(localStorage.getItem("user"))._id,
     }
-    console.log("Request Payload:", data); 
-    dispatch(
-      createProduct(data)
-    );
+
+     try {
+      await dispatch(createProduct(data));
+      toast.success("Product added successfully");
+    } catch (error) {
+      toast.error("Failed to add product");
+    }
   };
 
   return (

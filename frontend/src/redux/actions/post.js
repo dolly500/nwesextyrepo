@@ -18,7 +18,7 @@ export const createpost = (data) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: "postCreateFail",
-      payload: error.response.data.message,
+      payload: error?.response?.data?.message,
     });
   }
 };

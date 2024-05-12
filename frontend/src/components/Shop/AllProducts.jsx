@@ -19,19 +19,12 @@ const AllProducts = () => {
 
   console.log("After API call, products:", products);
 
-  // const handleDelete = async (id) => {
-  //   await dispatch(deleteProduct(id));
-  //   window.location.reload();
-  // };
-
   const handleDelete = async (id) => {
-    try {
-      const result = await dispatch(deleteProduct(id));
-      console.log("Delete Product Result:", result); // Log the result of the dispatch
-    } catch (error) {
-      console.error("Error Deleting Product:", error); // Log any errors that occur during deletion
-    }
+    await dispatch(deleteProduct(id));
+    window.location.reload();
   };
+
+ 
   
 
   const columns = [

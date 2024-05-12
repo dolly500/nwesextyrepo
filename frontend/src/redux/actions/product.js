@@ -58,7 +58,7 @@ export const deleteProduct = (id) => async (dispatch) => {
     });
     
     const { data } = await axios.delete(
-      `${server}/product/delete-product/${id}`,
+      `${server}/product/delete-shop-product/${id}`,
       {
         withCredentials: true,
       }

@@ -63,7 +63,7 @@ const handleCategoryChange = (e) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newForm = new FormData();
@@ -83,8 +83,12 @@ const handleCategoryChange = (e) => {
       shopToys: "",
     
     };
-    console.log('Request Payload', data)
-    dispatch(createpost(data));
+   try {
+      await dispatch(createpost(data));
+      toast.success("Post added successfully");
+    } catch (error) {
+      toast.error("Failed to add post");
+    }
   };
 
   return (

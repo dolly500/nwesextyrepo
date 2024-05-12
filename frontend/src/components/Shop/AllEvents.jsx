@@ -24,7 +24,7 @@ const AllEvents = () => {
 
   const handleDelete = async (id) => {
     await dispatch(deleteEvent(id));
-    // window.location.reload();
+    window.location.reload();
   };
 
   const columns = [

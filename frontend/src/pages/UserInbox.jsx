@@ -218,7 +218,7 @@ const UserInbox = () => {
   }, [messages]);
 
   return (
-<div className="w-full">
+<div className="w-full ">
   {!open && (
     <>
       <Header />
@@ -335,7 +335,7 @@ const MessageList = ({ data, index, setOpen, setCurrentChat, me, setUserData, us
 
 const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, messages, sellerId, userData, activeStatus, scrollRef, handleImageUpload }) => {
   return (
-    <div className="w-[full] min-h-full flex flex-col justify-between p-5">
+    <div className="w-[full]  min-h-full flex flex-col justify-between p-5">
       {/* message header */}
       <div className="w-full flex p-3 items-center justify-between bg-pink-500">
         <div className="flex">
@@ -361,7 +361,7 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
                     <p>{item.text}</p>
                   </div>
 
-                  <p className="text-[12px] text-[#000000d3] pt-1">{format(item.createdAt)}</p>
+                  <p className="text-[12px] text-[#000000d3] pt-1" style={{color: 'white'}}>{format(item.createdAt)}</p>
                 </div>
               )}
             </div>
@@ -373,7 +373,7 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
         <div className="w-[30px]">
           <input type="file" name="" id="image" className="hidden" onChange={handleImageUpload} />
           <label htmlFor="image">
-            <TfiGallery className="cursor-pointer" size={20} />
+            <TfiGallery className="cursor-pointer" size={20} style={{color: 'white'}}/>
           </label>
         </div>
         <div className="w-full">
