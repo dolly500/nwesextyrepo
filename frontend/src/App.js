@@ -145,7 +145,7 @@ const App = () => {
           path="/checkout"
           element={
             <ProtectedRoute>
-              <CheckoutPage />
+              <CheckoutPage/>
             </ProtectedRoute>
           }
         />

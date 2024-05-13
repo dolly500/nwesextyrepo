@@ -15,8 +15,8 @@ const AllCategories = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get(`${server}/product/admin-all-products`, {withCredentials: true}).then((res) => {
-        setData(res.data.products);
+    axios.get(`${server}/category/all-categories`, {withCredentials: true}).then((res) => {
+        setData(res.data.categories);
     })
   }, []);
 
@@ -62,9 +62,7 @@ const AllCategories = () => {
       row.push({
         id: item._id,
         name: item.name,
-        price: "₦ " + item.discountPrice,
-        Stock: item.stock,
-        sold: item?.sold_out,
+        description: item.description,
       });
     });
 

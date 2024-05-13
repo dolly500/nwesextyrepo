@@ -10,6 +10,7 @@ import Loader from "../Layout/Loader";
 const AllProducts = () => {
   const { products, isLoading } = useSelector((state) => state.products);
   const { seller } = useSelector((state) => state.seller);
+  
 
   const dispatch = useDispatch();
 
@@ -19,8 +20,8 @@ const AllProducts = () => {
 
   console.log("After API call, products:", products);
 
-  const handleDelete = async (id) => {
-    await dispatch(deleteProduct(id));
+  const handleDelete = async (shopId) => {
+    await dispatch(deleteProduct(shopId));
     window.location.reload();
   };
 
@@ -86,7 +87,7 @@ const AllProducts = () => {
       renderCell: (params) => {
         return (
           <>
-            <Button onClick={() => handleDelete(params.id)}>
+            <Button onClick={() => handleDelete(params._id)}>
               <AiOutlineDelete size={20} />
             </Button>
           </>

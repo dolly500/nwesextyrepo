@@ -11,7 +11,7 @@ import { server } from '../server';
 import styles from '../styles/styles';
 
 
-const ENDPOINT = 'https://socket-ecommerce-tu68.onrender.com/';
+const ENDPOINT = 'https://nwesextyrepo-chat.onrender.com/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const UserInbox = () => {
@@ -354,11 +354,11 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
           messages.map((item, index) => (
             <div className={`flex w-full my-2 ${item.sender === sellerId ? 'justify-end' : 'justify-start'}`} ref={scrollRef}>
               {item.sender !== sellerId && <img src={`${userData?.avatar?.url}`} className="w-[40px] h-[40px] rounded-full mr-3" alt="" />}
-              {item.images && <img src={`${item.images?.url}`} className="w-[300px] h-[300px] object-cover rounded-[10px] ml-2 mb-2" />}
+              {item.images && <img src={`${item?.images?.url}`} className="w-[300px] h-[300px] object-cover rounded-[10px] ml-2 mb-2" />}
               {item.text !== '' && (
                 <div>
                   <div className={`w-max p-2 rounded ${item.sender === sellerId ? 'bg-[#000]' : 'bg-[#38c776]'} text-[#fff] h-min`}>
-                    <p>{item.text}</p>
+                    <p>{item?.text}</p>
                   </div>
 
                   <p className="text-[12px] text-[#000000d3] pt-1" style={{color: 'white'}}>{format(item.createdAt)}</p>

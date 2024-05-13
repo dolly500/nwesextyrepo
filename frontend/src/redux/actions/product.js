@@ -51,14 +51,14 @@ export const getAllProductsShop = (id) => async (dispatch) => {
 };
 
 // delete product of a shop
-export const deleteProduct = (id) => async (dispatch) => {
+export const deleteProduct = (shopId) => async (dispatch) => {
   try {
     dispatch({
       type: "deleteProductRequest",
     });
     
     const { data } = await axios.delete(
-      `${server}/product/delete-shop-product/${id}`,
+      `${server}/product/delete-shop-product/${shopId}`,
       {
         withCredentials: true,
       }
@@ -76,14 +76,14 @@ export const deleteProduct = (id) => async (dispatch) => {
   }
 };
 
-// get all products
+// get all products by shopId
 export const getAllProducts = () => async (dispatch) => {
   try {
     dispatch({
       type: "getAllProductsRequest",
     });
 
-    const { data } = await axios.get(`${server}/product/get-all-products`);
+    const { data } = await axios.get(`${server}/product/get-all-products`, {withCredentials: true});
     dispatch({
       type: "getAllProductsSuccess",
       payload: data.products,

@@ -8,7 +8,7 @@ import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 import { server } from "../../server";
 import styles from "../../styles/styles";
-const ENDPOINT = "https://socket-ecommerce-tu68.onrender.com/";
+const ENDPOINT = "https://nwesextyrepo-chat.onrender.com/";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const DashboardMessages = () => {
@@ -45,7 +45,7 @@ const DashboardMessages = () => {
     const getConversation = async () => {
       try {
         const resonse = await axios.get(
-          `${server}/conversation/get-all-conversation-seller/${seller?._id}`,
+          `${server}/conversation/get-all-conversation-seller/${seller._id}`,
           {
             withCredentials: true,
           }
@@ -61,7 +61,7 @@ const DashboardMessages = () => {
 
   useEffect(() => {
     if (seller) {
-      const sellerId = seller?._id;
+      const sellerId = seller._id;
       socketId.emit("addUser", sellerId);
       socketId.on("getUsers", (data) => {
         setOnlineUsers(data);
@@ -70,7 +70,7 @@ const DashboardMessages = () => {
   }, [seller]);
 
   const onlineCheck = (chat) => {
-    const chatMembers = chat.members.find((member) => member !== seller?._id);
+    const chatMembers = chat.members.find((member) => member !== seller._id);
     const online = onlineUsers.find((user) => user.userId === chatMembers);
 
     return online ? true : false;
