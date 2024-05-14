@@ -89,23 +89,29 @@ router.put(
     try {
       const { lastMessage, lastMessageId } = req.body;
 
-      const conversation = await Conversation.findByIdAndUpdate(req.params.id, {
-        lastMessage,
-        lastMessageId,
-      });
+      // Update the conversation with the provided ID
+      const conversation = await Conversation.findByIdAndUpdate(
+        req.params.id,
+        { lastMessage, lastMessageId },
+        { new: true } // Return the updated document after the update operation
+      );
 
-      // Retrieve the updated conversation data after the update operation
-      const updatedConversation = await Conversation.findById(req.params.id);
+      // Check if conversation is found and updated
+      if (!conversation) {
+        return next(new ErrorHandler("Conversation not found", 404));
+      }
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
-        conversation: updatedConversation, // Include the updated conversation data in the response
+        conversation: conversation,
       });
     } catch (error) {
-      return next(new ErrorHandler(error), 500);
+      console.error("Update last message error:", error);
+      return next(new ErrorHandler("Failed to update last message", 500));
     }
   })
 );
+
 
 
 module.exports = router;
