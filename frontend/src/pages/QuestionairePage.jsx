@@ -25,30 +25,29 @@ const QuestionnaireForm = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-    if (success) {
-      toast.success("Questionnaire created successfully!");
-      navigate("/");
-    }
     axios.get(`${server}/category`, {withCredentials: true}).then((res) => {
       setCategories(res.data.categorys);
     })
   }, [error, success, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    dispatch(createQuestionaire({
-      religion,
-      gender,
-      relationshipStatus,
-      helpReason,
-      optionsAvailable,
-      consultationFee,
-      therapyType
-    }));
+    try{ 
+      await dispatch(createQuestionaire({
+        religion,
+        gender,
+        relationshipStatus,
+        helpReason,
+        optionsAvailable,
+        consultationFee,
+        therapyType
+      }));
+      toast.success("Questionaire added successfully");
+      navigate('/');
+    } catch (error) {
+      toast.error("Failed to add Questionaire");
+    }
   };
 
   return (
@@ -137,10 +136,11 @@ const QuestionnaireForm = () => {
             className="mt-1 p-2 w-full border rounded-md"
           >
             <option></option>
-            <option>Your sex life</option>
+            <option>Choose below:</option>
             <option>Differences with your spouse</option>
             <option>Divorce</option>
             <option>Adoption</option>
+            <option>Your Sex Life</option>
             <option>Infertility</option>
             <option>Infidelity</option>
             <option>Pregnancy</option>

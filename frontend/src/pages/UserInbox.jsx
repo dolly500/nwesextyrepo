@@ -18,7 +18,7 @@ const UserInbox = () => {
   const { user, loading } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [currentChat, setCurrentChat] = useState();
+  const [currentChat, setCurrentChat] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userData, setUserData] = useState(null);
@@ -333,7 +333,8 @@ const MessageList = ({ data, index, setOpen, setCurrentChat, me, setUserData, us
   );
 };
 
-const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, messages, sellerId, userData, activeStatus, scrollRef, handleImageUpload }) => {
+// Inside the MessageList component
+const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, messages, userData, activeStatus, scrollRef, handleImageUpload }) => {
   return (
     <div className="w-[full]  min-h-full flex flex-col justify-between p-5">
       {/* message header */}
@@ -352,12 +353,12 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
       <div className="px-3 h-[75vh] py-3 overflow-y-scroll">
         {messages &&
           messages.map((item, index) => (
-            <div className={`flex w-full my-2 ${item.sender === sellerId ? 'justify-end' : 'justify-start'}`} ref={scrollRef}>
-              {item.sender !== sellerId && <img src={`${userData?.avatar?.url}`} className="w-[40px] h-[40px] rounded-full mr-3" alt="" />}
+            <div className={`flex w-full my-2 ${item.sender === JSON.parse(localStorage.getItem("user"))._id ? 'justify-end' : 'justify-start'}`} ref={scrollRef}>
+              {item.sender !== JSON.parse(localStorage.getItem("user"))._id && <img src={`${userData?.avatar?.url}`} className="w-[40px] h-[40px] rounded-full mr-3" alt="" />}
               {item.images && <img src={`${item?.images?.url}`} className="w-[300px] h-[300px] object-cover rounded-[10px] ml-2 mb-2" />}
               {item.text !== '' && (
                 <div>
-                  <div className={`w-max p-2 rounded ${item.sender === sellerId ? 'bg-[#000]' : 'bg-[#38c776]'} text-[#fff] h-min`}>
+                  <div className={`w-max p-2 rounded ${item.sender === JSON.parse(localStorage.getItem("user"))._id ? 'bg-[#000]' : 'bg-pink-500'} text-[#fff] h-min`}>
                     <p>{item?.text}</p>
                   </div>
 
@@ -387,6 +388,7 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
     </div>
   );
 };
+
 
 
 

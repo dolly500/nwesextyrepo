@@ -45,7 +45,7 @@ const DashboardMessages = () => {
     const getConversation = async () => {
       try {
         const resonse = await axios.get(
-          `${server}/conversation/get-all-conversation-seller/${seller._id}`,
+          `${server}/conversation/get-all-conversation-seller/${JSON.parse(localStorage.getItem("user"))._id}`,
           {
             withCredentials: true,
           }
@@ -60,14 +60,15 @@ const DashboardMessages = () => {
   }, [seller, messages]);
 
   useEffect(() => {
-    if (seller) {
-      const sellerId = seller._id;
+    if (JSON.parse(localStorage.getItem("user"))) {
+      const sellerId = JSON.parse(localStorage.getItem("user"))._id;
       socketId.emit("addUser", sellerId);
       socketId.on("getUsers", (data) => {
         setOnlineUsers(data);
       });
     }
-  }, [seller]);
+  }, []);
+  
 
   const onlineCheck = (chat) => {
     const chatMembers = chat.members.find((member) => member !== seller._id);
@@ -94,23 +95,23 @@ const DashboardMessages = () => {
   // create new message
   const sendMessageHandler = async (e) => {
     e.preventDefault();
-
+  
     const message = {
-      sender: seller._id,
+      sender: JSON.parse(localStorage.getItem("user"))._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
-
-    const receiverId = currentChat.members.find(
-      (member) => member.id !== seller._id
+  
+    const receiverId = currentChat?.members.find(
+      (member) => member.id !== JSON.parse(localStorage.getItem("user"))._id
     );
-
+  
     socketId.emit("sendMessage", {
-      senderId: seller._id,
+      senderId: JSON.parse(localStorage.getItem("user"))._id,
       receiverId,
       text: newMessage,
     });
-
+  
     try {
       if (newMessage !== "") {
         await axios
@@ -127,17 +128,17 @@ const DashboardMessages = () => {
       console.log(error);
     }
   };
-
+  
   const updateLastMessage = async () => {
     socketId.emit("updateLastMessage", {
       lastMessage: newMessage,
-      lastMessageId: seller._id,
+      lastMessageId: JSON.parse(localStorage.getItem("user"))._id,
     });
-
+  
     await axios
       .put(`${server}/conversation/update-last-message/${currentChat._id}`, {
         lastMessage: newMessage,
-        lastMessageId: seller._id,
+        lastMessageId: JSON.parse(localStorage.getItem("user"))._id,
       })
       .then((res) => {
         console.log(res.data.conversation);
@@ -147,7 +148,7 @@ const DashboardMessages = () => {
         console.log(error);
       });
   };
-
+  
   const handleImageUpload = async (e) => {
     const reader = new FileReader();
 
@@ -195,10 +196,11 @@ const DashboardMessages = () => {
       `${server}/conversation/update-last-message/${currentChat._id}`,
       {
         lastMessage: "Photo",
-        lastMessageId: seller._id,
+        lastMessageId: JSON.parse(localStorage.getItem("user"))._id,
       }
     );
   };
+  
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ beahaviour: "smooth" });
@@ -263,7 +265,6 @@ const MessageList = ({
   isLoading
 }) => {
   console.log(data);
-  // const [user, setUser] = useState([]);
   const navigate = useNavigate();
   const handleClick = (id) => {
     navigate(`/dashboard-messages?${id}`);
@@ -273,7 +274,7 @@ const MessageList = ({
   console.log(userData, "first one");
 
   useEffect(() => {
-    const userId = data.members.find((user) => user != me);
+    const userId = data.members.find((user) => user !== JSON.parse(localStorage.getItem("user"))._id);
     console.log(userId, "user id")
     const getUser = async () => {
       try {
@@ -288,6 +289,7 @@ const MessageList = ({
     };
     getUser();
   }, [me, data]);
+
   
   return (
     <div
