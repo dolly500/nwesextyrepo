@@ -75,38 +75,39 @@ router.get(
   })
 );
 
+
+
 router.delete(
   "/delete-shop-product/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const products = await Product.find({ shopId: req.params.id });
+      const product = await Product.findById(req.params.id);
 
-      if (!products || products.length === 0) {
-        return next(new ErrorHandler("No products found with this shop id", 404));
+      if (!product) {
+        return next(new ErrorHandler("No product found with this id", 404));
       }
 
-      // Delete images associated with each product
-      await Promise.all(products.map(async (product) => {
-        if (product.images && product.images.length > 0) {
-          await Promise.all(product.images.map(async (image) => {
-            await cloudinary.v2.uploader.destroy(image.public_id);
-          }));
-        }
-      }));
+      // Delete images associated with the product
+      if (product.images && product.images.length > 0) {
+        await Promise.all(product.images.map(async (image) => {
+          await cloudinary.v2.uploader.destroy(image.public_id);
+        }));
+      }
 
-      // Remove all products
-      await Product.deleteMany({ shopId: req.params.id });
+      // Remove the product
+      await Product.findByIdAndDelete(req.params.id);
 
       res.status(200).json({
         success: true,
-        message: "Products Deleted successfully!",
+        message: "Product deleted successfully!",
       });
     } catch (error) {
       console.error("Delete product error:", error);
-      return next(new ErrorHandler("Failed to delete products", 400));
+      return next(new ErrorHandler("Failed to delete product", 400));
     }
   })
 );
+
 
 
 
