@@ -59,7 +59,13 @@ router.post(
 // get all events
 router.get("/get-all-events", async (req, res, next) => {
   try {
-    const events = await Event.find();
+    const { shopId } = req.query;
+    let events;
+    if (shopId) {
+      events = await Event.find({ shopId });
+    } else {
+      events = await Event.find();
+    }
     res.status(201).json({
       success: true,
       events,
@@ -68,6 +74,7 @@ router.get("/get-all-events", async (req, res, next) => {
     return next(new ErrorHandler(error, 400));
   }
 });
+
 
 // get all events of a shop by shopID
 router.get(
@@ -86,39 +93,41 @@ router.get(
   })
 );
 
+
 // delete all events of a shop by shopID
 router.delete(
   "/delete-shop-event/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const events = await Event.find({ shopId: req.params.id });
+      const event = await Event.findById(req.params.id);
 
-      if (!events || events.length === 0) {
-        return next(new ErrorHandler("No events found with this shop id", 404));
+      if (!event) {
+        return next(new ErrorHandler("No event found with this id", 404));
       }
 
-      // Delete images associated with each event
-      await Promise.all(events.map(async (event) => {
-        if (event.images && event.images.length > 0) {
-          await Promise.all(event.images.map(async (image) => {
-            await cloudinary.v2.uploader.destroy(image.public_id);
-          }));
-        }
-      }));
+      // Delete images associated with the event
+      if (event.images && event.images.length > 0) {
+        await Promise.all(event.images.map(async (image) => {
+          await cloudinary.v2.uploader.destroy(image.public_id);
+        }));
+      }
 
-      // Remove all events
-      await Event.deleteMany({ shopId: req.params.id });
+      // Remove the event
+      await Event.findByIdAndDelete(req.params.id);
 
       res.status(200).json({
         success: true,
-        message: "Events Deleted successfully!",
+        message: "Event deleted successfully!",
       });
     } catch (error) {
       console.error("Delete event error:", error);
-      return next(new ErrorHandler("Failed to delete events", 400));
+      return next(new ErrorHandler("Failed to delete event", 400));
     }
   })
 );
+
+
+
 
 
 
