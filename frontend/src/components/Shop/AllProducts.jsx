@@ -87,7 +87,7 @@ const AllProducts = () => {
         console.log('delete', params)
         return (
           <>
-            <Button onClick={() => handleDelete(params._id)}>
+            <Button onClick={() => handleDelete(params.id)}>
               <AiOutlineDelete size={20} />
             </Button>
           </>
