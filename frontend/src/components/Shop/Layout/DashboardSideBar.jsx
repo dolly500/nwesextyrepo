@@ -127,22 +127,6 @@ const DashboardSideBar = ({ active }) => {
       </div>
 
       <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-questionaire" className="w-full flex items-center">
-          <FaQuestionCircle
-            size={30}
-            color={`${active === 5 ? "#8E376A" : "#555"}`}
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 5 ? "text-[#8E376A]" : "text-[#555]"
-            }`}
-          >
-            All Questionaire
-          </h5>
-        </Link>
-      </div>
-
-      <div className="w-full flex items-center p-4">
         <Link to="/dashboard-create-post" className="w-full flex items-center">
           <VscNewFile
             size={30}
@@ -154,6 +138,22 @@ const DashboardSideBar = ({ active }) => {
             }`}
           >
             Create Post
+          </h5>
+        </Link>
+      </div>
+
+      <div className="w-full flex items-center p-4">
+        <Link to="/dashboard-questionaire" className="w-full flex items-center">
+          <FaQuestionCircle
+            size={30}
+            color={`${active === 5 ? "#8E376A" : "#555"}`}
+          />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 5 ? "text-[#8E376A]" : "text-[#555]"
+            }`}
+          >
+            All Questionaire
           </h5>
         </Link>
       </div>
