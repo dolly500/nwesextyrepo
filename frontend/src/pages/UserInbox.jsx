@@ -250,7 +250,7 @@ const createNewConversation = async (userId, sellerId) => {
         <h1 className="text-center text-[30px] py-3 font-Poppins">Choose Therapists To Message</h1>
         {/* All messages list here*/}
 
-        <div>
+        {/* <div>
           {sellers && Array.isArray(sellers) && sellers.length > 0 ? (
             sellers.map(seller => (
               <div key={seller._id} className="border border-gray-400 p-2 mb-4" onClick={() => handleSellerClick(seller)}>
@@ -261,7 +261,7 @@ const createNewConversation = async (userId, sellerId) => {
           ) : (
             <div className="text-center">No Therapist Available</div>
           )}
-        </div>
+        </div> */}
 
         
         {conversations &&
