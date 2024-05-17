@@ -190,7 +190,7 @@ const DashboardSideBar = ({ active }) => {
               active === 8 ? "text-[#8E376A]" : "text-[#555]"
             }`}
           >
-            Shop Inbox
+            LiveChat / Inbox
           </h5>
         </Link>
       </div>
