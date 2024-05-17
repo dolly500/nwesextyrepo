@@ -13,7 +13,6 @@ const AllProducts = () => {
   
 
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(getAllProductsShop(JSON.parse(localStorage.getItem("user"))._id));
   }, [dispatch]);
@@ -85,6 +84,7 @@ const AllProducts = () => {
       type: "number",
       sortable: false,
       renderCell: (params) => {
+        console.log('delete', params)
         return (
           <>
             <Button onClick={() => handleDelete(params._id)}>

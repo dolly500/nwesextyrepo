@@ -18,7 +18,7 @@ const UserInbox = () => {
   const { user, loading } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [currentChat, setCurrentChat] = useState({});
+  const [currentChat, setCurrentChat] = useState();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userData, setUserData] = useState(null);
@@ -54,6 +54,22 @@ const UserInbox = () => {
   useEffect(() => {
     arrivalMessage && currentChat?.members.includes(arrivalMessage.sender) && setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage, currentChat]);
+
+const createNewConversation = async (userId, sellerId) => {
+  try {
+    const requestData = {
+      groupTitle: "Chat with a Therapist", 
+      userId,
+      sellerId,
+    };
+    const response = await axios.post(`${server}/conversation/create-new-conversation`, requestData);
+
+    console.log('New conversation created:', response.data);
+  } catch (error) {
+    console.error('Error creating conversation:', error);
+  }
+};
+
 
   useEffect(() => {
     const getConversation = async () => {
@@ -92,7 +108,7 @@ const UserInbox = () => {
   useEffect(() => {
     const getMessage = async () => {
       try {
-        const response = await axios.get(`${server}/message/get-all-messages/${currentChat?._id}`);
+        const response = await axios.get(`${server}/message/get-all-messages/${user?._id}`);
         setMessages(response?.data?.messages);
       } catch (error) {
         console.log(error);
@@ -194,7 +210,7 @@ const UserInbox = () => {
     }
   };
 
-  const handleSellerClick = (seller) => {
+  const handleSellerClick = async (seller) => {
     const chatRoomId = `seller_${seller._id}`; // Concatenate the seller's ID with a prefix
     console.log('Opening chat room:', chatRoomId);
     
@@ -202,6 +218,14 @@ const UserInbox = () => {
     setOpen(true);
     setCurrentChat(chatRoomId); // Set the chat room ID
     setUserData(seller); // Set the seller data
+
+    // Create a new conversation between the user and the selected seller
+  try {
+    await createNewConversation(user._id, seller._id);
+    console.log('New conversation created successfully');
+  } catch (error) {
+    console.error('Error creating conversation:', error);
+  }
   };
   
   

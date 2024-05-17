@@ -87,7 +87,7 @@ const AllEvents = () => {
       renderCell: (params) => {
         return (
           <>
-            <Button onClick={() => handleDelete(params.id)}>
+            <Button onClick={() => handleDelete(params.row.id)}>
               <AiOutlineDelete size={20} />
             </Button>
           </>

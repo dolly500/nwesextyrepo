@@ -45,7 +45,7 @@ const DashboardMessages = () => {
     const getConversation = async () => {
       try {
         const resonse = await axios.get(
-          `${server}/conversation/get-all-conversation-seller/${JSON.parse(localStorage.getItem("user"))._id}`,
+          `${server}/conversation/get-all-conversation-seller/${seller._id}`,
           {
             withCredentials: true,
           }
