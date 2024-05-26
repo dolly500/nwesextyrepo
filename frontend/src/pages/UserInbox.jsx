@@ -209,23 +209,24 @@ const createNewConversation = async (userId, sellerId) => {
       console.log(error);
     }
   };
-
+  const navigate = useNavigate();
   const handleSellerClick = async (seller) => {
+    
     const chatRoomId = `seller_${seller._id}`; // Concatenate the seller's ID with a prefix
     console.log('Opening chat room:', chatRoomId);
     
     // Open the SellerInbox with the unique chat room ID
     setOpen(true);
-    setCurrentChat(chatRoomId); // Set the chat room ID
+    setCurrentChat(chatRoomId);
     setUserData(seller); // Set the seller data
 
     // Create a new conversation between the user and the selected seller
-  try {
-    await createNewConversation(user._id, seller._id);
-    console.log('New conversation created successfully');
-  } catch (error) {
-    console.error('Error creating conversation:', error);
-  }
+  // try {
+  //   await createNewConversation(user._id, seller._id);
+  //   console.log('New conversation created successfully');
+  // } catch (error) {
+  //   console.error('Error creating conversation:', error);
+  // }
   };
   
   
@@ -241,6 +242,7 @@ const createNewConversation = async (userId, sellerId) => {
     scrollRef?.current?.scrollIntoView({ beahaviour: 'smooth' });
   }, [messages]);
 
+  console.log('conversations', conversations)
   return (
 <div className="w-full ">
   {!open && (
@@ -250,7 +252,7 @@ const createNewConversation = async (userId, sellerId) => {
         <h1 className="text-center text-[30px] py-3 font-Poppins">Choose Therapists To Message</h1>
         {/* All messages list here*/}
 
-        {/* <div>
+        <div>
           {sellers && Array.isArray(sellers) && sellers.length > 0 ? (
             sellers.map(seller => (
               <div key={seller._id} className="border border-gray-400 p-2 mb-4" onClick={() => handleSellerClick(seller)}>
@@ -261,28 +263,30 @@ const createNewConversation = async (userId, sellerId) => {
           ) : (
             <div className="text-center">No Therapist Available</div>
           )}
-        </div> */}
+        </div>
+
+        <h1>text</h1>
 
         
-        {conversations &&
-          conversations.map((item, index) => {
-            console.log('Rendering MessageList:', item);
-            return (
-              <MessageList
-                data={item}
-                key={index}
-                index={index}
-                setOpen={setOpen}
-                setCurrentChat={setCurrentChat}
-                me={user?._id}
-                setUserData={setUserData}
-                userData={userData}
-                online={onlineCheck(item)}
-                setActiveStatus={setActiveStatus}
-                loading={loading}
-              />
-            );
-          })}
+{conversations.map((item, index) => {
+  
+  return (
+    <MessageList
+      data={item}
+      key={index}
+      index={index}
+      setOpen={setOpen}
+      setCurrentChat={setCurrentChat}
+      me={user?._id}
+      setUserData={setUserData}
+      userData={userData}
+      online={onlineCheck(item)}
+      setActiveStatus={setActiveStatus}
+      loading={loading}
+    />
+  );
+})}
+
       </div>
     </>
   )}
@@ -328,27 +332,36 @@ const MessageList = ({ data, index, setOpen, setCurrentChat, me, setUserData, us
   };
 
   useEffect(() => {
+    console.log('Fetching user data for conversation:', data);
     setActiveStatus(online);
-    const userId = data.members.find((user) => user !== me);
+    const userId = data?.members.find((user) => user !== me);
+    console.log('User ID to fetch:', userId);
     const getUser = async () => {
       try {
         const res = await axios.get(`${server}/shop/get-shop-info/${userId}`);
+        console.log('User data fetched successfully:', res.data);
         setUser(res.data.shop);
       } catch (error) {
         console.log(error);
       }
     };
     getUser();
-  }, [me, data]);
+  }, [me, data,online, setActiveStatus]);
 
   return (
-    <div className={`w-full flex p-3 px-3 ${active === index ? 'bg-[#00000010]' : 'bg-transparent'}  cursor-pointer`} onClick={(e) => setActive(index) || handleClick(data._id) || setCurrentChat(data) || setUserData(user) || setActiveStatus(online)}>
+    <div className={`w-full flex p-3 px-3 ${active === index ? 'bg-[#00000010]' : 'bg-transparent'}  cursor-pointer`} onClick={(e) => {
+      setActive(index);
+      handleClick(data._id);
+      setCurrentChat(data);
+      setUserData(user);
+      setActiveStatus(online);
+    }}>
       <div className="relative">
         <img src={`${user?.avatar?.url}`} alt="" className="w-[50px] h-[50px] rounded-full" />
         {online ? <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[2px] right-[2px]" /> : <div className="w-[12px] h-[12px] bg-[#c7b9b9] rounded-full absolute top-[2px] right-[2px]" />}
       </div>
       <div className="pl-3">
-        <h1 className="text-[18px]">{user?.name}</h1>
+        <h1 className="text-[18px]">{user.name}</h1>
         <p className="text-[16px] text-[#000c]">
           {!loading && data?.lastMessageId !== userData?._id ? 'You:' : userData?.name.split(' ')[0] + ': '} {data?.lastMessage}
         </p>
