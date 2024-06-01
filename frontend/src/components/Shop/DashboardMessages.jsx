@@ -60,18 +60,17 @@ const DashboardMessages = () => {
   }, [seller, messages]);
 
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem("user"))) {
-      const sellerId = JSON.parse(localStorage.getItem("user"))._id;
+    if (seller) {
+      const sellerId = seller?._id;
       socketId.emit("addUser", sellerId);
       socketId.on("getUsers", (data) => {
         setOnlineUsers(data);
       });
     }
-  }, []);
-  
+  }, [seller]);
 
   const onlineCheck = (chat) => {
-    const chatMembers = chat.members.find((member) => member !== seller._id);
+    const chatMembers = chat.members.find((member) => member !== seller?._id);
     const online = onlineUsers.find((user) => user.userId === chatMembers);
 
     return online ? true : false;
@@ -95,23 +94,23 @@ const DashboardMessages = () => {
   // create new message
   const sendMessageHandler = async (e) => {
     e.preventDefault();
-  
+
     const message = {
-      sender: JSON.parse(localStorage.getItem("user"))._id,
+      sender: seller._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
-  
-    const receiverId = currentChat?.members.find(
-      (member) => member.id !== JSON.parse(localStorage.getItem("user"))._id
+
+    const receiverId = currentChat.members.find(
+      (member) => member.id !== seller._id
     );
-  
+
     socketId.emit("sendMessage", {
-      senderId: JSON.parse(localStorage.getItem("user"))._id,
+      senderId: seller._id,
       receiverId,
       text: newMessage,
     });
-  
+
     try {
       if (newMessage !== "") {
         await axios
@@ -128,17 +127,17 @@ const DashboardMessages = () => {
       console.log(error);
     }
   };
-  
+
   const updateLastMessage = async () => {
     socketId.emit("updateLastMessage", {
       lastMessage: newMessage,
-      lastMessageId: JSON.parse(localStorage.getItem("user"))._id,
+      lastMessageId: seller._id,
     });
-  
+
     await axios
       .put(`${server}/conversation/update-last-message/${currentChat._id}`, {
         lastMessage: newMessage,
-        lastMessageId: JSON.parse(localStorage.getItem("user"))._id,
+        lastMessageId: seller._id,
       })
       .then((res) => {
         console.log(res.data.conversation);
@@ -148,7 +147,7 @@ const DashboardMessages = () => {
         console.log(error);
       });
   };
-  
+
   const handleImageUpload = async (e) => {
     const reader = new FileReader();
 
@@ -196,16 +195,15 @@ const DashboardMessages = () => {
       `${server}/conversation/update-last-message/${currentChat._id}`,
       {
         lastMessage: "Photo",
-        lastMessageId: JSON.parse(localStorage.getItem("user"))._id,
+        lastMessageId: seller._id,
       }
     );
   };
-  
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ beahaviour: "smooth" });
   }, [messages]);
-
+ console.log("seller's conversation", conversations)
   return (
     <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll rounded">
       {!open && (
@@ -265,6 +263,7 @@ const MessageList = ({
   isLoading
 }) => {
   console.log(data);
+  // const [user, setUser] = useState([]);
   const navigate = useNavigate();
   const handleClick = (id) => {
     navigate(`/dashboard-messages?${id}`);
@@ -274,7 +273,7 @@ const MessageList = ({
   console.log(userData, "first one");
 
   useEffect(() => {
-    const userId = data.members.find((user) => user !== JSON.parse(localStorage.getItem("user"))._id);
+    const userId = data.members.find((user) => user != me);
     console.log(userId, "user id")
     const getUser = async () => {
       try {
@@ -289,7 +288,6 @@ const MessageList = ({
     };
     getUser();
   }, [me, data]);
-
   
   return (
     <div
