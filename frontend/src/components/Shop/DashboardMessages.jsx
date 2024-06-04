@@ -183,7 +183,7 @@ const DashboardMessages = () => {
       await axios
         .post(`${server}/message/create-new-message`, {
           images: e,
-          sender: seller._id,
+          sender: JSON.parse(localStorage.getItem("user"))._id,
           text: newMessage,
           conversationId: currentChat._id,
         })
@@ -211,15 +211,29 @@ const DashboardMessages = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleUserDataFetch = async (userId) => {
+ 
+  const fetchUserData = async (userId) => {
     try {
       const res = await axios.get(`${server}/user/user-info/${userId}`);
-      return res.data.user;
+      setUserData((prevData) => ({
+        ...prevData,
+        [userId]: res.data.user,
+      }));
     } catch (error) {
-      console.log(error);
-      return null;
+      console.error(error);
     }
   };
+
+  useEffect(() => {
+    conversations.forEach((conversation) => {
+      const userId = conversation.members.find(
+        (user) => user !== seller._id
+      );
+      if (!userData[userId]) {
+        fetchUserData(userId);
+      }
+    });
+  }, [conversations, seller]);  
 
   return (
     <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll rounded">
@@ -229,30 +243,20 @@ const DashboardMessages = () => {
             All Messages
           </h1>
           {/* All messages list */}
-          {conversations &&
-            conversations.map((item, index) => {
-              const userId = item.members.find((user) => user !== seller._id);
-              const user = userData[userId];
-
-              if (!user) {
-                handleUserDataFetch(userId).then((fetchedUser) => {
-                  setUserData((prevData) => ({
-                    ...prevData,
-                    [userId]: fetchedUser,
-                  }));
-                });
-              }
-
-              return (
+          {conversations.map((conversation) => {
+            const userId = conversation.members.find(
+              (user) => user !== JSON.parse(localStorage.getItem("user"))._id
+            );
+            return (
                 <MessageList
-                  key={index}
-                  userData={user}
-                  conversation={item}
-                  setCurrentChat={setCurrentChat}
-                  setOpen={setOpen}
-                  online={onlineCheck(item)}
-                  isLoading={isLoading}
-                />
+                key={conversation?._id}
+                userData={userData[userId]}
+                conversation={conversation}
+                setCurrentChat={setCurrentChat}
+                setOpen={setOpen}
+                online={onlineCheck(conversation)}
+                isLoading={isLoading}
+              />
               );
             })}
         </>
