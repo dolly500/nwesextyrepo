@@ -26,7 +26,21 @@ const UserInbox = () => {
   const [activeStatus, setActiveStatus] = useState(false);
   const [open, setOpen] = useState(false);
   const scrollRef = useRef(null);
-  const [sellers, setSellers] = useState({});
+ 
+  
+
+
+  // useEffect(() => {
+  //   const getSellers = async function () {
+  //     const { data } = await axios.get(`${server}/shop/getSeller`, {
+  //       withCredentials: true,
+  //     });
+  //     console.log(data, 'data');
+  //     setSellers(data.sellers);
+  //   };
+
+  //   getSellers();
+  // }, [server]);
 
   useEffect(() => {
     socketId.on('getMessage', (data) => {
@@ -58,10 +72,12 @@ const UserInbox = () => {
     }
   };
 
+
   const handleCreateConversation = () => {
     const userId = user._id;
-    const sellerId = ""; // Replace with actual sellerId as needed
+    const sellerId = ''; 
     createNewConversation(userId, sellerId);
+    
   };
 
   useEffect(() => {
@@ -117,12 +133,16 @@ const UserInbox = () => {
 
   const sendMessageHandler = async (e) => {
     e.preventDefault();
+
     const message = {
       sender: user._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
-    const receiverId = currentChat.members.find((member) => member !== user._id);
+    const receiverId = currentChat.members.find(
+      (member) => member !== user._id);
+
+
     socketId.emit('sendMessage', {
       senderId: user._id,
       receiverId,
@@ -212,7 +232,7 @@ const UserInbox = () => {
         <>
           <Header />
           <div className="bg-[#fff] flex flex-col justify-center items-center m-auto md:w-1/2 p-8 md:p-20 rounded-lg mt-24">
-            <h1 className="text-center text-[30px] py-3 font-Poppins">Choose Therapists To Message</h1>
+            <h1 className="text-center text-[30px] py-3 font-Poppins">Start Conversation With a Therapist</h1>
 
         <button onClick={handleCreateConversation} className="bg-blue-500 text-white p-2 rounded-lg mb-4">
           Create New Conversation
@@ -334,10 +354,10 @@ const SellerInbox = ({ setOpen, newMessage, setNewMessage, sendMessageHandler, m
           messages.map((item, index) => (
             <div className={`flex w-full my-2 ${item.sender === user._id ? 'justify-end' : 'justify-start'}`} ref={scrollRef}>
               {item.sender !== user._id && <img src={`${userData?.avatar?.url}`} className="w-[40px] h-[40px] rounded-full mr-3" alt="" />}
-              {item.images && <img src={`${item?.images}`} className="w-[300px] h-[300px] object-cover rounded-[10px] ml-2 mb-2" />}
+              {item.images && <img src={`${item?.images?.url}`} className="w-[300px] h-[300px] object-cover rounded-[10px] ml-2 mb-2" />}
               {item.text !== '' && (
                 <div>
-                  <div className={`w-max p-2 rounded ${item.sender === user._id ? 'bg-[#000]' : 'bg-pink-500'} text-[#fff] h-min`}>
+                  <div className={`w-max p-2 rounded ${item.sender === user._id ? 'bg-pink-500' : 'bg-blue-500'} text-[#fff] h-min`}>
                     <p>{item?.text}</p>
                   </div>
                   <p className="text-[12px] text-[#000000d3] pt-1" style={{ color: 'white' }}>{format(item.createdAt)}</p>

@@ -396,7 +396,9 @@ const AboutUs = () => {
 
         <div className="mb-6">
           <h3 className="text-xl font-bold mb-2">Fill out questionnaire below:</h3>
-          <p><a href="/questionaire" style={{ color: 'blue' }}>Questionnaire Form</a></p>
+          <a href="/questionaire" className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Questionnaire Form
+          </a>
           {/* Add form elements for questionnaire here */}
         </div>
 
