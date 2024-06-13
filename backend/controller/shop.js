@@ -21,7 +21,6 @@ const {
 
 } = require("../validators/shopValidation");
 const bcrypt = require("bcrypt");
-const Shop = require("../model/shop");
 const {
   sendResetTokenByEmail,
   generateResetToken,
