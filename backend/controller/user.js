@@ -13,7 +13,6 @@ const {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  verifyEmailRequestSchema
 
 
 } = require("../validators/userValidator");
@@ -24,7 +23,7 @@ const {
 
  } = require('../services/auth.service');
 const Shop = require("../model/shop");
-const bcrypt = require("bcrypt"); // Import bcrypt
+const bcrypt = require("bcrypt");
 
 
 // create user
