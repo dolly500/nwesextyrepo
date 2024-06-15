@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../styles/styles";
 import { Country, State } from "country-state-city";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
@@ -26,42 +25,45 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const paymentSubmit = () => {
-    
-   if(address1 === "" || zipCode === null || country === "" || city === ""){
-      toast.error("Kindly fill out your delivery address!")
-   } else{
-    const shippingAddress = {
-      address1,
-      address2,
-      zipCode,
-      country,
-      city,
-    };
-
-    const orderData = {
-      cart,
-      totalPrice,
-      subTotalPrice,
-      shipping,
-      discountPrice,
-      shippingAddress,
-      user,
-    }
-    console.log("latest order", orderData, shippingAddress)
-    // update local storage with the updated orders array
-    localStorage.setItem("latestOrder", JSON.stringify(orderData));
-    navigate("/payment");
-   }
-  };
-
   const subTotalPrice = cart.reduce(
     (acc, item) => acc + item.qty * item.discountPrice,
     0
   );
 
-  // this is shipping cost variable
   const shipping = subTotalPrice * 0.1;
+
+  const discountPercentenge = couponCodeData ? discountPrice : 0;
+
+  const totalPrice = (
+    subTotalPrice + shipping - discountPercentenge
+  ).toFixed(2);
+
+  const paymentSubmit = () => {
+    if (address1 === "" || zipCode === null || country === "" || city === "") {
+      toast.error("Kindly fill out your delivery address!");
+    } else {
+      const shippingAddress = {
+        address1,
+        address2,
+        zipCode,
+        country,
+        city,
+      };
+
+      const orderData = {
+        cart,
+        totalPrice: parseFloat(totalPrice),
+        subTotalPrice,
+        shipping,
+        discountPrice,
+        shippingAddress,
+        user,
+      };
+
+      localStorage.setItem("latestOrder", JSON.stringify(orderData));
+      navigate("/payment", { state: { orderData } });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,19 +91,11 @@ const Checkout = () => {
         }
       }
       if (res.data.couponCode === null) {
-        toast.error("Coupon code doesn't exists!");
+        toast.error("Coupon code doesn't exist!");
         setCouponCode("");
       }
     });
   };
-
-  const discountPercentenge = couponCodeData ? discountPrice : "";
-
-  const totalPrice = couponCodeData
-    ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
-    : (subTotalPrice + shipping).toFixed(2);
-
-  console.log(discountPercentenge);
 
   return (
     <div className="w-full flex flex-col items-center py-8 bg-white">
@@ -264,41 +258,12 @@ const ShippingInfo = ({
               type="address"
               value={address2}
               onChange={(e) => setAddress2(e.target.value)}
+              required
               className={`${styles.input}`}
             />
           </div>
         </div>
-
-        <div></div>
       </form>
-      <h5
-        className="text-[18px] cursor-pointer inline-block"
-        onClick={() => setUserInfo(!userInfo)}
-      >
-        Choose From saved address
-      </h5>
-      {userInfo && (
-        <div>
-          {user &&
-            user.addresses.map((item, index) => (
-              <div className="w-full flex mt-1">
-                <input
-                  type="checkbox"
-                  className="mr-3"
-                  value={item.addressType}
-                  onClick={() =>
-                    setAddress1(item.address1) ||
-                    setAddress2(item.address2) ||
-                    setZipCode(item.zipCode) ||
-                    setCountry(item.country) ||
-                    setCity(item.city)
-                  }
-                />
-                <h2>{item.addressType}</h2>
-              </div>
-            ))}
-        </div>
-      )}
     </div>
   );
 };
@@ -313,40 +278,47 @@ const CartData = ({
   discountPercentenge,
 }) => {
   return (
-    <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
+    <div className="w-full bg-white rounded-md p-5 pb-8">
       <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]">₦{subTotalPrice}</h5>
+        <h3 className="text-[18px] font-[400]">Cart Item</h3>
+        <h5 className="text-[16px] font-[400] text-[#00000084]">
+          ${subTotalPrice}
+        </h5>
       </div>
       <br />
       <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
-        <h5 className="text-[18px] font-[600]">₦{shipping.toFixed(2)}</h5>
+        <h3 className="text-[18px] font-[400]">Shipping Cost</h3>
+        <h5 className="text-[16px] font-[400] text-[#00000084]">
+          ${shipping === 0 ? "0" : shipping.toFixed(2)}
+        </h5>
       </div>
       <br />
       <div className="flex justify-between border-b pb-3">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
-        <h5 className="text-[18px] font-[600]">
-          - {discountPercentenge ? "₦" + discountPercentenge.toString() : null}
+        <h3 className="text-[18px] font-[400]">Discount</h3>
+        <h5 className="text-[16px] font-[400] text-[#00000084]">
+          - ${discountPercentenge ? discountPercentenge.toFixed(2) : "0"}
         </h5>
       </div>
-      <h5 className="text-[18px] font-[600] text-end pt-3">₦{totalPrice}</h5>
+      <div className="flex justify-between border-b pb-3">
+        <h3 className="text-[18px] font-[400]">Total Price</h3>
+        <h5 className="text-[16px] font-[400] text-[#00000084]">${totalPrice}</h5>
+      </div>
       <br />
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           className={`${styles.input} h-[40px] pl-2`}
-          placeholder="Coupoun code"
+          placeholder="Coupon code"
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value)}
           required
         />
-        <input
-          className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
-          required
-          value="Apply code"
+        <button
           type="submit"
-        />
+          className={`w-full bg-black h-[40px] rounded-[5px] text-white mt-2`}
+        >
+          Apply code
+        </button>
       </form>
     </div>
   );

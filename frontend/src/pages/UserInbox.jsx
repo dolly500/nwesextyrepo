@@ -52,36 +52,26 @@ const UserInbox = () => {
     });
   }, []);
 
-  const createNewConversation = async (userId, sellerId) => {
+  const handleCreateConversation = async () => {
     try {
       const requestData = {
-        groupTitle: "Chat with a Therapist",
-        userId,
-        sellerId,
+        groupTitle: 'Chat with a Therapist',
+        userId: user._id,
+        sellerId: '',
       };
       const response = await axios.post(`${server}/conversation/create-new-conversation`, requestData, {
         withCredentials: true,
       });
-
-      console.log('New conversation created:', response.data);
       setConversations([...conversations, response.data.conversation]);
-      return response.data.conversation;
     } catch (error) {
       console.error('Error creating conversation:', error);
-      return null;
     }
   };
 
-
-  const handleCreateConversation = () => {
-    const userId = user._id;
-    const sellerId = ''; 
-    createNewConversation(userId, sellerId);
-    
-  };
-
   useEffect(() => {
-    arrivalMessage && currentChat?.members.includes(arrivalMessage.sender) && setMessages((prev) => [...prev, arrivalMessage]);
+    if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
+      setMessages((prev) => [...prev, arrivalMessage]);
+    }
   }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
@@ -101,7 +91,7 @@ const UserInbox = () => {
       };
       getConversation();
     }
-  }, [user, messages]);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -120,15 +110,17 @@ const UserInbox = () => {
   };
 
   useEffect(() => {
-    const getMessage = async () => {
-      try {
-        const response = await axios.get(`${server}/message/get-all-messages/${currentChat?._id}`);
-        setMessages(response.data.messages);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getMessage();
+    if (currentChat) {
+      const getMessages = async () => {
+        try {
+          const response = await axios.get(`${server}/message/get-all-messages/${currentChat._id}`);
+          setMessages(response.data.messages);
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+        }
+      };
+      getMessages();
+    }
   }, [currentChat]);
 
   const sendMessageHandler = async (e) => {
@@ -149,11 +141,11 @@ const UserInbox = () => {
       text: newMessage,
     });
     try {
-      if (newMessage !== '') {
+      if (newMessage) {
         await axios.post(`${server}/message/create-new-message`, message)
           .then((res) => {
             setMessages([...messages, res.data.message]);
-            updateLastMessage();
+            updateLastMessage(res.data.message);
           })
           .catch((error) => {
             console.log(error);
@@ -164,13 +156,13 @@ const UserInbox = () => {
     }
   };
 
-  const updateLastMessage = async () => {
+  const updateLastMessage = async (message) => {
     socketId.emit('updateLastMessage', {
-      lastMessage: newMessage,
+      lastMessage: message.text,
       lastMessageId: user._id,
     });
     await axios.put(`${server}/conversation/update-last-message/${currentChat._id}`, {
-      lastMessage: newMessage,
+      lastMessage: message.text,
       lastMessageId: user._id,
     }).then((res) => {
       setNewMessage('');
