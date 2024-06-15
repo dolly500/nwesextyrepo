@@ -43,4 +43,11 @@ const generateResetToken = async () => {
   return { token, hash };
 };
 
-module.exports = { sendResetTokenByEmail,generateResetToken};
+
+
+const validateResetToken = (savedTokenHash, inputToken) => {
+  return bcrypt.compareSync(inputToken, savedTokenHash);
+};
+
+
+module.exports = { sendResetTokenByEmail,generateResetToken,validateResetToken};

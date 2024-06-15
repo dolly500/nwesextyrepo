@@ -8,6 +8,8 @@ const path = require("path");
 const fileUpload = require('express-fileupload');
 const morgan = require("morgan");
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger-output.json');
 
 
 
@@ -31,6 +33,10 @@ app.get("/", async (req, res, next) => {
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
 }));
+
+
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.use(bodyParser.urlencoded({ extended: true, limit: "52428800" }));
 

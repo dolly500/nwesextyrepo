@@ -13,15 +13,18 @@ const {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  verifyEmailRequestSchema
 
 
 } = require("../validators/userValidator");
 const {
   sendResetTokenByEmail,
-  generateResetToken
+  generateResetToken,
+  validateResetToken
+
  } = require('../services/auth.service');
 const Shop = require("../model/shop");
+const bcrypt = require("bcrypt");
+
 
 // create user
 router.post("/create-user", async (req, res, next) => {

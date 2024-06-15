@@ -17,10 +17,20 @@ const {
   updateSellerInfoSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  verifyEmailRequestSchema
 
 
 } = require("../validators/shopValidation");
+const bcrypt = require("bcrypt");
+const {
+  sendResetTokenByEmail,
+  generateResetToken,
+  validateResetToken
+
+} = require('../services/auth.service');
+
+
+
+
 
 
 // create shop
@@ -165,6 +175,99 @@ router.post(
     }
   })
 );
+
+
+router.post('/forgot-password', catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { error, value } = forgotPasswordSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset email failed",
+      });
+    }
+
+    const { email } = value;
+    const shop = await Shop.findOne({ email });
+    if (!shop) {
+      return res.status(404).json({ success: false, error: "Seller not found" });
+    }
+
+    // Generate a reset token and save its hash in the user document
+    const { token, hash } = await generateResetToken();
+    shop.resetToken = token;
+    shop.resetTokenHash = hash;
+    shop.resetTokenExpiry = Date.now() + 3600000; // Token expiry time (1 hour)
+    await shop.save();
+
+    // Send the reset token via email
+    await sendResetTokenByEmail(shop.email, token);
+
+    res.status(200).json({
+      success: true,
+      data: { email: shop.email },
+      message: "Password reset email sent",
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+ 
+ })
+);
+
+
+router.put('/reset-password', catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { error, value } = resetPasswordSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: error.details[0].message,
+        message: "Password reset failed",
+      });
+    }
+
+    const { email, resetToken, newPassword } = value;
+
+    const  shop = await Shop.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    // Validate the reset token
+    if (!validateResetToken(user.resetTokenHash, resetToken)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Invalid or expired reset token" });
+    }
+
+    // Reset the user's password using bcrypt
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 is the number of salt rounds
+    shop.password = hashedPassword;
+    shop.resetToken = null; // Clear the reset token after use
+    shop.resetTokenHash = null; // Clear the reset token hash after use
+    shop.resetTokenExpiry = null;
+    await  shop.save();
+
+    res.status(200).json({
+      success: true,
+      data: { email:  shop.email },
+      message: "Password reset successful",
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+ 
+})
+);
+
+
+
 
 
 

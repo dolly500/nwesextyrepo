@@ -6,12 +6,17 @@ const Order = require("../model/order")
 const User = require("../model/user")
 // const paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
 
+
 router.post(
   "/process/:orderId",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      console.log("Processing order:", req.params.orderId);
       const order = await Order.findOne({ _id: req.params.orderId });
+      console.log("Order",order)
       const amount = order.totalPrice
+      console.log("Order",amount)
+
 
       const response = await axios.post(
         'https://api.paystack.co/transaction/initialize',
