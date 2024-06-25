@@ -13,7 +13,7 @@ const CheckoutPage = () => {
         <br />
         <CheckoutSteps active={1} />
         <Checkout />
-        <Payment />
+        {/* <Payment /> */}
         <br />
         <br />
         <Footer />

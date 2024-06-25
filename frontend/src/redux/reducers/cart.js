@@ -1,32 +1,26 @@
-import { createReducer } from "@reduxjs/toolkit";
+import { ADD_TO_CART, REMOVE_FROM_CART, LOAD_CART_FROM_LOCAL_STORAGE } from "../constants/cartConstants";
 
 const initialState = {
-  cart: localStorage.getItem("cartItems")
-    ? JSON.parse(localStorage.getItem("cartItems"))
-    : [],
+  cart: [],
 };
 
-export const cartReducer = createReducer(initialState, {
-  addToCart: (state, action) => {
-    const item = action.payload;
-    const isItemExist = state.cart.find((i) => i._id === item._id);
-    if (isItemExist) {
-      return {
-        ...state,
-        cart: state.cart.map((i) => (i._id === isItemExist._id ? item : i)),
-      };
-    } else {
-      return {
-        ...state,
-        cart: [...state.cart, item],
-      };
-    }
-  },
+export const cartReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case ADD_TO_CART:
+      // Add to cart logic
+      return { ...state, cart: [...state.cart, action.payload.data] };
+    case REMOVE_FROM_CART:
+      // Remove from cart logic
+      return { ...state, cart: state.cart.filter(item => item._id !== action.payload.data._id) };
+    case LOAD_CART_FROM_LOCAL_STORAGE:
+      // Load cart from local storage logic
+      const storedCart = JSON.parse(localStorage.getItem(`cart_${action.payload}`)) || [];
+      return { ...state, cart: storedCart };
+    default:
+      return state;
+  }
+};
 
-  removeFromCart: (state, action) => {
-    return {
-      ...state,
-      cart: state.cart.filter((i) => i._id !== action.payload),
-    };
-  },
-});
+
+
+

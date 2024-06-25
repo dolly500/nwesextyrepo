@@ -16,7 +16,7 @@ import {
   removeFromWishlist,
 } from "../../../redux/actions/wishlist";
 import { useEffect } from "react";
-import { addTocart } from "../../../redux/actions/cart";
+import { addToCart } from "../../../redux/actions/cart";
 import { toast } from "react-toastify";
 import Ratings from "../../Products/Ratings";
 
@@ -54,7 +54,7 @@ const ProductCard = ({ data,isEvent }) => {
         toast.error("Product stock limited!");
       } else {
         const cartData = { ...data, qty: 1 };
-        dispatch(addTocart(cartData));
+        dispatch(addToCart(cartData));
         toast.success("Item added to cart successfully!");
       }
     }
