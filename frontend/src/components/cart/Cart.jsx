@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { addTocart, removeFromCart } from "../../redux/actions/cart";
 import styles from "../../styles/styles";
 
+
 const Cart = ({ setOpenCart }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
