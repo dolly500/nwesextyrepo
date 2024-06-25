@@ -103,7 +103,6 @@ const App = () => {
   return (
     <BrowserRouter>
       {paystackApikey && (
-        // <Elements paystack={loadpaystack(paystackApikey)}>
         <Routes>
           <Route
             path="/payment"
@@ -114,7 +113,6 @@ const App = () => {
             }
           />
         </Routes>
-        // </Elements>
       )}
       <Routes>
         <Route path="/" element={<HomePage />} />

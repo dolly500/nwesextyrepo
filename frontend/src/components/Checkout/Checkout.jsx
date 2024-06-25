@@ -1,353 +1,176 @@
-import React, { useState } from "react";
-import styles from "../../styles/styles";
-import { Country, State } from "country-state-city";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import axios from "axios";
-import { server } from "../../server";
-import { toast } from "react-toastify";
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { server } from '../../server';
 
-const Checkout = () => {
-  const { user } = useSelector((state) => state.user);
+const Checkout = ({ userId }) => {
   const { cart } = useSelector((state) => state.cart);
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [userInfo, setUserInfo] = useState(false);
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [zipCode, setZipCode] = useState(null);
-  const [couponCode, setCouponCode] = useState("");
-  const [couponCodeData, setCouponCodeData] = useState(null);
-  const [discountPrice, setDiscountPrice] = useState(null);
   const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [shippingAddress, setShippingAddress] = useState({
+    address: '',
+    city: '',
+    postalCode: '',
+    country: '',
+  });
+  const [paymentInfo, setPaymentInfo] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+  });
+
+  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const paymentSubmit = () => {
-    
-   if(address1 === "" || zipCode === null || country === "" || city === ""){
-      toast.error("Kindly fill out your delivery address!")
-   } else{
-    const shippingAddress = {
-      address1,
-      address2,
-      zipCode,
-      country,
-      city,
-    };
-
-    const orderData = {
-      cart,
-      totalPrice,
-      subTotalPrice,
-      shipping,
-      discountPrice,
-      shippingAddress,
-      user,
+    if (!cart.length) {
+      navigate('/cart');
     }
-    console.log("latest order", orderData, shippingAddress)
-    // update local storage with the updated orders array
-    localStorage.setItem("latestOrder", JSON.stringify(orderData));
-    navigate("/payment");
-   }
-  };
+  }, [cart, navigate]);
 
-  const subTotalPrice = cart.reduce(
-    (acc, item) => acc + item.qty * item.discountPrice,
-    0
-  );
+  const handlePayment = async () => {
+    try {
+      // API request to create order
+      const createOrderResponse = await axios.post(`${server}/order/create-order`, {
+        cart,
+        shippingAddress,
+        user: userId,
+        totalPrice,
+        paymentInfo,
+      });
 
-  // this is shipping cost variable
-  const shipping = subTotalPrice * 0.1;
+      const { orders } = createOrderResponse.data;
+      setOrders(orders);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const name = couponCode;
+      // Process and verify payment for each order
+      for (const order of orders) {
+        const orderId = order._id;
 
-    await axios.get(`${server}/coupon/get-coupon-value/${name}`).then((res) => {
-      const shopId = res.data.couponCode?.shopId;
-      const couponCodeValue = res.data.couponCode?.value;
-      if (res.data.couponCode !== null) {
-        const isCouponValid =
-          cart && cart.filter((item) => item.shopId === shopId);
+        // API request to process payment
+        await axios.post(`${server}/payment/process/${orderId}`, {
+          userId,
+          items: cart,
+          total: totalPrice,
+        });
 
-        if (isCouponValid.length === 0) {
-          toast.error("Coupon code is not valid for this shop");
-          setCouponCode("");
-        } else {
-          const eligiblePrice = isCouponValid.reduce(
-            (acc, item) => acc + item.qty * item.discountPrice,
-            0
-          );
-          const discountPrice = (eligiblePrice * couponCodeValue) / 100;
-          setDiscountPrice(discountPrice);
-          setCouponCodeData(res.data.couponCode);
-          setCouponCode("");
+        // API request to verify payment
+        const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
+
+        if (!verificationResponse.data.success) {
+          throw new Error("Payment Verification Failed!");
         }
       }
-      if (res.data.couponCode === null) {
-        toast.error("Coupon code doesn't exists!");
-        setCouponCode("");
-      }
+
+      toast.success("Payment Successful!");
+      navigate('/order-success'); // Redirect to order success page
+    } catch (error) {
+      console.error(error);
+      toast.error("Payment Failed!");
+    }
+  };
+
+  const handleShippingAddressChange = (e) => {
+    setShippingAddress({
+      ...shippingAddress,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const discountPercentenge = couponCodeData ? discountPrice : "";
-
-  const totalPrice = couponCodeData
-    ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
-    : (subTotalPrice + shipping).toFixed(2);
-
-  console.log(discountPercentenge);
+  const handlePaymentInfoChange = (e) => {
+    setPaymentInfo({
+      ...paymentInfo,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
-    <div className="w-full flex flex-col items-center py-8 bg-white">
-      <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
-        <div className="w-full 800px:w-[65%]">
-          <ShippingInfo
-            user={user}
-            country={country}
-            setCountry={setCountry}
-            city={city}
-            setCity={setCity}
-            userInfo={userInfo}
-            setUserInfo={setUserInfo}
-            address1={address1}
-            setAddress1={setAddress1}
-            address2={address2}
-            setAddress2={setAddress2}
-            zipCode={zipCode}
-            setZipCode={setZipCode}
-          />
-        </div>
-        <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
-          <CartData
-            handleSubmit={handleSubmit}
-            totalPrice={totalPrice}
-            shipping={shipping}
-            subTotalPrice={subTotalPrice}
-            couponCode={couponCode}
-            setCouponCode={setCouponCode}
-            discountPercentenge={discountPercentenge}
-          />
-        </div>
-      </div>
-      <div
-        className={`${styles.button} w-[150px] 800px:w-[280px] mt-10`}
-        onClick={paymentSubmit}
-      >
-        <h5 className="text-white">Go to Payment</h5>
-      </div>
-    </div>
-  );
-};
-
-const ShippingInfo = ({
-  user,
-  country,
-  setCountry,
-  city,
-  setCity,
-  userInfo,
-  setUserInfo,
-  address1,
-  setAddress1,
-  address2,
-  setAddress2,
-  zipCode,
-  setZipCode,
-}) => {
-  return (
-    <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
-      <h5 className="text-[18px] font-[500]">Shipping Address</h5>
-      <br />
-      <form>
-        <div className="w-full flex pb-3">
-          <div className="w-[50%]">
-            <label className="block pb-2">Full Name</label>
-            <input
-              type="text"
-              value={user && user.name}
-              required
-              className={`${styles.input} !w-[95%]`}
-            />
+    <div className="container mx-auto p-5">
+      <h1 className="text-2xl font-bold mb-5">Checkout</h1>
+      <div className="bg-white p-5 rounded shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+        {cart.map((item, index) => (
+          <div key={index} className="flex justify-between items-center mb-4">
+            <div>
+              <h4 className="font-medium">{item.name}</h4>
+              <p>Quantity: {item.qty}</p>
+              <p>Price: ₦{item.discountPrice}</p>
+            </div>
+            <p className="font-medium">₦{item.qty * item.discountPrice}</p>
           </div>
-          <div className="w-[50%]">
-            <label className="block pb-2">Email Address</label>
-            <input
-              type="email"
-              value={user && user.email}
-              required
-              className={`${styles.input}`}
-            />
-          </div>
+        ))}
+        <div className="flex justify-between items-center font-semibold text-lg">
+          <p>Total:</p>
+          <p>₦{totalPrice}</p>
         </div>
 
-        <div className="w-full flex pb-3">
-          <div className="w-[50%]">
-            <label className="block pb-2">Phone Number</label>
-            <input
-              type="number"
-              required
-              value={user && user.phoneNumber}
-              className={`${styles.input} !w-[95%]`}
-            />
-          </div>
-          <div className="w-[50%]">
-            <label className="block pb-2">Zip Code</label>
-            <input
-              type="number"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              required
-              className={`${styles.input}`}
-            />
-          </div>
-        </div>
-
-        <div className="w-full flex pb-3">
-          <div className="w-[50%]">
-            <label className="block pb-2">Country</label>
-            <select
-              className="w-[95%] border h-[40px] rounded-[5px]"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            >
-              <option className="block pb-2" value="">
-                Choose your country
-              </option>
-              {Country &&
-                Country.getAllCountries().map((item) => (
-                  <option key={item.isoCode} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div className="w-[50%]">
-            <label className="block pb-2">City</label>
-            <select
-              className="w-[95%] border h-[40px] rounded-[5px]"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            >
-              <option className="block pb-2" value="">
-                Choose your City
-              </option>
-              {State &&
-                State.getStatesOfCountry(country).map((item) => (
-                  <option key={item.isoCode} value={item.isoCode}>
-                    {item.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="w-full flex pb-3">
-          <div className="w-[50%]">
-            <label className="block pb-2">Address1</label>
-            <input
-              type="address"
-              required
-              value={address1}
-              onChange={(e) => setAddress1(e.target.value)}
-              className={`${styles.input} !w-[95%]`}
-            />
-          </div>
-          <div className="w-[50%]">
-            <label className="block pb-2">Address2</label>
-            <input
-              type="address"
-              value={address2}
-              onChange={(e) => setAddress2(e.target.value)}
-              className={`${styles.input}`}
-            />
-          </div>
-        </div>
-
-        <div></div>
-      </form>
-      <h5
-        className="text-[18px] cursor-pointer inline-block"
-        onClick={() => setUserInfo(!userInfo)}
-      >
-        Choose From saved address
-      </h5>
-      {userInfo && (
-        <div>
-          {user &&
-            user.addresses.map((item, index) => (
-              <div className="w-full flex mt-1">
-                <input
-                  type="checkbox"
-                  className="mr-3"
-                  value={item.addressType}
-                  onClick={() =>
-                    setAddress1(item.address1) ||
-                    setAddress2(item.address2) ||
-                    setZipCode(item.zipCode) ||
-                    setCountry(item.country) ||
-                    setCity(item.city)
-                  }
-                />
-                <h2>{item.addressType}</h2>
-              </div>
-            ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const CartData = ({
-  handleSubmit,
-  totalPrice,
-  shipping,
-  subTotalPrice,
-  couponCode,
-  setCouponCode,
-  discountPercentenge,
-}) => {
-  return (
-    <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]">₦{subTotalPrice}</h5>
-      </div>
-      <br />
-      <div className="flex justify-between">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">shipping:</h3>
-        <h5 className="text-[18px] font-[600]">₦{shipping.toFixed(2)}</h5>
-      </div>
-      <br />
-      <div className="flex justify-between border-b pb-3">
-        <h3 className="text-[16px] font-[400] text-[#000000a4]">Discount:</h3>
-        <h5 className="text-[18px] font-[600]">
-          - {discountPercentenge ? "₦" + discountPercentenge.toString() : null}
-        </h5>
-      </div>
-      <h5 className="text-[18px] font-[600] text-end pt-3">₦{totalPrice}</h5>
-      <br />
-      <form onSubmit={handleSubmit}>
+        <h2 className="text-xl font-semibold mb-4 mt-5">Shipping Address</h2>
         <input
           type="text"
-          className={`${styles.input} h-[40px] pl-2`}
-          placeholder="Coupoun code"
-          value={couponCode}
-          onChange={(e) => setCouponCode(e.target.value)}
-          required
+          name="address"
+          placeholder="Address"
+          value={shippingAddress.address}
+          onChange={handleShippingAddressChange}
+          className="mb-2 p-2 border rounded w-full"
         />
         <input
-          className={`w-full h-[40px] border border-[#f63b60] text-center text-[#f63b60] rounded-[3px] mt-8 cursor-pointer`}
-          required
-          value="Apply code"
-          type="submit"
+          type="text"
+          name="city"
+          placeholder="City"
+          value={shippingAddress.city}
+          onChange={handleShippingAddressChange}
+          className="mb-2 p-2 border rounded w-full"
         />
-      </form>
+        <input
+          type="text"
+          name="postalCode"
+          placeholder="Postal Code"
+          value={shippingAddress.postalCode}
+          onChange={handleShippingAddressChange}
+          className="mb-2 p-2 border rounded w-full"
+        />
+        <input
+          type="text"
+          name="country"
+          placeholder="Country"
+          value={shippingAddress.country}
+          onChange={handleShippingAddressChange}
+          className="mb-2 p-2 border rounded w-full"
+        />
+
+        <h2 className="text-xl font-semibold mb-4 mt-5">Payment Information</h2>
+        <input
+          type="text"
+          name="cardNumber"
+          placeholder="Card Number"
+          value={paymentInfo.cardNumber}
+          onChange={handlePaymentInfoChange}
+          className="mb-2 p-2 border rounded w-full"
+        />
+        <input
+          type="text"
+          name="expiryDate"
+          placeholder="Expiry Date (MM/YY)"
+          value={paymentInfo.expiryDate}
+          onChange={handlePaymentInfoChange}
+          className="mb-2 p-2 border rounded w-full"
+        />
+        <input
+          type="text"
+          name="cvv"
+          placeholder="CVV"
+          value={paymentInfo.cvv}
+          onChange={handlePaymentInfoChange}
+          className="mb-2 p-2 border rounded w-full"
+        />
+
+        <button
+          onClick={handlePayment}
+          className="mt-5 w-full bg-red-500 text-white py-2 rounded"
+        >
+          Confirm and Pay
+        </button>
+      </div>
     </div>
   );
 };

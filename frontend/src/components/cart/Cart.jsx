@@ -1,29 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HiOutlineMinus, HiPlus } from "react-icons/hi";
 import { IoBagHandleOutline } from "react-icons/io5";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { addTocart, removeFromCart } from "../../redux/actions/cart";
+import { addToCart, removeFromCart, loadCartFromLocalStorage } from "../../redux/actions/cart";
 import styles from "../../styles/styles";
 
-
-const Cart = ({ setOpenCart }) => {
+const Cart = ({ setOpenCart, userId }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (userId) {
+      dispatch(loadCartFromLocalStorage(userId));
+    }
+  }, [userId, dispatch]);
+
   const removeFromCartHandler = (data) => {
-    dispatch(removeFromCart(data));
+    dispatch(removeFromCart(data, userId));
   };
-  
+
   const totalPrice = cart.reduce(
     (acc, item) => acc + item.qty * item.discountPrice,
     0
   );
 
   const quantityChangeHandler = (data) => {
-    dispatch(addTocart(data));
+    dispatch(addToCart(data, userId));
   };
 
   return (
@@ -50,16 +55,12 @@ const Cart = ({ setOpenCart }) => {
                   onClick={() => setOpenCart(false)}
                 />
               </div>
-              {/* Item length */}
               <div className={`${styles.noramlFlex} p-4`}>
                 <IoBagHandleOutline size={25} />
                 <h5 className="pl-2 text-[20px] font-[500]">
                   {cart && cart.length} items
                 </h5>
               </div>
-
-              {/* cart Single Items */}
-              <br />
               <div className="w-full border-t">
                 {cart &&
                   cart.map((i, index) => (
@@ -72,9 +73,7 @@ const Cart = ({ setOpenCart }) => {
                   ))}
               </div>
             </div>
-
             <div className="px-5 mb-3">
-              {/* checkout buttons */}
               <Link to="/checkout">
                 <div
                   className={`h-[45px] flex items-center justify-center w-[100%] bg-[#e44343] rounded-[5px]`}

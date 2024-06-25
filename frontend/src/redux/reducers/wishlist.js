@@ -1,34 +1,39 @@
-import { createReducer } from "@reduxjs/toolkit";
+import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST, LOAD_WISHLIST_FROM_LOCAL_STORAGE } from "../constants/wishlistConstants";
 
 const initialState = {
-  wishlist: localStorage.getItem("wishlistItems")
-    ? JSON.parse(localStorage.getItem("wishlistItems"))
-    : [],
+  wishlist: [],
 };
 
-export const wishlistReducer = createReducer(initialState, {
-  addToWishlist: (state, action) => {
-    const item = action.payload;
-    const isItemExist = state.wishlist.find((i) => i._id === item._id);
-    if (isItemExist) {
-      return {
-        ...state,
-        wishlist: state.wishlist.map((i) =>
-          i._id === isItemExist._id ? item : i
-        ),
-      };
-    } else {
-      return {
-        ...state,
-        wishlist: [...state.wishlist, item],
-      };
-    }
-  },
+export const wishlistReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case ADD_TO_WISHLIST:
+      const newItem = action.payload;
+      const existingItem = state.wishlist.find((item) => item._id === newItem._id);
+      if (existingItem) {
+        return {
+          ...state,
+          wishlist: state.wishlist.map((item) =>
+            item._id === existingItem._id ? newItem : item
+          ),
+        };
+      } else {
+        return {
+          ...state,
+          wishlist: [...state.wishlist, newItem],
+        };
+      }
 
-  removeFromWishlist: (state, action) => {
-    return {
-      ...state,
-      wishlist: state.wishlist.filter((i) => i._id !== action.payload),
-    };
-  },
-});
+    case REMOVE_FROM_WISHLIST:
+      return {
+        ...state,
+        wishlist: state.wishlist.filter((item) => item._id !== action.payload),
+      };
+
+    case LOAD_WISHLIST_FROM_LOCAL_STORAGE:
+      const storedWishlist = JSON.parse(localStorage.getItem("wishlistItems")) || [];
+      return { ...state, wishlist: storedWishlist };
+
+    default:
+      return state;
+  }
+};

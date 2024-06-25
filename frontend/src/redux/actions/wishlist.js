@@ -1,21 +1,22 @@
-// add to wishlist
-export const addToWishlist = (data) => async (dispatch, getState) => {
-    dispatch({
-      type: "addToWishlist",
-      payload: data,
-    });
-  
-    localStorage.setItem("wishlistItems", JSON.stringify(getState().wishlist.wishlist));
-    return data;
+import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST, LOAD_WISHLIST_FROM_LOCAL_STORAGE } from "../constants/wishlistConstants";
+
+export const addToWishlist = (data, userId) => {
+  return {
+    type: ADD_TO_WISHLIST,
+    payload: { ...data, userId }, // Ensure payload structure matches reducer expectations
   };
-  
-  // remove from wishlist
-  export const removeFromWishlist = (data) => async (dispatch, getState) => {
-    dispatch({
-      type: "removeFromWishlist",
-      payload: data._id,
-    });
-    localStorage.setItem("wishlistItems", JSON.stringify(getState().wishlist.wishlist));
-    return data;
+};
+
+export const removeFromWishlist = (data) => {
+  return {
+    type: REMOVE_FROM_WISHLIST,
+    payload: data._id, // Assuming data contains an _id field to identify the item
   };
-  
+};
+
+export const loadWishlistFromLocalStorage = (userId) => {
+  return {
+    type: LOAD_WISHLIST_FROM_LOCAL_STORAGE,
+    payload: userId,
+  };
+};

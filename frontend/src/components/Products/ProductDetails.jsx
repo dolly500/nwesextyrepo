@@ -9,7 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { addTocart } from "../../redux/actions/cart";
+import { addToCart } from "../../redux/actions/cart"; // Correct import
 import { getAllProductsShop } from "../../redux/actions/product";
 import {
   addToWishlist,
@@ -29,6 +29,7 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getAllProductsShop(data && data?.shop?._id));
     if (wishlist && wishlist.find((i) => i._id === data?._id)) {
@@ -67,7 +68,7 @@ const ProductDetails = ({ data }) => {
         toast.error("Product stock limited!");
       } else {
         const cartData = { ...data, qty: count };
-        dispatch(addTocart(cartData));
+        dispatch(addToCart(cartData));
         toast.success("Item added to cart successfully!");
       }
     }
@@ -89,10 +90,9 @@ const ProductDetails = ({ data }) => {
 
   const averageRating = avg.toFixed(2);
 
-
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
-      console.log("data", data)
+      console.log("data", data);
 
       const groupTitle = data._id + user._id;
       const userId = user._id;
@@ -130,8 +130,10 @@ const ProductDetails = ({ data }) => {
                   {data &&
                     data.images.map((i, index) => (
                       <div
-                        className={`${select === 0 ? "border" : "null"
-                          } cursor-pointer`}
+                        key={index}
+                        className={`${
+                          select === index ? "border" : ""
+                        } cursor-pointer`}
                       >
                         <img
                           src={`${i?.url}`}
@@ -141,10 +143,6 @@ const ProductDetails = ({ data }) => {
                         />
                       </div>
                     ))}
-                  <div
-                    className={`${select === 1 ? "border" : "null"
-                      } cursor-pointer`}
-                  ></div>
                 </div>
               </div>
               <div className="w-full 800px:w-[50%] pt-5">
@@ -314,7 +312,7 @@ const ProductDetailsInfo = ({
         <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll">
           {data &&
             data.reviews.map((item, index) => (
-              <div className="w-full flex my-2">
+              <div key={index} className="w-full flex my-2">
                 <img
                   src={`${item?.user?.avatar?.url}`}
                   alt=""
@@ -368,9 +366,7 @@ const ProductDetailsInfo = ({
               </h5>
               <h5 className="font-[600] pt-3 text-black">
                 Total Products:{" "}
-                <span className="font-[500]">
-                  {products && products.length}
-                </span>
+                <span className="font-[500]">{products && products.length}</span>
               </h5>
               <h5 className="font-[600] pt-3 text-black">
                 Total Reviews:{" "}
@@ -380,7 +376,9 @@ const ProductDetailsInfo = ({
                 <div
                   className={`${styles.button} !rounded-[4px] !h-[39.5px] mt-3`}
                 >
-                 <Link to='/products'> <h4 className="text-white">Visit Shop</h4></Link>
+                  <Link to='/products'>
+                    <h4 className="text-white">Visit Shop</h4>
+                  </Link>
                 </div>
               </Link>
             </div>

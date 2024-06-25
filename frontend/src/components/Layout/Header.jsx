@@ -138,26 +138,6 @@ const Header = ({ activeHeading, data }) => {
     } else{
       alert("Please Log In!")
     }
-    // else {
-    //   // toast.error("Please login to create a conversation");
-    //   navigate(`/inbox`)
-    //   console.log("data", data)
-    //     const groupTitle = data._id + user._id;
-    //     const userId = user._id;
-    //     const sellerId = data.shop._id;
-    //     await axios
-    //       .post(`${server}/conversation/create-new-conversation`, {
-    //         groupTitle,
-    //         userId,
-    //         sellerId,
-    //       })
-    //       .then((res) => {
-    //         navigate(`/inbox?${res.data.conversation._id}`);
-    //       })
-    //       .catch((error) => {
-    //         toast.error(error.response.data.message);
-    //       });
-    // }
   };
 
   return (

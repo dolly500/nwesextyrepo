@@ -16,7 +16,7 @@ const DashboardMessages = () => {
   const { seller, isLoading } = useSelector((state) => state.seller);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [currentChat, setCurrentChat] = useState();
+  const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [userData, setUserData] = useState({});
   const [newMessage, setNewMessage] = useState("");
@@ -36,26 +36,45 @@ const DashboardMessages = () => {
     });
   }, []);
 
+  const createNewConversation = async (userId, sellerId) => {
+    try {
+      const requestData = {
+        groupTitle: "Chat with a Therapist",
+        userId,
+        sellerId,
+      };
+      const response = await axios.post(`${server}/conversation/create-new-conversation`, requestData, {
+        withCredentials: true,
+      });
+
+      console.log('New conversation created:', response.data);
+      setConversations(prev => [...prev, response.data.conversation]);
+      return response.data.conversation;
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      return null; 
+    }
+  };
+
+  const handleCreateConversation = async () => {
+    const userId = '';
+    const sellerId = JSON.parse(localStorage.getItem("user"))._id;
+    createNewConversation(userId, sellerId);
+  };
+
   useEffect(() => {
     arrivalMessage &&
       currentChat?.members.includes(arrivalMessage.sender) &&
       setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage, currentChat]);
 
-
-
   useEffect(() => {
     const getConversation = async () => {
       try {
         const response = await axios.get(
-          `${server}/conversation/get-all-conversation-seller/${JSON.parse(
-            localStorage.getItem("user")
-          )._id}`,
-          {
-            withCredentials: true,
-          }
+          `${server}/conversation/get-all-conversation-seller/${JSON.parse(localStorage.getItem("user"))._id}`,
+          { withCredentials: true }
         );
-
         setConversations(response.data.conversations);
       } catch (error) {
         console.log(error);
@@ -83,7 +102,6 @@ const DashboardMessages = () => {
     return online ? true : false;
   };
 
-  // get messages
   useEffect(() => {
     const getMessage = async () => {
       try {
@@ -95,10 +113,11 @@ const DashboardMessages = () => {
         console.log(error);
       }
     };
-    getMessage();
+    if (currentChat) {
+      getMessage();
+    }
   }, [currentChat]);
 
-  // create new message
   const sendMessageHandler = async (e) => {
     e.preventDefault();
 
@@ -211,7 +230,6 @@ const DashboardMessages = () => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
- 
   const fetchUserData = async (userId) => {
     try {
       const res = await axios.get(`${server}/user/user-info/${userId}`);
@@ -233,36 +251,39 @@ const DashboardMessages = () => {
         fetchUserData(userId);
       }
     });
-  }, [conversations, seller]);  
+  }, [conversations, seller]);
+
+  console.log('conv log', conversations);
 
   return (
     <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll rounded">
-      {!open && (
-        <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins">
-            All Messages
-          </h1>
-          {/* All messages list */}
-          {conversations.map((conversation) => {
-            const userId = conversation.members.find(
-              (user) => user !== JSON.parse(localStorage.getItem("user"))._id
-            );
-            return (
-                <MessageList
-                key={conversation?._id}
-                userData={userData[userId]}
-                conversation={conversation}
-                setCurrentChat={setCurrentChat}
-                setOpen={setOpen}
-                online={onlineCheck(conversation)}
-                isLoading={isLoading}
-              />
-              );
-            })}
-        </>
-      )}
+      <h1 className="text-center text-[30px] py-3 font-Poppins">
+        All Messages
+      </h1>
 
-      {open && (
+      <button onClick={handleCreateConversation} className="bg-blue-500 text-white p-2 rounded-lg mb-4">
+        Create New Conversation For Therapists Users
+      </button>
+
+      {/* All messages list */}
+      {conversations.map((conversation) => {
+        const userId = conversation.members.find(
+          (user) => user !== JSON.parse(localStorage.getItem("user"))._id
+        );
+        return (
+          <MessageList
+            key={conversation._id}
+            userData={userData[userId]}
+            conversation={conversation}
+            setCurrentChat={setCurrentChat}
+            setOpen={setOpen}
+            online={onlineCheck(conversation)}
+            isLoading={isLoading}
+          />
+        );
+      })}
+
+      {open && currentChat && (
         <SellerInbox
           setOpen={setOpen}
           newMessage={newMessage}
@@ -275,6 +296,7 @@ const DashboardMessages = () => {
           scrollRef={scrollRef}
           setMessages={setMessages}
           handleImageUpload={handleImageUpload}
+          currentChat={currentChat}
         />
       )}
     </div>
@@ -300,7 +322,7 @@ const MessageList = ({
     <div
       className={`w-full flex p-3 px-3 ${
         active === conversation._id ? "bg-[#00000010]" : "bg-transparent"
-      }  cursor-pointer`}
+      } cursor-pointer`}
       onClick={(e) => {
         setActive(conversation._id);
         handleClick(conversation._id);
@@ -453,4 +475,3 @@ const SellerInbox = ({
 };
 
 export default DashboardMessages;
-
