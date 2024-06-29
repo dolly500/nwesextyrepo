@@ -40,27 +40,45 @@ const Checkout = ({ userId }) => {
         paymentInfo,
       });
 
-      const { orders } = createOrderResponse.data;
-      setOrders(orders);
+      // console.log("Debug: -----------------------", createOrderResponse)
+
+      const { orders: created_orders } = createOrderResponse.data;
+
+      console.log(created_orders)
+      setOrders(created_orders);
 
       // Process and verify payment for each order
+
+      // console.log("DEBUG 2: ========== ", orders)
       for (const order of orders) {
+        // console.log("Debug 3: ===============", order)
         const orderId = order._id;
 
-        // API request to process payment
-        await axios.post(`${server}/payment/process/${orderId}`, {
-          userId,
-          items: cart,
-          total: totalPrice,
-        });
+
+        await axios.post(`${server}/payment/process/${orderId}`, 
+        /** TODO: Get user email somehow... 
+         * probably fetch it from Auth?
+        */
+        // {
+        //   email: "user-email",
+        //   amount: order?.totalPrice
+        // }
+      )
 
         // API request to verify payment
         const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
 
         if (!verificationResponse.data.success) {
           throw new Error("Payment Verification Failed!");
+          return 
         }
       }
+
+      /** If Payment verification is successful,
+       * redirect users to chat page
+       * 
+       * TODO: re-route users to live chat page     
+       */
 
       toast.success("Payment Successful!");
       navigate('/order-success'); // Redirect to order success page
