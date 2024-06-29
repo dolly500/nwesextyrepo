@@ -12,7 +12,12 @@ const CheckoutPage = () => {
         <br />
         <br />
         <CheckoutSteps active={1} />
-        <Checkout />
+        {/** INFO: add missing @param userId 
+         * userId - 66116c8364783ef83120989a
+         * 
+         * TODO: dynamically fetch userID
+        */}
+        <Checkout userId="66116c8364783ef83120989a" />
         {/* <Payment /> */}
         <br />
         <br />
