@@ -5,8 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { server } from '../../server';
 
-const Checkout = ({ userId }) => {
-  const { cart } = useSelector((state) => state.cart);
+const Checkout = () => {
+  const { cart, user } = useSelector((state) => ({
+    cart: state.cart,
+    user: state.user
+  }));
+
+  const userId = user._id
+  const userEmail = user.email
+
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
@@ -60,31 +67,30 @@ const Checkout = ({ userId }) => {
 
       // console.log("Debug: -----------------------", createOrderResponse)
 
-      const { orders: created_orders } = createOrderResponse.data;
+      const { orders } = createOrderResponse.data;
 
-      console.log(created_orders)
-      setOrders(created_orders);
+      console.log("Created Orders", orders)
+      setOrders(orders);
 
       // Process and verify payment for each order
 
-      // console.log("DEBUG 2: ========== ", orders)
       for (const order of orders) {
         // console.log("Debug 3: ===============", order)
         const orderId = order._id;
 
 
-        await axios.post(`${server}/payment/process/${orderId}`,
-          /** TODO: Get user email somehow... 
-           * probably fetch it from Auth?
-          */
-          // {
-          //   email: "user-email",
-          //   amount: order?.totalPrice
-          // }
+        const res = await axios.post(`${server}/payment/process/${orderId}`,
+          {
+            email: userEmail,
+            amount: order?.totalPrice
+          }
         )
+
+        console.log("res", res)
 
         // API request to verify payment
         const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
+        console.log("verification", verificationResponse)
 
         if (!verificationResponse.data.success) {
           throw new Error("Payment Verification Failed!");
