@@ -8,6 +8,7 @@ import { server } from '../../server';
 const Checkout = ({ userId }) => {
   const { cart } = useSelector((state) => state.cart);
   const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [shippingAddress, setShippingAddress] = useState({
     address: '',
@@ -20,6 +21,8 @@ const Checkout = ({ userId }) => {
     expiryDate: '',
     cvv: '',
   });
+  const [paystackApiKey, setPaystackApiKey] = useState('');
+
 
   const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
 
@@ -28,6 +31,21 @@ const Checkout = ({ userId }) => {
       navigate('/cart');
     }
   }, [cart, navigate]);
+
+  // Get PayStack API key on page load
+  useEffect(() => {
+    const fetchPaystackApiKey = async () => {
+      try {
+        const res = await axios.get(`${server}/payment/paystackapikey`);
+        console.log("Api key: ", res)
+        setPaystackApiKey(res.data.paystackApikey);
+      } catch (error) {
+        console.error('Error fetching Paystack API key:', error);
+      }
+    };
+
+    fetchPaystackApiKey();
+  }, []);
 
   const handlePayment = async () => {
     try {
@@ -55,22 +73,21 @@ const Checkout = ({ userId }) => {
         const orderId = order._id;
 
 
-        await axios.post(`${server}/payment/process/${orderId}`, 
-        /** TODO: Get user email somehow... 
-         * probably fetch it from Auth?
-        */
-        // {
-        //   email: "user-email",
-        //   amount: order?.totalPrice
-        // }
-      )
+        await axios.post(`${server}/payment/process/${orderId}`,
+          /** TODO: Get user email somehow... 
+           * probably fetch it from Auth?
+          */
+          // {
+          //   email: "user-email",
+          //   amount: order?.totalPrice
+          // }
+        )
 
         // API request to verify payment
         const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
 
         if (!verificationResponse.data.success) {
           throw new Error("Payment Verification Failed!");
-          return 
         }
       }
 
