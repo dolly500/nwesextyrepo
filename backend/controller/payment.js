@@ -4,7 +4,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const axios = require("axios")
 const Order = require("../model/order")
 const User = require("../model/user")
-// const paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
+const paystack = require("paystack")(process.env.PAYSTACK_SECRET_KEY);
 
 
 router.post(
