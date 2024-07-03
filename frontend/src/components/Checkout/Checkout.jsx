@@ -5,9 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { server } from '../../server';
 
-const Checkout = ({ userId }) => {
+const Checkout = () => {
   const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.user);
+
+  const userId = user._id
+  const userEmail = user.email
+
   const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [shippingAddress, setShippingAddress] = useState({
     address: '',
@@ -20,14 +26,29 @@ const Checkout = ({ userId }) => {
     expiryDate: '',
     cvv: '',
   });
+  const [paystackApiKey, setPaystackApiKey] = useState('');
 
-  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
+  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0)
 
   useEffect(() => {
     if (!cart.length) {
       navigate('/cart');
     }
   }, [cart, navigate]);
+
+  // Get PayStack API key on page load
+  useEffect(() => {
+    const fetchPaystackApiKey = async () => {
+      try {
+        const res = await axios.get(`${server}/payment/paystackapikey`);
+        setPaystackApiKey(res.data.paystackApikey);
+      } catch (error) {
+        console.error('Error fetching Paystack API key:', error);
+      }
+    };
+
+    fetchPaystackApiKey();
+  }, []);
 
   const handlePayment = async () => {
     try {
@@ -40,48 +61,59 @@ const Checkout = ({ userId }) => {
         paymentInfo,
       });
 
-      // console.log("Debug: -----------------------", createOrderResponse)
-
-      const { orders: created_orders } = createOrderResponse.data;
-
-      console.log(created_orders)
-      setOrders(created_orders);
+      const { orders } = createOrderResponse.data;
+      setOrders(orders);
 
       // Process and verify payment for each order
-
-      // console.log("DEBUG 2: ========== ", orders)
       for (const order of orders) {
-        // console.log("Debug 3: ===============", order)
         const orderId = order._id;
 
+        try {
+          const paymentResponse = await axios.post(
+            `${server}/payment/process/${orderId}`,
+            {
+              email: userEmail,
+              amount: order?.totalPrice * 100 //Convert amount to subunit of currency
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${paystackApiKey}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
 
-        await axios.post(`${server}/payment/process/${orderId}`, 
-        /** TODO: Get user email somehow... 
-         * probably fetch it from Auth?
-        */
-        // {
-        //   email: "user-email",
-        //   amount: order?.totalPrice
-        // }
-      )
+          console.log('Payment Response:', paymentResponse);
 
-        // API request to verify payment
-        const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
 
-        if (!verificationResponse.data.success) {
-          throw new Error("Payment Verification Failed!");
-          return 
+          /** Redirect users to a paystack payment page,
+         * If transaction is initialized succesfully
+         */
+          if (paymentResponse.status === 200 && paymentResponse?.data.success) {
+            window.location.replace(paymentResponse?.data.client_secret?.data?.authorization_url)
+          }
+        } catch (error) {
+          console.error('Error making payment request:', error);
         }
+
+        // ?trxref=nnpm44qh3h&reference=nnpm44qh3h
+        // API request to verify payment
+        // const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
+        // console.log("verification", verificationResponse)
+
+        // if (!verificationResponse.data.success) {
+        //   throw new Error("Payment Verification Failed!");
+        // }
       }
 
       /** If Payment verification is successful,
        * redirect users to chat page
        * 
-       * TODO: re-route users to live chat page     
+       * TODO: re-route users to leive chat page     
        */
 
       toast.success("Payment Successful!");
-      navigate('/order-success'); // Redirect to order success page
+      // navigate('/order-success'); // Redirect to order success page
     } catch (error) {
       console.error(error);
       toast.error("Payment Failed!");
