@@ -13,16 +13,16 @@ router.post(
     try {
       console.log("Processing order:", req.params.orderId);
       const order = await Order.findOne({ _id: req.params.orderId });
-      console.log("Order",order)
-      const amount = order.totalPrice
-      console.log("Order",amount)
-
+      console.log("Order:", order);
+      const amount = order.totalPrice * 100; // Ensure amount is in kobo (Paystack expects amount in the smallest currency unit)
+      console.log("Order amount:", amount);
 
       const response = await axios.post(
         'https://api.paystack.co/transaction/initialize',
         {
           email: order.user.email,
           amount,
+          callback_url: `${process.env.BASE_URL}/payment/callback`, // Dynamic callback URL
         },
         {
           headers: {
@@ -31,10 +31,14 @@ router.post(
           },
         }
       );
+
+      const paystackReference = response.data.data.reference;
+      console.log("Paystack reference:", paystackReference);
+
       const data = {
         paymentInfo: {
-          paystackRef: response.data.data.reference,
-        }
+          paystackRef: paystackReference,
+        },
       };
 
       await Order.findByIdAndUpdate(req.params.orderId, data, { new: true });
@@ -42,17 +46,17 @@ router.post(
       res.status(200).json({
         success: true,
         client_secret: response.data,
+        redirect_url: response.data.data.authorization_url, // Paystack URL to redirect user to
       });
 
     } catch (error) {
-      // Handle errors here
+      console.error("Error processing order:", error);
       res.status(400).json({
-        success: error.status,
+        success: false,
         message: error.message,
-      });;
+      });
     }
   })
-
 );
 
 router.put(
