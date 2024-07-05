@@ -22,7 +22,7 @@ router.post(
         {
           email: order.user.email,
           amount,
-          callback_url: `${process.env.BASE_URL}/payment/callback`, // Dynamic callback URL
+          callback_url: `${process.env.BASE_URL}/api/payment/callback`, // Dynamic callback URL
         },
         {
           headers: {
