@@ -69,7 +69,7 @@ const Checkout = () => {
         const orderId = order._id;
 
         try {
-          const paymentResponse = await axios.post(
+          await axios.post(
             `${server}/payment/process/${orderId}`,
             {
               email: userEmail,
@@ -81,39 +81,20 @@ const Checkout = () => {
                 'Content-Type': 'application/json'
               }
             }
-          );
-
-          console.log('Payment Response:', paymentResponse);
-
-
-          /** Redirect users to a paystack payment page,
-         * If transaction is initialized succesfully
-         */
-          if (paymentResponse.status === 200 && paymentResponse?.data.success) {
-            window.location.replace(paymentResponse?.data.client_secret?.data?.authorization_url)
-          }
+          ).then((res) => {
+            /** Redirect users to a paystack payment page,
+             * If transaction is initialized succesfully
+            */
+            if (res.status === 200 && res?.data.success) {
+              window.location.replace(res?.data.client_secret?.data?.authorization_url)
+            }
+          }).catch((err) => {
+            throw new Error(err.response.data.message)
+          })
         } catch (error) {
           console.error('Error making payment request:', error);
         }
-
-        // ?trxref=nnpm44qh3h&reference=nnpm44qh3h
-        // API request to verify payment
-        // const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
-        // console.log("verification", verificationResponse)
-
-        // if (!verificationResponse.data.success) {
-        //   throw new Error("Payment Verification Failed!");
-        // }
       }
-
-      /** If Payment verification is successful,
-       * redirect users to chat page
-       * 
-       * TODO: re-route users to leive chat page     
-       */
-
-      toast.success("Payment Successful!");
-      // navigate('/order-success'); // Redirect to order success page
     } catch (error) {
       console.error(error);
       toast.error("Payment Failed!");
