@@ -59,6 +59,56 @@ router.post(
   })
 );
 
+router.get(
+  "/payment/callback",
+  catchAsyncErrors(async (req, res, next) => {
+    const { reference } = req.query;
+
+    try {
+      const response = await axios.get(
+        `https://api.paystack.co/transaction/verify/${reference}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          },
+        }
+      );
+
+      const verificationData = response.data;
+      console.log("Verification data:", verificationData);
+
+      if (verificationData.data.status === "success") {
+        const order = await Order.findOneAndUpdate(
+          { "paymentInfo.paystackRef": reference },
+          { status: "Paid" },
+          { new: true }
+        );
+
+        // Redirect user to a success page
+        res.redirect(`${process.env.FRONTEND_URL}/payment-success`);
+      } else {
+        // Redirect user to a failure page
+        res.redirect(`${process.env.FRONTEND_URL}/payment-failure`);
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      // Redirect user to a failure page
+      res.redirect(`${process.env.FRONTEND_URL}/payment-failure`);
+    }
+  })
+);
+
+
+
+
+
+
+
+
+
+
+
+
 router.put(
   "/verify/:orderId",
   catchAsyncErrors(async (req, res, next) => {
