@@ -29,7 +29,7 @@ const HomePage = () => {
  */
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const trxRefParam = urlParams.get('trxRef'); // Extract 'trxRef' parameter
+    const trxRefParam = urlParams.get('trxref'); // Extract 'trxRef' parameter
 
     const verifyTrxRef = async (trxRef) => {
       setIsLoading(true);
@@ -37,9 +37,33 @@ const HomePage = () => {
         const response = await axios.put(`${server}/payment/verify/${trxRef}`);
         const data = await response.data;
 
-        if (response.status === 200) {
+        if (response.status !== 200) {
           throw new Error(`API request failed with status ${response.status}`);
         }
+
+        // TODO - WRITE it to accomodate chat reference/redirect
+
+        // Create a conversation and navigate to inbox after payment success
+        // if (isAuthenticated) {
+        //   const groupTitle   = data._id + user._id;
+        //   const userId = user._id;
+        //   const sellerId = data.shop._id;
+
+        //   await axios.post(`${server}/conversation/create-new-conversation`, {
+        //     groupTitle,
+        //     userId,
+        //     sellerId,
+        //   })
+        //     .then((res) => {
+        //       navigate(`/inbox?${res.data.conversation._id}`);
+        //     })
+        //     .catch((error) => {
+        //       toast.error(error.response.data.message);
+        //     });
+        // }
+        // else {
+        //   navigate(`/inbox`);
+        // }
 
 
         /** If Payment verification is successful,
