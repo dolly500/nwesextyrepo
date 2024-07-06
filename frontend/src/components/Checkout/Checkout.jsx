@@ -5,9 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { server } from '../../server';
 
-const Checkout = ({ userId }) => {
+const Checkout = () => {
   const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.user);
+
+  const userId = user._id
+  const userEmail = user.email
+
   const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [shippingAddress, setShippingAddress] = useState({
     address: '',
@@ -20,14 +26,29 @@ const Checkout = ({ userId }) => {
     expiryDate: '',
     cvv: '',
   });
+  const [paystackApiKey, setPaystackApiKey] = useState('');
 
-  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0);
+  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.discountPrice, 0)
 
   useEffect(() => {
     if (!cart.length) {
       navigate('/cart');
     }
   }, [cart, navigate]);
+
+  // Get PayStack API key on page load
+  useEffect(() => {
+    const fetchPaystackApiKey = async () => {
+      try {
+        const res = await axios.get(`${server}/payment/paystackapikey`);
+        setPaystackApiKey(res.data.paystackApikey);
+      } catch (error) {
+        console.error('Error fetching Paystack API key:', error);
+      }
+    };
+
+    fetchPaystackApiKey();
+  }, []);
 
   const handlePayment = async () => {
     try {
@@ -47,23 +68,33 @@ const Checkout = ({ userId }) => {
       for (const order of orders) {
         const orderId = order._id;
 
-        // API request to process payment
-        await axios.post(`${server}/payment/process/${orderId}`, {
-          userId,
-          items: cart,
-          total: totalPrice,
-        });
-
-        // API request to verify payment
-        const verificationResponse = await axios.post(`${server}/payment/verify/${orderId}`);
-
-        if (!verificationResponse.data.success) {
-          throw new Error("Payment Verification Failed!");
+        try {
+          await axios.post(
+            `${server}/payment/process/${orderId}`,
+            {
+              email: userEmail,
+              amount: order?.totalPrice * 100 //Convert amount to subunit of currency
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${paystackApiKey}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          ).then((res) => {
+            /** Redirect users to a paystack payment page,
+             * If transaction is initialized succesfully
+            */
+            if (res.status === 200 && res?.data.success) {
+              window.location.replace(res?.data.client_secret?.data?.authorization_url)
+            }
+          }).catch((err) => {
+            throw new Error(err.response.data.message)
+          })
+        } catch (error) {
+          console.error('Error making payment request:', error);
         }
       }
-
-      toast.success("Payment Successful!");
-      navigate('/order-success'); // Redirect to order success page
     } catch (error) {
       console.error(error);
       toast.error("Payment Failed!");

@@ -40,7 +40,9 @@ const Header = ({ activeHeading, data }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
-  
+  const [paystackApiKey, setPaystackApiKey] = useState('');
+
+
   console.log("isAuthenticated:", isAuthenticated)
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -57,8 +59,8 @@ const Header = ({ activeHeading, data }) => {
   const openModal = () => {
     setModalOpen(true);
   };
-  
-  
+
+
   const closeModal = () => {
     setModalOpen(false);
   };
@@ -69,7 +71,7 @@ const Header = ({ activeHeading, data }) => {
     } else {
       setActive(false);
     }
-});
+  });
 
   useEffect(() => {
     axios.get(`${server}/category`, { withCredentials: true })
@@ -77,77 +79,71 @@ const Header = ({ activeHeading, data }) => {
         setCategories(res.data.categorys);
         console.log('api', res.data.categorys)
       })
-      
+
       .catch((error) => {
         console.error("Error fetching categories:", error);
       });
   }, []);
 
+  // Get PayStack API key on page load
+  useEffect(() => {
+    const fetchPaystackApiKey = async () => {
+      try {
+        const res = await axios.get(`${server}/payment/paystackapikey`);
+        setPaystackApiKey(res.data.paystackApikey);
+      } catch (error) {
+        console.error('Error fetching Paystack API key:', error);
+      }
+    };
+
+    fetchPaystackApiKey();
+  }, []);
 
   const handlePayment = async () => {
+    const _amount = 5000 // Set your desired amount
+
     try {
-      // Make a request to your server to initiate the payment
-      const response = await axios.post('', {
-        amount: 5000, // Set your desired amount
-        email: '', // Set the customer's email
-        metadata: {
-          custom_fields: [
-            {
-              display_name: 'Product Name',
-              variable_name: 'product_name',
-              value: 'Your Product',
-            },
-          ],
+      await axios.post(
+        `${server}/payment/chatpayment/${user._id}`,
+        {
+          email: user.email,
+          amount: _amount * 100 //Convert amount to subunit of currency
         },
-      });
-  
-      // After getting the response from the server, redirect to Paystack payment page
-      window.location.href = response.data.data.authorization_url;
-      
-      // Create a conversation and navigate to inbox after payment success
-      if (isAuthenticated) {
-        const groupTitle = data._id + user._id;
-        const userId = user._id;
-        const sellerId = data.shop._id;
-  
-        await axios.post(`${server}/conversation/create-new-conversation`, {
-          groupTitle,
-          userId,
-          sellerId,
-        })
-        .then((res) => {
-          navigate(`/inbox?${res.data.conversation._id}`);
-        })
-        .catch((error) => {
-          toast.error(error.response.data.message);
-        });
-      }
-      else {
-        navigate(`/inbox`);
-      }
+        {
+          headers: {
+            'Authorization': `Bearer ${paystackApiKey}`,
+          }
+        }
+      ).then((res) => {
+        /** Redirect users to a paystack payment page,
+          * If transaction is initialized succesfully
+          */
+        if (res.status === 200 && res?.data.success) {
+          window.location.replace(res?.data.client_secret?.data?.authorization_url)
+        }
+      }).catch((err) => { throw new Error(err) })
     } catch (error) {
       console.error('Error initiating payment:', error);
-      // Handle error appropriately (e.g., show an error message to the user)
     }
   };
-  
+
 
   const handleMessageSubmit = async () => {
     if (isAuthenticated) {
       openModal();
-    } else{
+    } else {
       alert("Please Log In!")
     }
   };
 
   return (
     <>
-      <div className={`${styles.section} lg:bg-white lg:h-19 lg:w-300 lg:p-1`} style={{width: '100%'}} >
+      <div className={`${styles.section} lg:bg-white lg:h-19 lg:w-300 lg:p-1`} style={{ width: '100%' }} >
         <div className="hidden 800px:h-[50px] 800px:my-[20px] 800px:flex items-center justify-between">
           <div className="">
             <Link to="/">
               <img className="h-auto max-w-full w-2/5 ml-8"
-                src= {logo}
+                src={logo}
                 alt=""
               />
             </Link>
@@ -186,7 +182,7 @@ const Header = ({ activeHeading, data }) => {
             ) : null}
           </div>
 
-          <div className={`${styles.button} mr-20`} style={{display: 'none'}}>
+          <div className={`${styles.button} mr-20`} style={{ display: 'none' }}>
             <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
               <h1 className="text-[#fff] flex items-center">
                 {isSeller ? "Become seller" : "Become Seller"}{" "}
@@ -197,9 +193,8 @@ const Header = ({ activeHeading, data }) => {
         </div>
       </div>
       <div
-        className={`${
-          active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
-        } transition hidden 800px:flex items-center justify-between w-full bg-[#E6007E] h-[70px]`}
+        className={`${active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
+          } transition hidden 800px:flex items-center justify-between w-full bg-[#E6007E] h-[70px]`}
       >
         <div
           className={`${styles.section} relative ${styles.noramlFlex} justify-between`}
@@ -234,79 +229,79 @@ const Header = ({ activeHeading, data }) => {
           <div className="flex">
             <div className={`${styles.noramlFlex}`}>
 
-                <div className="relative cursor-pointer mr-[15px]" onClick={handleMessageSubmit}>
-                  <IoChatbubbleEllipses size={30} color="rgb(255 255 255 / 83%)"/>
+              <div className="relative cursor-pointer mr-[15px]" onClick={handleMessageSubmit}>
+                <IoChatbubbleEllipses size={30} color="rgb(255 255 255 / 83%)" />
+              </div>
+
+
+              <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="Login Modal"
+                style={{
+                  overlay: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  },
+                  content: {
+                    width: '400px',
+                    margin: 'auto',
+                    borderRadius: '8px',
+                    position: 'relative',
+                  },
+                }}
+              >
+                <div>
+                  {/* Cancel icon at the right top */}
+                  <button
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '20px',
+                      color: '#333',
+                    }}
+                    onClick={closeModal}
+                  >
+                    &#10006; {/* Unicode for 'x' symbol */}
+                  </button>
+
+                  <p>Buy Your Talk Time Unit To Access Assigned Therapists</p>
+
+                  <br />
+
+                  {/* Cancel button styling */}
+                  <button
+                    style={{
+                      background: '#ddd',
+                      color: '#333',
+                      padding: '8px 16px',
+                      borderRadius: '4px',
+                      marginRight: '10px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </button>
+
+                  {/* Pay Here button styling */}
+                  <button
+                    style={{
+                      background: '#483bc1',
+                      color: '#fff',
+                      padding: '8px 16px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={handlePayment}
+                  >
+                    Pay Here
+                  </button>
                 </div>
-
-                
-<Modal
-  isOpen={isModalOpen}
-  onRequestClose={closeModal}
-  contentLabel="Login Modal"
-  style={{
-    overlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    content: {
-      width: '400px',
-      margin: 'auto',
-      borderRadius: '8px',
-      position: 'relative',
-    },
-  }}
->
-  <div>
-    {/* Cancel icon at the right top */}
-    <button
-      style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '20px',
-        color: '#333',
-      }}
-      onClick={closeModal}
-    >
-      &#10006; {/* Unicode for 'x' symbol */}
-    </button>
-
-    <p>Buy Your Talk Time Unit To Access Assigned Therapists</p>
-
-    <br />
-    
-    {/* Cancel button styling */}
-    <button
-      style={{
-        background: '#ddd',
-        color: '#333',
-        padding: '8px 16px',
-        borderRadius: '4px',
-        marginRight: '10px',
-        cursor: 'pointer',
-      }}
-      onClick={closeModal}
-    >
-      Cancel
-    </button>
-    
-    {/* Pay Here button styling */}
-    <button
-      style={{
-        background: '#483bc1',
-        color: '#fff',
-        padding: '8px 16px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-      }}
-      onClick={handlePayment}
-    >
-      Pay Here
-    </button>
-  </div>
-</Modal>
+              </Modal>
 
             </div>
             <div className={`${styles.noramlFlex}`}>
@@ -377,7 +372,7 @@ const Header = ({ activeHeading, data }) => {
             <BiMenuAltLeft
               size={40}
               className="ml-4"
-              onClick={() => setOpen(true)} style={{color: 'white'}}
+              onClick={() => setOpen(true)} style={{ color: 'white' }}
             />
           </div>
           <div>
@@ -386,28 +381,28 @@ const Header = ({ activeHeading, data }) => {
                 src={logo}
                 alt=""
                 className="mt-3 cursor-pointer max-w-full h-auto"
-                style={{ maxHeight: '150px' }} 
+                style={{ maxHeight: '150px' }}
               />
             </Link>
           </div>
           <div className="flex">
             <div className="relative mr-[20px]" onClick={handleMessageSubmit}>
-              <IoChatbubbleEllipses size={30} style={{color: 'white'}}/>
+              <IoChatbubbleEllipses size={30} style={{ color: 'white' }} />
             </div>
             <div
               className="relative mr-[20px]"
               onClick={() => setOpenCart(true)}
             >
-              <AiOutlineShoppingCart size={30} style={{color: 'white'}} onClick={() => setOpenCart(true)}/>
+              <AiOutlineShoppingCart size={30} style={{ color: 'white' }} onClick={() => setOpenCart(true)} />
               <span className="absolute left-0 top-0 rounded-full bg-[#5f3bc1] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
                 {cart && cart.length}
               </span>
             </div>
           </div>
           {/* cart popup */}
- 
+
           {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
-          
+
 
           {/* wishlist popup */}
           {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
@@ -425,7 +420,7 @@ const Header = ({ activeHeading, data }) => {
                     className="relative mr-[15px]"
                     onClick={() => setOpenWishlist(true) || setOpen(false)}
                   >
-                    <AiOutlineHeart size={30} className="mt-5 ml-3" style={{color: 'white'}} />
+                    <AiOutlineHeart size={30} className="mt-5 ml-3" style={{ color: 'white' }} />
                     <span className="absolute right-0 top-0 rounded-full bg-[#c13b89] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
                       {wishlist && wishlist.length}
                     </span>
@@ -433,7 +428,7 @@ const Header = ({ activeHeading, data }) => {
                 </div>
                 <RxCross1
                   size={30}
-                  className="ml-4 mt-5" style={{color: 'white'}}
+                  className="ml-4 mt-5" style={{ color: 'white' }}
                   onClick={() => setOpen(false)}
                 />
               </div>
@@ -446,29 +441,29 @@ const Header = ({ activeHeading, data }) => {
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
-                   {searchData && searchData.length !== 0 ? (
-              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
-                {searchData &&
-                  searchData.map((i, index) => {
-                    return (
-                      <Link to={`/product/${i._id}`}>
-                        <div className="w-full flex items-start-py-3">
-                          <img
-                            src={`${i.images[0]?.url}`}
-                            alt=""
-                            className="w-[40px] h-[40px] mr-[10px]"
-                          />
-                          <h1>{i.name}</h1>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                {searchData && searchData.length !== 0 ? (
+                  <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                    {searchData &&
+                      searchData.map((i, index) => {
+                        return (
+                          <Link to={`/product/${i._id}`}>
+                            <div className="w-full flex items-start-py-3">
+                              <img
+                                src={`${i.images[0]?.url}`}
+                                alt=""
+                                className="w-[40px] h-[40px] mr-[10px]"
+                              />
+                              <h1>{i.name}</h1>
+                            </div>
+                          </Link>
+                        );
+                      })}
                   </div>
                 ) : null}
               </div>
 
               <Navbar active={activeHeading} />
-              <div className={`${styles.button} ml-4 !rounded-[4px]`} style={{display: 'none'}}>
+              <div className={`${styles.button} ml-4 !rounded-[4px]`} style={{ display: 'none' }}>
                 <Link to="/shop-create">
                   <h1 className="text-[#fff] flex items-center">
                     Become Seller <IoIosArrowForward className="ml-1" />

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+
 import Header from '../components/Layout/Header';
 import Hero from '../components/Route/Hero/Hero';
 import Categories from '../components/Route/Categories/Categories';
@@ -11,21 +14,94 @@ import Events from '../components/Events/Events';
 import Footer from '../components/Layout/Footer';
 import SlideInOnScroll from './SlideInOnScroll'; // Import the SlideInOnScroll component
 import { server } from '../server';
-import axios from 'axios';
 
 const HomePage = () => {
+  const [categoriesData, setCategoriesData] = useState([])
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const [categoriesData, setCategoriesData] = useState([])
+
+  /**
+ * Retrieves transaction reference (@param trxRef) from the URL on page load.
+ * Verifies @param trxRef by makin an API call to the /payment/verify endpoint.
+ * If the verification is successful, User is redirected to the inbox (@ /inbox) route.
+ * Otherwise, an error message is displayed to the user.
+ */
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const trxRefParam = urlParams.get('trxref'); // Extract 'trxRef' parameter
+
+    const verifyTrxRef = async (trxRef) => {
+      setIsLoading(true);
+      try {
+        const response = await axios.put(`${server}/payment/verify/${trxRef}`);
+        const data = await response.data;
+
+        if (response.status !== 200) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        // TODO - WRITE it to accomodate chat reference/redirect
+
+        // Create a conversation and navigate to inbox after payment success
+        // if (isAuthenticated) {
+        //   const groupTitle   = data._id + user._id;
+        //   const userId = user._id;
+        //   const sellerId = data.shop._id;
+
+        //   await axios.post(`${server}/conversation/create-new-conversation`, {
+        //     groupTitle,
+        //     userId,
+        //     sellerId,
+        //   })
+        //     .then((res) => {
+        //       navigate(`/inbox?${res.data.conversation._id}`);
+        //     })
+        //     .catch((error) => {
+        //       toast.error(error.response.data.message);
+        //     });
+        // }
+        // else {
+        //   navigate(`/inbox`);
+        // }
+
+
+        /** If Payment verification is successful,
+         * redirect users to Chat Inbox
+         */
+        if (data.success) {
+          toast.success("Payment Successful!");
+          navigate('/inbox'); // Redirect to /inbox on success
+        } else {
+          throw new Error(data.error || 'Verification failed'); // Handle error message from API
+        }
+
+      } catch (error) {
+        console.error('Error verifying trxRef:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (trxRefParam) {
+      verifyTrxRef(trxRefParam); // Trigger verification on mount
+    } else {
+      // Handle missing 'trxRef' parameter (optional)
+      console.info('No "trxRef" parameter was found in URL');
+    }
+  }, []);
+
+
+
 
   useEffect(() => {
     // When the component mounts, scroll to the top of the page
     window.scrollTo(0, 0);
-    axios.get(`${server}/category/`, {withCredentials: true}).then((res) => {
+    axios.get(`${server}/category/`, { withCredentials: true }).then((res) => {
       setCategoriesData(res?.data?.categorys);
-  }).catch((error) => {
-    console.error('Error fetching category data:', error);
-  });
+    }).catch((error) => {
+      console.error('Error fetching category data:', error);
+    });
   }, []);
 
   const handleFooterClick = () => {
@@ -54,6 +130,9 @@ const HomePage = () => {
 
   return (
     <div>
+      {
+        isLoading ? <div>Verifying Transaction...</div> : null
+      }
       <Header activeHeading={1} categoriesData={categoriesData} />
       <div className={`bg-black`}>
         <SlideInOnScroll>
@@ -72,7 +151,7 @@ const HomePage = () => {
           <FeaturedProduct />
         </SlideInOnScroll>
         <SlideInOnScroll>
-        <Footer onClick={handleFooterClick}/>
+          <Footer onClick={handleFooterClick} />
 
         </SlideInOnScroll>
       </div>

@@ -8,15 +8,16 @@ import Payment from "../components/Payment/Payment";
 const CheckoutPage = () => {
   return (
     <div>
-        <Header />
-        <br />
-        <br />
-        <CheckoutSteps active={1} />
-        <Checkout />
-        {/* <Payment /> */}
-        <br />
-        <br />
-        <Footer />
+      <Header />
+      <br />
+      <br />
+      <CheckoutSteps active={1} />
+
+      <Checkout />
+      {/* <Payment /> */}
+      <br />
+      <br />
+      <Footer />
     </div>
   )
 }
