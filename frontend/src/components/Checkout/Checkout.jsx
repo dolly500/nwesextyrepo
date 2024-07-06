@@ -56,7 +56,7 @@ const Checkout = () => {
       const createOrderResponse = await axios.post(`${server}/order/create-order`, {
         cart,
         shippingAddress,
-        user: userId,
+        user: user,
         totalPrice,
         paymentInfo,
       });

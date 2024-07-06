@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useSelector } from "react-redux";
 import axios from 'axios';
 
 import Header from '../components/Layout/Header';
@@ -16,10 +17,13 @@ import SlideInOnScroll from './SlideInOnScroll'; // Import the SlideInOnScroll c
 import { server } from '../server';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useSelector((state) => state.user);
+
   const [categoriesData, setCategoriesData] = useState([])
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate();
+
 
   /**
  * Retrieves transaction reference (@param trxRef) from the URL on page load.
@@ -30,6 +34,8 @@ const HomePage = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const trxRefParam = urlParams.get('trxref'); // Extract 'trxRef' parameter
+    const typeParam = urlParams.get('type'); // Extract 'type' parameter
+
 
     const verifyTrxRef = async (trxRef) => {
       setIsLoading(true);
@@ -41,30 +47,37 @@ const HomePage = () => {
           throw new Error(`API request failed with status ${response.status}`);
         }
 
-        // TODO - WRITE it to accomodate chat reference/redirect
+        /** Logic to perform if redirect URL resulted from,
+         * chat payment
+         */
+        if (typeParam === 'chat') {
+          if (isAuthenticated) {
 
-        // Create a conversation and navigate to inbox after payment success
-        // if (isAuthenticated) {
-        //   const groupTitle   = data._id + user._id;
-        //   const userId = user._id;
-        //   const sellerId = data.shop._id;
+            const groupTitle = data._id + user._id;
+            const userId = user._id;
+            const sellerId = data.shop._id;
 
-        //   await axios.post(`${server}/conversation/create-new-conversation`, {
-        //     groupTitle,
-        //     userId,
-        //     sellerId,
-        //   })
-        //     .then((res) => {
-        //       navigate(`/inbox?${res.data.conversation._id}`);
-        //     })
-        //     .catch((error) => {
-        //       toast.error(error.response.data.message);
-        //     });
-        // }
-        // else {
-        //   navigate(`/inbox`);
-        // }
+            await axios.post(`${server}/conversation/create-new-conversation`, {
+              groupTitle,
+              userId,
+              sellerId,
+            })
+              .then((res) => {
+                toast.success("Payment Successful!");
+                navigate(`/inbox?${res.data.conversation._id}`);
+              })
+              .catch((error) => {
+                toast.error(error.response.data.message);
+              });
 
+            return
+          } else {
+            toast.success("Payment Successful!");
+            navigate('/inbox');
+
+            return
+          }
+        }
 
         /** If Payment verification is successful,
          * redirect users to Chat Inbox
@@ -72,6 +85,8 @@ const HomePage = () => {
         if (data.success) {
           toast.success("Payment Successful!");
           navigate('/inbox'); // Redirect to /inbox on success
+
+          return
         } else {
           throw new Error(data.error || 'Verification failed'); // Handle error message from API
         }
@@ -87,7 +102,7 @@ const HomePage = () => {
       verifyTrxRef(trxRefParam); // Trigger verification on mount
     } else {
       // Handle missing 'trxRef' parameter (optional)
-      console.info('No "trxRef" parameter was found in URL');
+      console.info(`No "trxRef" ${!typeParam ? 'or "type"' : null}  parameter was found in URL`);
     }
   }, []);
 

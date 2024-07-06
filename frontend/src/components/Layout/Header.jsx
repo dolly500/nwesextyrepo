@@ -11,8 +11,7 @@ import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { IoChatbubbleEllipses } from "react-icons/io5";
 import { RxCross1 } from "react-icons/rx";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { server } from "../../server";
 import logo from "../../static/imgs/logo.png";
 import styles from "../../styles/styles";
@@ -24,7 +23,6 @@ import Modal from "react-modal";
 
 
 const Header = ({ activeHeading, data }) => {
-  const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { isSeller } = useSelector((state) => state.seller);
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -42,8 +40,6 @@ const Header = ({ activeHeading, data }) => {
   const [open, setOpen] = useState(false);
   const [paystackApiKey, setPaystackApiKey] = useState('');
 
-
-  console.log("isAuthenticated:", isAuthenticated)
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
