@@ -52,7 +52,6 @@ const HomePage = () => {
          */
         if (typeParam === 'chat') {
           if (isAuthenticated) {
-
             const groupTitle = data._id + user._id;
             const userId = user._id;
             const sellerId = data.shop._id;
@@ -84,8 +83,6 @@ const HomePage = () => {
          */
         if (data.success) {
           toast.success("Payment Successful!");
-          navigate('/inbox'); // Redirect to /inbox on success
-
           return
         } else {
           throw new Error(data.error || 'Verification failed'); // Handle error message from API
