@@ -69,9 +69,13 @@ const HomePage = () => {
               .catch((error) => {
                 toast.error(error.response.data.message);
               });
+
+            return
           } else {
             toast.success("Payment Successful!");
             navigate('/inbox');
+
+            return
           }
         }
 
@@ -81,6 +85,8 @@ const HomePage = () => {
         if (data.success) {
           toast.success("Payment Successful!");
           navigate('/inbox'); // Redirect to /inbox on success
+
+          return
         } else {
           throw new Error(data.error || 'Verification failed'); // Handle error message from API
         }
