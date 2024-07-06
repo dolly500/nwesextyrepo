@@ -21,7 +21,7 @@ router.post(
       const response = await axios.post(
         'https://api.paystack.co/transaction/initialize',
         {
-          email: "dolapoakamo01@gmail.com",
+          email: order.user.email,
           amount,
           // https://allsextoys.vercel.app/api/payment/callback?type=order&trxref=olv521cn7v&reference=olv521cn7v
           // callback_url: `localhost:3000/?type=order`, // Dynamic callback URL
@@ -182,7 +182,7 @@ router.post(
         {
           email: user.email,
           amount,
-          callback_url: `${process.env.BASE_URL}/api/payment/callback?type=chat`, // Corrected callback URL
+          callback_url: `${process.env.FRONTEND_URL}?type=chat`, // Corrected callback URL
         },
         {
           headers: {
