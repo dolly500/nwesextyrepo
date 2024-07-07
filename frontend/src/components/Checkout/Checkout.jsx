@@ -169,7 +169,7 @@ const Checkout = () => {
           className="mb-2 p-2 border rounded w-full"
         />
 
-        <h2 className="text-xl font-semibold mb-4 mt-5">Payment Information</h2>
+        {/* <h2 className="text-xl font-semibold mb-4 mt-5">Payment Information</h2>
         <input
           type="text"
           name="cardNumber"
@@ -193,7 +193,7 @@ const Checkout = () => {
           value={paymentInfo.cvv}
           onChange={handlePaymentInfoChange}
           className="mb-2 p-2 border rounded w-full"
-        />
+        /> */}
 
         <button
           onClick={handlePayment}
