@@ -29,11 +29,11 @@ const ShopLogin = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        Cookies.set('currentSeller', JSON.stringify(res.data.user), {sameSite: "Strict", expires: expirationTime})
+        Cookies.set('currentSeller', JSON.stringify(res.data.user), { sameSite: "none", expires: expirationTime })
         localStorage.setItem("user", JSON.stringify(res.data.user))
         toast.success("Login Success!");
         navigate("/dashboard");
-        window.location.reload(true); 
+        window.location.reload(true);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -43,17 +43,17 @@ const ShopLogin = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 ">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-      <Link to="/">
-        <img src={logo} alt='' style={{ height: '130px', width: '120px', display: 'flex', margin: '0 auto' }}
-        />
-      </Link>
+        <Link to="/">
+          <img src={logo} alt='' style={{ height: '130px', width: '120px', display: 'flex', margin: '0 auto' }}
+          />
+        </Link>
 
-      <Link to="/">
+        <Link to="/">
           {/* Home Icon Button */}
           <button className="absolute top-4 right-4 text-pink-600">
             <FaHome size={24} />
           </button>
-      </Link>
+        </Link>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Login to your shop
         </h2>
