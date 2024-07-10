@@ -14,7 +14,7 @@ const swaggerDocument = require('./swagger-output.json');
 
 
 app.use(cors({
-  origin: true,
+  origin: ['https://allsextoyss.vercel.app', 'http://localhost:3000'],
   credentials: true
 }));
 // app.use(express.bodyParser({limit: '50mb'}))
