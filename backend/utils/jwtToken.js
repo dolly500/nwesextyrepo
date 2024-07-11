@@ -8,7 +8,7 @@ const sendToken = (user, statusCode, res) => {
   const options = {
     expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    sameSite: "none",
+    sameSite: "strict",
     secure: true,
   };
 
@@ -45,24 +45,24 @@ const generateAccessToken = (user) => {
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  console.log('Auth Header:', authHeader); 
+  console.log('Auth Header:', authHeader);
 
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    console.log('Invalid token: Token not found'); 
+    console.log('Invalid token: Token not found');
     return res.status(401).json({ success: false, message: 'Invalid token' });
   }
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     console.log('Decoded Token:', decodedToken);
-    req.user = decodedToken; 
-    next(); 
+    req.user = decodedToken;
+    next();
   } catch (err) {
-    console.log('Invalid token: Verification failed'); 
+    console.log('Invalid token: Verification failed');
     return res.status(401).json({ success: false, message: 'Invalid token' });
   }
 };
 
-module.exports = { sendToken, verifyToken, generateAccessToken};
+module.exports = { sendToken, verifyToken, generateAccessToken };

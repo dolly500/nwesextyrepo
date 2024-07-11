@@ -101,9 +101,9 @@ router.post(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { error } = activationSchema.validate(req.body);
-    if (error) {
-      throw new ErrorHandler(error.details[0].message, 400);
-    }
+      if (error) {
+        throw new ErrorHandler(error.details[0].message, 400);
+      }
       const { activation_token } = req.body;
 
       const newSeller = jwt.verify(
@@ -214,8 +214,8 @@ router.post('/forgot-password', catchAsyncErrors(async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
- 
- })
+
+})
 );
 
 
@@ -234,7 +234,7 @@ router.put('/reset-password', catchAsyncErrors(async (req, res, next) => {
 
     const { email, resetToken, newPassword } = value;
 
-    const  shop = await Shop.findOne({ email });
+    const shop = await Shop.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
@@ -252,17 +252,17 @@ router.put('/reset-password', catchAsyncErrors(async (req, res, next) => {
     shop.resetToken = null; // Clear the reset token after use
     shop.resetTokenHash = null; // Clear the reset token hash after use
     shop.resetTokenExpiry = null;
-    await  shop.save();
+    await shop.save();
 
     res.status(200).json({
       success: true,
-      data: { email:  shop.email },
+      data: { email: shop.email },
       message: "Password reset successful",
     });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
- 
+
 })
 );
 
@@ -300,7 +300,7 @@ router.get(
       res.cookie("seller_token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "strict",
         secure: true,
       });
       res.status(201).json({
@@ -336,31 +336,31 @@ router.put(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { error } = updateShopAvatarSchema.validate(req.body);
-    if (error) {
-      throw new ErrorHandler(error.details[0].message, 400);
-    }
+      if (error) {
+        throw new ErrorHandler(error.details[0].message, 400);
+      }
       let existsSeller = await Shop.findById(req.seller._id);
 
-        const imageId = existsSeller.avatar.public_id;
+      const imageId = existsSeller.avatar.public_id;
 
-        await cloudinary.v2.uploader.destroy(imageId);
+      await cloudinary.v2.uploader.destroy(imageId);
 
-        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-          folder: "avatars",
-          width: 150,
-        });
+      const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+      });
 
-        existsSeller.avatar = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
+      existsSeller.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      };
 
-  
+
       await existsSeller.save();
 
       res.status(200).json({
         success: true,
-        seller:existsSeller,
+        seller: existsSeller,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -375,9 +375,9 @@ router.put(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { error } = updateSellerInfoSchema.validate(req.body);
-    if (error) {
-      throw new ErrorHandler(error.details[0].message, 400);
-    }
+      if (error) {
+        throw new ErrorHandler(error.details[0].message, 400);
+      }
       const { name, description, address, phoneNumber, zipCode } = req.body;
 
       const shop = await Shop.findOne(req.seller._id);

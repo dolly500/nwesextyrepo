@@ -21,7 +21,7 @@ const {
   generateResetToken,
   validateResetToken
 
- } = require('../services/auth.service');
+} = require('../services/auth.service');
 const Shop = require("../model/shop");
 const bcrypt = require("bcrypt");
 
@@ -200,8 +200,8 @@ router.post('/forgot-password', catchAsyncErrors(async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
- 
- })
+
+})
 );
 
 // Reset-Password
@@ -248,7 +248,7 @@ router.put('/reset-password', catchAsyncErrors(async (req, res, next) => {
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }
- 
+
 })
 );
 
@@ -286,7 +286,7 @@ router.get(
       res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "strict",
         secure: true,
       });
       res.status(201).json({
