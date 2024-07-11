@@ -29,7 +29,7 @@ const ShopLogin = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        Cookies.set('currentSeller', JSON.stringify(res.data.user), { sameSite: "strict", expires: expirationTime })
+        Cookies.set('currentSeller', JSON.stringify(res.data.user), { sameSite: "none", expires: expirationTime })
         localStorage.setItem("user", JSON.stringify(res.data.user))
         toast.success("Login Success!");
         navigate("/dashboard");
