@@ -16,10 +16,7 @@ const swaggerDocument = require('./swagger-output.json');
 app.use(cors({
   origin: ['https://allsextoyss.vercel.app', 'http://localhost:3000'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 600 // Preflight results can be cached for 10 minutes
+  domain: 'allsextoyss.vercel.app'
 }));
 // app.use(express.bodyParser({limit: '50mb'}))
 
