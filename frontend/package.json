@@ -68,6 +68,7 @@
       "react-app/jest"
     ]
   },
+  "proxy": "https://allsextoyss.vercel.app",
   "browserslist": {
     "production": [
       ">0.2%",
