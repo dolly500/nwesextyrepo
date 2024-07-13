@@ -3,14 +3,18 @@ const catchAsyncErrors = require("./catchAsyncErrors");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
 const Shop = require("../model/shop");
+exports.isAuthenticated = catchAsyncErrors(async (req, res, next) => {
+    const authHeader = req.headers.authorization;
 
-exports.isAuthenticated = catchAsyncErrors(async(req,res,next) => {
-    const {token} = req.cookies;
-
-    if(!token){
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return next(new ErrorHandler("Please login to continue", 401));
     }
 
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        return next(new ErrorHandler("Please login to continue", 401));
+    }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
@@ -20,9 +24,16 @@ exports.isAuthenticated = catchAsyncErrors(async(req,res,next) => {
 });
 
 
-exports.isSeller = catchAsyncErrors(async(req,res,next) => {
-    const {seller_token} = req.cookies;
-    if(!seller_token){
+exports.isSeller = catchAsyncErrors(async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return next(new ErrorHandler("Please login to continue", 401));
+    }
+
+    const seller_token = authHeader.split(' ')[1];
+
+    if (!seller_token) {
         return next(new ErrorHandler("Please login to continue", 401));
     }
 
@@ -32,7 +43,6 @@ exports.isSeller = catchAsyncErrors(async(req,res,next) => {
 
     next();
 });
-
 
 exports.isAdmin = (...roles) => {
     return (req,res,next) => {
