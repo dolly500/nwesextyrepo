@@ -155,7 +155,7 @@ router.post(
         return next(new ErrorHandler("Incorrect email or password", 400));
       }
 
-      // Send token and set cookie
+      // Send token only
       sendToken(user, 200, res); // Assuming 200 is the status code for success
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
