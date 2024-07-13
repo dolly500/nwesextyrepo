@@ -7,6 +7,7 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import logo from "../../static/imgs/logo.png"
+import { setLocalStorage } from "../../lib/localStorage";
 
 
 const Login = () => {
@@ -28,6 +29,9 @@ const Login = () => {
         { withCredentials: true }
       )
       .then((res) => {
+        //Set token gotten as response in localstorage
+        setLocalStorage("auth-token", res.data?.token, 4 * 60 * 60) //Set Timeout of 4hours
+
         toast.success("Login Success!");
         navigate("/");
         window.location.reload(true);

@@ -1,14 +1,20 @@
 import axios from 'axios';
 import { server } from '../../server';
+import { getLocalStorage } from '../../lib/localStorage';
 
 // load user
 export const loadUser = () => async (dispatch) => {
+  const token = getLocalStorage("auth-token")
+
   try {
     dispatch({
       type: 'LoadUserRequest',
     });
     const { data } = await axios.get(`${server}/user/getuser`, {
       withCredentials: true,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     dispatch({
@@ -25,22 +31,27 @@ export const loadUser = () => async (dispatch) => {
 
 // load seller
 export const loadSeller = () => async (dispatch) => {
+  const token = getLocalStorage("auth-token")
+
   try {
     dispatch({
       type: 'LoadSellerRequest',
     });
     const { data } = await axios.get(`${server}/shop/getSeller`, {
       withCredentials: true,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
-    
-     // Log after the API call is successful
-     console.log("Received seller data:", data);
-     
+
+    // Log after the API call is successful
+    console.log("Received seller data:", data);
+
     dispatch({
       type: 'LoadSellerSuccess',
       payload: data.seller,
     });
-   
+
   } catch (error) {
     dispatch({
       type: 'LoadSellerFail',
