@@ -10,6 +10,7 @@ import { RxCross1 } from "react-icons/rx";
 import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
+import { getLocalStorage } from "../../lib/localStorage";
 
 const AllUsers = () => {
   const dispatch = useDispatch();
@@ -21,14 +22,22 @@ const AllUsers = () => {
     dispatch(getAllUsers());
   }, [dispatch]);
 
+  const token = getLocalStorage("auth-token")
+
   const handleDelete = async (id) => {
     await axios
-    .delete(`${server}/user/delete-user/${id}`, { withCredentials: true })
-    .then((res) => {
-      toast.success(res.data.message);
-    });
+      .delete(`${server}/user/delete-user/${id}`, {
+        withCredentials: true,
+        headers:
+        {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        toast.success(res.data.message);
+      });
 
-  dispatch(getAllUsers());
+    dispatch(getAllUsers());
   };
 
   const columns = [
@@ -125,7 +134,7 @@ const AllUsers = () => {
                 </div>
                 <div
                   className={`${styles.button} text-white text-[18px] !h-[42px] ml-4`}
-                  onClick={() =>  setOpen(false) || handleDelete(userId)}
+                  onClick={() => setOpen(false) || handleDelete(userId)}
                 >
                   confirm
                 </div>

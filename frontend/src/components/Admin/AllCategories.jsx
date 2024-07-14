@@ -10,13 +10,19 @@ import Loader from "../Layout/Loader";
 import axios from "axios";
 import { server } from "../../server";
 import { useState } from "react";
+import { getLocalStorage } from '../../lib/localStorage'
 
 const AllCategories = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get(`${server}/category/all-categories`, {withCredentials: true}).then((res) => {
-        setData(res.data.categories);
+    const token = getLocalStorage("auth-token")
+
+    axios.get(`${server}/category/all-categories`, {
+      withCredentials: true,
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((res) => {
+      setData(res.data.categories);
     })
   }, []);
 
@@ -58,7 +64,7 @@ const AllCategories = () => {
   const row = [];
 
   data &&
-  data.forEach((item) => {
+    data.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
@@ -68,15 +74,15 @@ const AllCategories = () => {
 
   return (
     <>
-        <div className="w-full mx-8 pt-1 mt-10 bg-white">
-          <DataGrid
-            rows={row}
-            columns={columns}
-            pageSize={10}
-            disableSelectionOnClick
-            autoHeight
-          />
-        </div>
+      <div className="w-full mx-8 pt-1 mt-10 bg-white">
+        <DataGrid
+          rows={row}
+          columns={columns}
+          pageSize={10}
+          disableSelectionOnClick
+          autoHeight
+        />
+      </div>
     </>
   );
 };

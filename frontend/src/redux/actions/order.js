@@ -1,5 +1,6 @@
 import axios from "axios";
 import { server } from "../../server";
+import { getLocalStorage } from "../../lib/localStorage";
 
 // get all orders of user
 export const getAllOrdersOfUser = (userId) => async (dispatch) => {
@@ -53,9 +54,14 @@ export const getAllOrdersOfAdmin = () => async (dispatch) => {
     dispatch({
       type: "adminAllOrdersRequest",
     });
+    const token = getLocalStorage("auth-token")
 
     const { data } = await axios.get(`${server}/order/admin-all-orders`, {
       withCredentials: true,
+      headers:
+      {
+        Authorization: `Bearer ${token}`
+      }
     });
 
     dispatch({

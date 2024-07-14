@@ -9,6 +9,7 @@ import { format } from 'timeago.js';
 import Header from '../components/Layout/Header';
 import { server } from '../server';
 import styles from '../styles/styles';
+import { getLocalStorage } from '../lib/localStorage'
 
 const ENDPOINT = 'https://nwesextyrepo-chat.onrender.com/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
@@ -26,8 +27,8 @@ const UserInbox = () => {
   const [activeStatus, setActiveStatus] = useState(false);
   const [open, setOpen] = useState(false);
   const scrollRef = useRef(null);
- 
-  
+
+
 
 
   // useEffect(() => {
@@ -75,12 +76,17 @@ const UserInbox = () => {
   }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
+    const token = getLocalStorage("auth-token")
+
     if (user) {
       console.log('User ID:', user._id);
       const getConversation = async () => {
         try {
           const response = await axios.get(`${server}/conversation/get-all-conversation-user/${user._id}`, {
             withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           });
           console.log('Full response:', response);  // Log the full response
           console.log('Conversations:', response.data.conversations);  // Log the conversations array
@@ -226,9 +232,9 @@ const UserInbox = () => {
           <div className="bg-[#fff] flex flex-col justify-center items-center m-auto md:w-1/2 p-8 md:p-20 rounded-lg mt-24">
             <h1 className="text-center text-[30px] py-3 font-Poppins">Start Conversation With a Therapist</h1>
 
-        <button onClick={handleCreateConversation} className="bg-blue-500 text-white p-2 rounded-lg mb-4">
-          Create New Conversation
-        </button>
+            <button onClick={handleCreateConversation} className="bg-blue-500 text-white p-2 rounded-lg mb-4">
+              Create New Conversation
+            </button>
             {conversations.map((item, index) => (
               <MessageList
                 key={index}

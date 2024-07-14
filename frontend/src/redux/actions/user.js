@@ -67,6 +67,8 @@ export const updateUserInformation = (name, email, phoneNumber, password) => asy
       type: 'updateUserInfoRequest',
     });
 
+    const token = getLocalStorage("auth-token")
+
     const { data } = await axios.put(
       `${server}/user/update-user-info`,
       {
@@ -77,9 +79,10 @@ export const updateUserInformation = (name, email, phoneNumber, password) => asy
       },
       {
         withCredentials: true,
-        headers: {
-          'Access-Control-Allow-Credentials': true,
-        },
+        headers:
+        {
+          Authorization: `Bearer ${token}`
+        }
       }
     );
 
@@ -102,6 +105,8 @@ export const updatUserAddress = (country, city, address1, address2, zipCode, add
       type: 'updateUserAddressRequest',
     });
 
+    const token = getLocalStorage("auth-token")
+
     const { data } = await axios.put(
       `${server}/user/update-user-addresses`,
       {
@@ -112,7 +117,13 @@ export const updatUserAddress = (country, city, address1, address2, zipCode, add
         zipCode,
         addressType,
       },
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers:
+        {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
 
     dispatch({
@@ -137,7 +148,15 @@ export const deleteUserAddress = (id) => async (dispatch) => {
       type: 'deleteUserAddressRequest',
     });
 
-    const { data } = await axios.delete(`${server}/user/delete-user-address/${id}`, { withCredentials: true });
+    const token = getLocalStorage("auth-token")
+
+    const { data } = await axios.delete(`${server}/user/delete-user-address/${id}`, {
+      withCredentials: true,
+      headers:
+      {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
     dispatch({
       type: 'deleteUserAddressSuccess',
@@ -161,8 +180,14 @@ export const getAllUsers = () => async (dispatch) => {
       type: 'getAllUsersRequest',
     });
 
+    const token = getLocalStorage("auth-token")
+
     const { data } = await axios.get(`${server}/user/admin-all-users`, {
       withCredentials: true,
+      headers:
+      {
+        Authorization: `Bearer ${token}`
+      }
     });
 
     dispatch({

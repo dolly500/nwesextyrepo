@@ -5,13 +5,22 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { server } from "../../server";
+import { getLocalStorage } from '../../lib/localStorage'
 
 const AllPosts = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
-   axios.get(`${server}/post/admin-all-posts`, {withCredentials: true}).then((res) =>{
-    setPosts(res.data.posts);
-   })
+    const token = getLocalStorage("auth-token")
+
+    axios.get(`${server}/post/admin-all-posts`, {
+      withCredentials: true,
+      headers:
+      {
+        Authorization: `Bearer ${token}`
+      }
+    }).then((res) => {
+      setPosts(res.data.posts);
+    })
   }, []);
 
   const columns = [
@@ -28,9 +37,9 @@ const AllPosts = () => {
       minWidth: 100,
       flex: 0.6,
     },
-    
 
-    
+
+
     {
       field: "Preview",
       flex: 0.8,

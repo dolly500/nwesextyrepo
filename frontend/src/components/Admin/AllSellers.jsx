@@ -10,6 +10,7 @@ import { server } from "../../server";
 import { toast } from "react-toastify";
 import { getAllSellers } from "../../redux/actions/sellers";
 import { Link } from "react-router-dom";
+import { getLocalStorage } from "../../lib/localStorage";
 
 const AllSellers = () => {
   const dispatch = useDispatch();
@@ -21,14 +22,22 @@ const AllSellers = () => {
     dispatch(getAllSellers());
   }, [dispatch]);
 
+  const token = getLocalStorage("auth-token")
+
   const handleDelete = async (id) => {
     await axios
-    .delete(`${server}/shop/delete-seller/${id}`, { withCredentials: true })
-    .then((res) => {
-      toast.success(res.data.message);
-    });
+      .delete(`${server}/shop/delete-seller/${id}`, {
+        withCredentials: true,
+        headers:
+        {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then((res) => {
+        toast.success(res.data.message);
+      });
 
-  dispatch(getAllSellers());
+    dispatch(getAllSellers());
   };
 
   const columns = [
@@ -63,24 +72,24 @@ const AllSellers = () => {
       flex: 0.8,
     },
     {
-        field: "  ",
-        flex: 1,
-        minWidth: 150,
-        headerName: "Preview Shop",
-        type: "number",
-        sortable: false,
-        renderCell: (params) => {
-          return (
-            <>
+      field: "  ",
+      flex: 1,
+      minWidth: 150,
+      headerName: "Preview Shop",
+      type: "number",
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <>
             <Link to={`/shop/preview/${params.id}`}>
-            <Button>
+              <Button>
                 <AiOutlineEye size={20} />
               </Button>
             </Link>
-            </>
-          );
-        },
+          </>
+        );
       },
+    },
     {
       field: " ",
       flex: 1,
@@ -102,7 +111,7 @@ const AllSellers = () => {
 
   const row = [];
   sellers &&
-  sellers.forEach((item) => {
+    sellers.forEach((item) => {
       row.push({
         id: item._id,
         name: item?.name,
@@ -143,7 +152,7 @@ const AllSellers = () => {
                 </div>
                 <div
                   className={`${styles.button} text-white text-[18px] !h-[42px] ml-4`}
-                  onClick={() =>  setOpen(false) || handleDelete(userId)}
+                  onClick={() => setOpen(false) || handleDelete(userId)}
                 >
                   confirm
                 </div>

@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { getAllOrdersOfUser } from "../../redux/actions/order";
+import { getLocalStorage } from "../../lib/localStorage";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -52,6 +53,8 @@ const ProfileContent = ({ active }) => {
   const handleImage = async (e) => {
     const reader = new FileReader();
 
+    const token = getLocalStorage("auth-token")
+
     reader.onload = () => {
       if (reader.readyState === 2) {
         setAvatar(reader.result);
@@ -61,6 +64,10 @@ const ProfileContent = ({ active }) => {
             { avatar: reader.result },
             {
               withCredentials: true,
+              headers:
+              {
+                Authorization: `Bearer ${token}`
+              }
             }
           )
           .then((response) => {
@@ -466,11 +473,19 @@ const ChangePassword = () => {
   const passwordChangeHandler = async (e) => {
     e.preventDefault();
 
+    const token = getLocalStorage("auth-token")
+
     await axios
       .put(
         `${server}/user/update-user-password`,
         { oldPassword, newPassword, confirmPassword },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers:
+          {
+            Authorization: `Bearer ${token}`
+          }
+        }
       )
       .then((res) => {
         toast.success(res.data.success);
